@@ -1,11 +1,11 @@
-/* File is 304 KB. Showing the first 292 KB in the highlighted view to avoid running out of memory. Use the Editor tab to see the full file. */
+
  
 <html lang="en">
  <head>
   <meta name="viewport" content="width=device-width, initial-scale=1"> 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subha Medical ERP | Ultra Pro v21</title>
+  <title>Medical Software | Pharmacy ERP</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Supabase central database client -->
@@ -263,11 +263,33 @@
   </div>
   <div id="login-screen">
    <div class="login-box">
-    <i class="fas fa-heartbeat" style="font-size:54px;color:var(--success);margin-bottom:16px"></i>
-    <h2 id="login-shop-name">Subha Medical</h2>
-    <p style="opacity:.8;margin:8px 0 22px">Pharmacy ERP</p>
+    <div aria-label="Medical Software logo" style="width:66px;height:66px;margin:0 auto 14px;display:grid;place-items:center;border-radius:20px;background:linear-gradient(145deg,#0f766e,#2563eb);box-shadow:0 8px 24px #0f766e35">
+     <svg viewBox="0 0 64 64" width="42" height="42" role="img" aria-hidden="true">
+      <path d="M32 5 54 17.5v29L32 59 10 46.5v-29L32 5Z" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round" /> <path d="M19 33h8l4-10 6 19 4-9h5" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /> <circle cx="32" cy="32" r="3" fill="#a7f3d0" />
+     </svg>
+    </div>
+    <h2 id="login-shop-name">Medical Software</h2>
+    <p style="opacity:.8;margin:8px 0 22px">Pharmacy Management System</p>
     <input type="email" id="cloud-email" class="name-input" style="font-size:15px;letter-spacing:0" placeholder="Email address" autocomplete="username" required> <input type="password" id="cloud-password" class="name-input" style="font-size:15px;letter-spacing:0" placeholder="Password" autocomplete="current-password" onkeypress="if(event.key==='Enter') checkLogin()" required>
     <button id="erp-login-button" class="btn btn-success" style="width:100%;margin-top:10px" onclick="checkLogin()">Sign in</button>
+    <div style="display:flex;justify-content:space-between;gap:10px;margin-top:12px;font-size:12px">
+     <a href="#" onclick="showAuthFlow('register');return false" style="color:#99f6e4">Register pharmacy</a><a href="#" onclick="showAuthFlow('forgot');return false" style="color:#bfdbfe">Forgot password?</a>
+    </div>
+    <div id="auth-flow" class="hidden" style="margin-top:16px;text-align:left;background:#fff;color:#0f172a;padding:16px;border-radius:14px">
+     <h3 id="auth-flow-title" style="margin:0 0 10px">Register pharmacy</h3>
+     <div id="auth-register-fields">
+      <input id="reg-pharmacy-name" placeholder="Pharmacy name" autocomplete="organization" style="margin-bottom:8px"><input id="reg-owner-name" placeholder="Owner name" autocomplete="name" style="margin-bottom:8px"><input id="reg-email" type="email" placeholder="Email address" autocomplete="email" style="margin-bottom:8px"><input id="reg-password" type="password" placeholder="Create password" autocomplete="new-password" style="margin-bottom:8px">
+     </div>
+     <div id="auth-otp-fields" class="hidden">
+      <input id="auth-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Email verification code" style="margin-bottom:8px">
+     </div>
+     <div id="auth-reset-fields" class="hidden">
+      <input id="reset-email" type="email" placeholder="Account email" autocomplete="email" style="margin-bottom:8px"><input id="reset-new-password" type="password" placeholder="New password" autocomplete="new-password" style="margin-bottom:8px">
+     </div>
+     <button id="auth-flow-action" class="btn btn-info" style="width:100%" onclick="submitAuthFlow()">Send verification code</button>
+     <button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="hideAuthFlow()">Back to sign in</button>
+     <div id="auth-flow-status" role="status" style="font-size:11px;margin-top:8px"></div>
+    </div>
     <div id="login-sync-status" role="status" aria-live="polite" style="font-size:11px;margin-top:12px;color:#38bdf8;min-height:16px"></div>
    </div>
   </div>
@@ -1759,6 +1781,9 @@
     let subhaCloudSaveTimer = null;
     let subhaCloudSaveChain = Promise.resolve();
     let subhaCloudBusy = false;
+    let subhaTenantContext = null;
+    let authFlowMode = 'register';
+    let pendingRegistration = null;
     const SUBHA_SUPABASE_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co";
     const SUBHA_SUPABASE_KEY = "sb_publishable_yjg6DKw0JTfU3eYayTfo_g_dyocz5kt";
  
@@ -1779,43 +1804,109 @@
     async function subhaCloudSignIn(){
         const email=(document.getElementById('cloud-email')?.value||'').trim();
         const password=document.getElementById('cloud-password')?.value||'';
-        if(!email||!password) throw new Error("Enter the Supabase account email and password.");
+        if(!email||!password) throw new Error("Enter your email and password.");
         const client=initSubhaSupabase();
         const {data,error}=await client.auth.signInWithPassword({email,password});
         if(error) throw error;
         subhaCloudUser=data.user;
         return data.user;
     }
+    async function loadTenantContext(){
+        const {data,error}=await initSubhaSupabase().rpc('medical_my_pharmacy_context');
+        if(error) throw error;
+        const ctx=Array.isArray(data)?data[0]:data;
+        if(!ctx || !ctx.pharmacy_id) throw new Error('No pharmacy workspace is linked to this account. Complete pharmacy registration or ask the company administrator.');
+        if(ctx.status!=='active') throw new Error('This pharmacy account is not active. Contact the company administrator.');
+        subhaTenantContext=ctx;
+        return ctx;
+    }
     async function subhaCloudPull(){
         const client=initSubhaSupabase();
-        const {data,error}=await client.from('pharmacy_erp_state')
-          .select('state_json,revision,updated_at').eq('id',1).maybeSingle();
+        const ctx=await loadTenantContext();
+        const {data,error}=await client.from('medical_pharmacy_state')
+          .select('state_json,revision,updated_at').eq('pharmacy_id',ctx.pharmacy_id).maybeSingle();
         if(error) throw error;
         if(data && data.state_json && typeof data.state_json==='object' && Object.keys(data.state_json).length>0){
             db=data.state_json;
             subhaCloudRevision=Number(data.revision||0);
             try{localStorage.setItem('subha_erp_v13',JSON.stringify(buildCompactLocalDB()));}catch(e){}
             try{await persistAllSalesJournal(db.sales||[]);}catch(e){}
-            syncUI();
-            return true;
+            syncUI(); return true;
         }
-        // First-time setup: seed cloud from this device's existing ERP data.
-        await subhaCloudPush(true);
-        return false;
+        // First login for this pharmacy: seed only its own empty tenant record.
+        await subhaCloudPush(true); return false;
     }
     async function subhaCloudPush(firstSeed=false){
-        if(!subhaCloudUser) throw new Error("Cloud sign-in required.");
-        const client=initSubhaSupabase();
+        if(!subhaCloudUser || !subhaTenantContext?.pharmacy_id) throw new Error('An active pharmacy workspace is required.');
         const payload=buildCompactLocalDB();
-        const {data,error}=await client.rpc('subha_save_erp_state',{
-          p_state:payload,p_expected_revision:subhaCloudRevision,p_first_seed:firstSeed
+        const {data,error}=await initSubhaSupabase().rpc('medical_save_pharmacy_state',{
+          p_pharmacy_id:subhaTenantContext.pharmacy_id,p_state:payload,
+          p_expected_revision:subhaCloudRevision,p_first_seed:firstSeed
         });
         if(error) throw error;
         const result=Array.isArray(data)?data[0]:data;
-        if(result?.conflict) throw new Error("CLOUD_CONFLICT: Another device saved newer data. Refresh from cloud before continuing.");
+        if(result?.conflict) throw new Error('CLOUD_CONFLICT: Another device saved newer pharmacy data. Refresh before continuing.');
         if(result?.error) throw new Error(result.error);
-        subhaCloudRevision=Number(result?.revision ?? subhaCloudRevision+1);
-        return true;
+        subhaCloudRevision=Number(result?.revision ?? subhaCloudRevision+1); return true;
+    }
+    function showAuthFlow(mode){
+        authFlowMode=mode; const box=document.getElementById('auth-flow'); box.classList.remove('hidden');
+        document.getElementById('auth-register-fields').classList.toggle('hidden',mode!=='register');
+        document.getElementById('auth-otp-fields').classList.add('hidden');
+        document.getElementById('auth-reset-fields').classList.toggle('hidden',mode!=='forgot');
+        document.getElementById('auth-flow-title').textContent=mode==='register'?'Register pharmacy':'Reset password';
+        document.getElementById('auth-flow-action').textContent=mode==='register'?'Send verification code':'Send recovery code';
+        document.getElementById('auth-flow-status').textContent='';
+    }
+    function hideAuthFlow(){document.getElementById('auth-flow').classList.add('hidden');}
+    async function submitAuthFlow(){
+        const status=document.getElementById('auth-flow-status'),btn=document.getElementById('auth-flow-action');
+        btn.disabled=true; status.textContent='Please wait…';
+        try{
+          const client=initSubhaSupabase();
+          if(authFlowMode==='register' && !pendingRegistration){
+            const pharmacyName=document.getElementById('reg-pharmacy-name').value.trim();
+            const ownerName=document.getElementById('reg-owner-name').value.trim();
+            const email=document.getElementById('reg-email').value.trim();
+            const password=document.getElementById('reg-password').value;
+            if(!pharmacyName||!ownerName||!email||password.length<8) throw new Error('Enter all registration details. Password must contain at least 8 characters.');
+            const {data,error}=await client.auth.signUp({email,password,options:{data:{full_name:ownerName,pharmacy_name:pharmacyName}}});
+            if(error) throw error;
+            pendingRegistration={pharmacyName,ownerName,email};
+            document.getElementById('auth-register-fields').classList.add('hidden');
+            document.getElementById('auth-otp-fields').classList.remove('hidden');
+            document.getElementById('auth-flow-title').textContent='Verify email';
+            btn.textContent='Verify code'; status.textContent='A verification code was requested for your email. Enter the code from the email.';
+          } else if(authFlowMode==='register'){
+            const token=document.getElementById('auth-otp').value.trim();
+            if(!token) throw new Error('Enter the verification code.');
+            const {data,error}=await client.auth.verifyOtp({email:pendingRegistration.email,token,type:'signup'});
+            if(error) throw error;
+            subhaCloudUser=data.user;
+            const {data:created,error:createError}=await client.rpc('medical_register_pharmacy',{p_pharmacy_name:pendingRegistration.pharmacyName,p_owner_name:pendingRegistration.ownerName});
+            if(createError) throw createError;
+            pendingRegistration=null;
+            status.textContent='Email verified and pharmacy registration submitted. Sign in after the company administrator activates the account.';
+            btn.textContent='Registration submitted'; btn.disabled=true;
+          } else if(authFlowMode==='forgot'){
+            const email=document.getElementById('reset-email').value.trim();
+            const newPassword=document.getElementById('reset-new-password').value;
+            const otp=document.getElementById('auth-otp').value.trim();
+            if(!otp){
+              if(!email) throw new Error('Enter your account email.');
+              const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+              if(error) throw error;
+              document.getElementById('auth-otp-fields').classList.remove('hidden');
+              btn.textContent='Verify code and change password'; status.textContent='A one-time code was requested. Enter the code, then your new password.';
+            } else {
+              if(newPassword.length<8) throw new Error('Enter a new password with at least 8 characters.');
+              const {error}=await client.auth.verifyOtp({email,token:otp,type:'recovery'}); if(error) throw error;
+              const {error:updateError}=await client.auth.updateUser({password:newPassword}); if(updateError) throw updateError;
+              await client.auth.signOut(); status.textContent='Password updated. You can now sign in.'; hideAuthFlow();
+            }
+          }
+        }catch(e){status.textContent=e.message||String(e);}
+        finally{if(!btn.disabled)btn.disabled=false;}
     }
     function queueSubhaCloudSave(){
         if(!subhaCloudUser) return;
@@ -1837,6 +1928,7 @@
     async function subhaCloudSignOut(){
         try{if(subhaCloudClient) await subhaCloudClient.auth.signOut();}catch(e){console.warn('Sign-out warning:',e);}
         subhaCloudUser=null;
+        subhaTenantContext=null;
         currentUser='';
         cloudStatus('Signed out',false);
         document.getElementById('login-screen').classList.remove('hidden');
@@ -1924,7 +2016,7 @@
           if(button){button.disabled=true;button.textContent='Signing in…';}
           if(status) status.textContent='Connecting securely…';
           await subhaCloudSignIn();
-          if(status) status.textContent='Loading central pharmacy data…';
+          if(status) status.textContent='Loading your pharmacy workspace…';
           await subhaCloudPull();
           currentUser=(subhaCloudUser?.email||'Staff').split('@')[0];
           document.getElementById('ph-name').value=currentUser;
@@ -1933,7 +2025,7 @@
           document.getElementById('ret-ph').value=currentUser;
           document.getElementById('login-screen').classList.add('hidden');
           document.getElementById('cloud-password').value='';
-          cloudStatus('Connected • '+(subhaCloudUser.email||'Signed in'),true);
+          cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);
           updateShiftBadge();
           nav('dashboard');
         }catch(e){
@@ -1959,7 +2051,7 @@
           document.getElementById('header-user').innerText=currentUser;
           document.getElementById('ret-ph').value=currentUser;
           document.getElementById('login-screen').classList.add('hidden');
-          cloudStatus('Connected • '+(subhaCloudUser.email||'Signed in'),true);
+          cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);
           updateShiftBadge();
           nav('dashboard');
           return true;
@@ -3853,65 +3945,7 @@ function _billApplyMemoryRows(rows){
             @media print{html,body{width:auto;height:auto;overflow:visible}.no-print{display:none!important}}
         `;
         doc.open();
-        doc.write('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Subha Medical Invoice</title><style>'+billCss+'</style>
-    <style id="subha-compact-mobile-polish">
-      /* Compact, clean ERP layout: keep every existing module and action intact. */
-      html, body { max-width:100%; }
-      .workspace { padding:16px 18px; }
-      .header-bar { padding:12px 16px; margin-bottom:14px; gap:8px; }
-      .header-bar h2 { font-size:20px; line-height:1.25; }
-      .header-bar h2 span { font-size:11px !important; }
-      .stat-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
-      .stat-card { min-width:0; padding:12px; gap:10px; border-radius:11px; }
-      .stat-icon { width:36px; height:36px; min-width:36px; font-size:15px; border-radius:9px; }
-      .stat-info p { font-size:10px; line-height:1.25; }
-      .stat-info h3 { font-size:18px; line-height:1.25; overflow-wrap:anywhere; }
-      .glass-card { padding:14px; margin-bottom:12px; border-radius:12px; }
-      .glass-card h3 { font-size:14px; }
-      .btn { padding:8px 12px; font-size:11px; gap:6px; }
-      .btn-sm { padding:6px 9px; font-size:10px; }
-      .floating-ai { right:10px; bottom:10px; padding:8px 10px; font-size:10px; }
-      #subha-cloud-toolbar { display:none !important; }
-      .workspace > .header-bar > div { min-width:0; }
-      @media (max-width:850px) {
-        body { display:flex; flex-direction:column; min-height:100vh; height:auto; overflow-x:hidden; }
-        .sidebar { order:0; position:sticky; top:0; width:100% !important; height:54px; min-height:54px; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:3px; padding:5px 7px; overflow-x:auto; overflow-y:hidden; box-shadow:0 2px 10px #21102d20; }
-        .sidebar:hover { width:100% !important; }
-        .nav-link { flex:0 0 40px; width:40px; min-width:40px; height:40px; min-height:40px; margin:0; padding:0; justify-content:center; border-radius:9px; }
-        .nav-link i { min-width:0; font-size:16px; }
-        .nav-link span { display:none !important; }
-        .workspace { order:1; width:100%; padding:10px; overflow:visible; }
-        .header-bar { display:flex; flex-direction:column; align-items:stretch; padding:11px 12px; margin-bottom:11px; border-radius:11px; }
-        .header-bar > div { width:100%; display:flex; flex-wrap:wrap; align-items:center; gap:6px !important; }
-        .header-bar h2 { font-size:18px; }
-        .header-bar h2 span { font-size:10px !important; }
-        .header-bar .btn { padding:7px 9px; }
-        .stat-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-bottom:10px; }
-        .stat-card { padding:10px 9px; gap:8px; min-height:76px; }
-        .stat-icon { width:31px; height:31px; min-width:31px; font-size:13px; border-radius:8px; }
-        .stat-info p { font-size:9px; letter-spacing:.15px; }
-        .stat-info h3 { font-size:16px; }
-        #card-low .stat-info button { padding:5px 7px !important; font-size:9px !important; }
-        #card-ai .stat-info h3 { font-size:11px !important; }
-        #card-audit .stat-info h3 { font-size:12px !important; }
-        .workspace [style*="grid-template-columns: repeat(auto-fit, minmax(300px"] { grid-template-columns:minmax(0,1fr) !important; gap:10px !important; }
-        .glass-card { padding:11px; margin-bottom:10px; }
-        .table-responsive { overflow-x:auto; }
-        .floating-ai { width:38px; height:38px; padding:0; justify-content:center; border-radius:50%; right:10px; bottom:10px; }
-        .floating-ai i { font-size:15px !important; }
-        .floating-ai { font-size:0; gap:0; }
-      }
-      @media (max-width:380px) {
-        .workspace { padding:8px; }
-        .stat-grid { gap:6px; }
-        .stat-card { padding:8px 7px; gap:6px; }
-        .stat-icon { width:28px; height:28px; min-width:28px; font-size:12px; }
-        .stat-info p { font-size:8px; }
-        .stat-info h3 { font-size:15px; }
-      }
-    </style>
- 
-</head><body><div id="bill-root">'+String(html||'')+'</div></body></html>');
+        doc.write('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Subha Medical Invoice</title><style>'+billCss+'</style></head><body><div id="bill-root">'+String(html||'')+'</div></body></html>');
         doc.close();
         let done=false;
         const cleanup=()=>{
@@ -4795,81 +4829,4 @@ function _billApplyMemoryRows(rows){
         }
         const response=await fetch(full,opts);
         const raw=await response.text();
-        if(!response.ok) throw new Error('Server returned HTTP '+response.status);
-        let data;
-        try {
-            data=JSON.parse(raw.replace(/^\uFEFF/, '').trim());
-        } catch(parseErr) {
-            const preview=String(raw||'').replace(/\s+/g,' ').slice(0,180);
-            throw new Error('Backend returned non-JSON: '+preview);
-        }
-        if(data && data.ok===false) throw new Error(data.error||'Central request failed');
-        return data;
-    }
- 
-    async function testCentralConnection(){
-        try{
-          initSubhaSupabase();
-          const {data:{session},error}=await subhaCloudClient.auth.getSession();
-          if(error) throw error;
-          if(!session) throw new Error("No Supabase session. Sign in from the login screen.");
-          const {error:readError}=await subhaCloudClient.from('pharmacy_erp_state').select('id,revision').eq('id',1).maybeSingle();
-          if(readError) throw readError;
-          alert("✓ Supabase connection successful. Authenticated central database is reachable.");
-          return true;
-        }catch(e){alert("Supabase connection failed: "+(e.message||e));return false;}
-    }
- 
-    async function syncToSheet(silent=false){
-        if(subhaCloudUser){ try{ await subhaCloudPush(false); cloudStatus("✓ Supabase synced",true); return true; }catch(e){cloudStatus(e.message||String(e),false); if(!silent) alert(e.message||String(e)); return false;} }
-        if(!silent) alert("Google Sheets sync is retired in this Supabase edition. Sign in to Supabase."); return false;
-        /* legacy Google Apps Script implementation retained below for reference only */
-        if(syncInProgress) return false;
-        const url=getCloudUrl();
-        if(!url){ if(!silent) alert('Please enter the Google Web App URL in Settings.'); return false; }
-        syncInProgress=true;
-        const btn=document.querySelector('button[onclick*="syncToSheet"]');
-        try{
-            localStorage.setItem('subha_sheet_url',url);
-            if(btn&&!silent){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Syncing...';}
-            setSyncStatus('🔄 Uploading central data...');
-            const result=await cloudRequest('save',{
-                action:'save',
-                shopName:shopDetails.shopName||'Subha Medical',
-                expectedRevision:cloudRevision,
-                db:JSON.parse(JSON.stringify(db)),
-                deviceId:getDeviceId()
-            });
-            if(!result || result.ok===false) throw new Error(result?.error||'Central save failed');
-            cloudRevision=Number(result.revision ?? result.rev ?? cloudRevision+1);
-            localStorage.setItem('subha_cloud_revision',String(cloudRevision));
-            setSyncStatus('✅ Central sync complete • Rev '+cloudRevision);
-            if(!silent) alert('✅ Data saved to the central Google Sheet database.\nRevision: '+cloudRevision);
-            return true;
-        }catch(e){
-            console.error('Central sync error:',e);
-            if(String(e.message||'').includes('SYNC_CONFLICT')){
-                setSyncStatus('⚠️ Central data changed — restore required',false);
-                if(!silent) alert('⚠️ Another device has newer central data.\nUse Restore / Download first, then save your new changes.');
-            }else{
-                setSyncStatus('❌ Central sync failed',false);
-                if(!silent) alert('❌ Central sync failed: '+(e.message||e));
-            }
-            return false;
-        }finally{
-            syncInProgress=false;
-            if(btn&&!silent){btn.disabled=false;btn.innerHTML='⬆️ Upload / Sync';}
-        }
-    }
- 
-    async function restoreFromCloud(silent=false){
-        try{
-          if(!subhaCloudUser){
-            const client=initSubhaSupabase();
-            const {data:{session},error}=await client.auth.getSession();
-            if(error) throw error;
-            subhaCloudUser=session?.user||null;
-          }
-          if(!subhaCloudUser) throw new Error("Sign in to Supabase first.");
-          await subhaCloudPull();
-          cloudStatus("✓ Central Supabase data loaded
+        if(!response.ok) throw new Error('Server retur
