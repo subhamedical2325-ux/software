@@ -32,7 +32,12 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: white;
         }
-        .login-box { text-align: center; width: 300px; }
+        .login-box { text-align:center;width:min(92vw,390px);padding:30px 26px;border:1px solid #ffffff20;border-radius:26px;background:linear-gradient(155deg,#172554,#0f172a 65%);box-shadow:0 25px 70px #0008;backdrop-filter:blur(16px) }
+        .login-box .name-input{background:#f8fafc;color:#0f172a;border:1px solid #dbeafe;border-radius:13px;text-align:left;padding:15px 16px;margin:8px 0}
+        .login-box .btn-success{border-radius:13px;padding:14px;font-weight:800;letter-spacing:.3px;background:linear-gradient(100deg,#0d9488,#2563eb);box-shadow:0 10px 24px #0d948855}
+        #company-admin-screen{position:fixed;inset:0;z-index:9998;background:#f1f5f9;color:#0f172a;overflow:auto;padding:24px}
+        .company-panel{max-width:900px;margin:5vh auto;background:white;border:1px solid #e2e8f0;border-radius:22px;padding:24px;box-shadow:0 20px 60px #0f172a18}
+        .company-panel input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:10px;margin:6px 0 12px}
         .login-input { 
             padding: 15px; width: 100%; border-radius: 50px; border: none; 
             text-align: center; font-size: 20px; letter-spacing: 2px; margin: 10px 0;
@@ -249,6 +254,19 @@
         .stat-info h3 { font-size:15px; }
       }
     </style>
+  <style id="medical-auth-polish">
+#login-screen .login-box{max-width:470px!important}
+#login-screen section{box-shadow:0 18px 45px rgba(15,23,42,.16);border:1px solid #e6edf7}
+#login-screen input.name-input{min-height:54px;border:1.5px solid #dbe5f1;border-radius:13px;padding:13px 15px;margin:7px 0;font-size:16px;background:#f8fafc;color:#0f172a;outline:none}
+#login-screen input.name-input:focus{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+#erp-login-button,#owner-flow-btn{min-height:54px;border:0;border-radius:13px;background:linear-gradient(100deg,#0d9488,#2563eb);color:#fff;font-weight:800;letter-spacing:.2px;box-shadow:0 10px 22px rgba(37,99,235,.18)}
+#login-screen .auth-secondary{min-height:48px;border:0;border-radius:12px;color:#fff;font-weight:750;text-decoration:none}
+#login-screen .auth-secondary.btn-info{background:linear-gradient(100deg,#0f766e,#2563eb)}
+#login-screen .auth-secondary.btn-dark{background:#334155}
+#owner-flow{background:#f8fafc;border:1px solid #dbe5f1;border-radius:14px;padding:15px!important}
+#owner-flow-btn:disabled,#erp-login-button:disabled{opacity:.65;cursor:wait}
+#owner-auth-status,#login-sync-status{line-height:1.5;overflow-wrap:anywhere}
+</style>
  </head>
  <body>
   <datalist id="med-data"></datalist> <datalist id="company-suggestions"></datalist> <!-- QR / Barcode Camera Scanner Modal -->
@@ -262,35 +280,63 @@
    </div>
   </div>
   <div id="login-screen">
-   <div class="login-box">
-    <div aria-label="Medical Software logo" style="width:66px;height:66px;margin:0 auto 14px;display:grid;place-items:center;border-radius:20px;background:linear-gradient(145deg,#0f766e,#2563eb);box-shadow:0 8px 24px #0f766e35">
-     <svg viewBox="0 0 64 64" width="42" height="42" role="img" aria-hidden="true">
-      <path d="M32 5 54 17.5v29L32 59 10 46.5v-29L32 5Z" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round" /> <path d="M19 33h8l4-10 6 19 4-9h5" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /> <circle cx="32" cy="32" r="3" fill="#a7f3d0" />
+   <div class="login-box" style="width:min(94vw,470px)">
+    <div aria-label="Medical Software logo" style="width:62px;height:62px;margin:0 auto 14px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#0f766e,#2563eb)">
+     <svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true">
+      <path d="M32 5 54 17.5v29L32 59 10 46.5v-29L32 5Z" fill="none" stroke="#fff" stroke-width="3.5" /><path d="M19 33h8l4-10 6 19 4-9h5" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" />
      </svg>
     </div>
-    <h2 id="login-shop-name">Medical Software</h2>
-    <p style="opacity:.8;margin:8px 0 22px">Pharmacy Management System</p>
-    <input type="email" id="cloud-email" class="name-input" style="font-size:15px;letter-spacing:0" placeholder="Email address" autocomplete="username" required> <input type="password" id="cloud-password" class="name-input" style="font-size:15px;letter-spacing:0" placeholder="Password" autocomplete="current-password" onkeypress="if(event.key==='Enter') checkLogin()" required>
-    <button id="erp-login-button" class="btn btn-success" style="width:100%;margin-top:10px" onclick="checkLogin()">Sign in</button>
-    <div style="display:flex;justify-content:space-between;gap:10px;margin-top:12px;font-size:12px">
-     <a href="#" onclick="showAuthFlow('register');return false" style="color:#99f6e4">Register pharmacy</a><a href="#" onclick="showAuthFlow('forgot');return false" style="color:#bfdbfe">Forgot password?</a>
+    <h2 style="margin:0">Medical Software</h2>
+    <p style="opacity:.8;margin:7px 0 20px">Pharmacy Management System</p>
+    <section style="text-align:left;background:#fff;color:#0f172a;border-radius:16px;padding:18px">
+     <h3 style="margin:0 0 5px">Sign in</h3>
+     <p style="font-size:13px;color:#64748b;margin:0 0 14px">Use your registered email and password.</p>
+     <input type="email" id="cloud-email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Registered email address" autocomplete="off" autocapitalize="none" spellcheck="false" name="pharmacy-login-email"> <input type="password" id="cloud-password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Password" autocomplete="current-password" name="pharmacy-login-password" onkeypress="if(event.key==='Enter') checkLogin()">
+     <button id="erp-login-button" class="btn btn-success" style="width:100%;margin-top:8px" onclick="checkLogin()">Secure sign in</button>
+     <div class="auth-actions" style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px">
+      <button type="button" class="btn btn-info auth-secondary" onclick="showOwnerFlow('register')">＋ New pharmacy registration</button>
+      <button type="button" class="btn btn-dark auth-secondary" onclick="showOwnerFlow('forgot')">Forgot password?</button>
+     </div>
+     <div id="owner-flow" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid #e2e8f0">
+      <h3 id="owner-flow-title" style="margin:0 0 10px">Register new pharmacy</h3>
+      <div id="owner-register-fields">
+       <input id="owner-reg-pharmacy" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Pharmacy name"> <input id="owner-reg-name" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Owner name"> <input id="owner-reg-email" type="email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Owner email"> <input id="owner-reg-password" type="password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Create password (minimum 8 characters)" autocomplete="new-password">
+      </div>
+      <div id="owner-forgot-fields" class="hidden">
+       <p style="font-size:13px;color:#64748b">Enter your registered email in the sign-in email field above. We will send a recovery OTP to that address.</p>
+      </div>
+      <div id="owner-flow-otp" class="hidden">
+       <input id="owner-flow-code" class="name-input" style="width:100%;box-sizing:border-box" inputmode="numeric" autocomplete="one-time-code" placeholder="Email verification code">
+      </div>
+      <div id="owner-new-password-wrap" class="hidden">
+       <input id="owner-new-password" type="password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="New password (minimum 8 characters)" autocomplete="new-password">
+      </div>
+      <button id="owner-flow-btn" class="btn btn-info" style="width:100%" onclick="submitOwnerFlow()">Send verification code</button>
+      <button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="hideOwnerFlow()">Back to sign in</button>
+     </div>
+     <div id="owner-auth-status" role="status" aria-live="polite" style="font-size:12px;color:#475569;margin-top:10px;min-height:18px"></div>
+    </section>
+    <div id="login-sync-status" role="status" aria-live="polite" style="font-size:12px;margin-top:12px;color:#38bdf8;min-height:18px"></div>
+   </div>
+  </div>
+  <div id="company-admin-screen" class="hidden">
+   <div class="company-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+     <div>
+      <div style="font-size:11px;letter-spacing:2px;color:#0d9488;font-weight:800">SUBHA MEDICAL</div>
+      <h2 style="margin:5px 0">Pharmacy Management</h2>
+      <p style="margin:0;color:#64748b;font-size:13px">Manage pharmacy registrations and account status.</p>
+     </div>
+     <button class="btn btn-dark" onclick="companyAdminSignOut()">Sign out</button>
     </div>
-    <div id="auth-flow" class="hidden" style="margin-top:16px;text-align:left;background:#fff;color:#0f172a;padding:16px;border-radius:14px">
-     <h3 id="auth-flow-title" style="margin:0 0 10px">Register pharmacy</h3>
-     <div id="auth-register-fields">
-      <input id="reg-pharmacy-name" placeholder="Pharmacy name" autocomplete="organization" style="margin-bottom:8px"><input id="reg-owner-name" placeholder="Owner name" autocomplete="name" style="margin-bottom:8px"><input id="reg-email" type="email" placeholder="Email address" autocomplete="email" style="margin-bottom:8px"><input id="reg-password" type="password" placeholder="Create password" autocomplete="new-password" style="margin-bottom:8px">
+    <div id="company-admin-status" role="status" style="font-size:13px;margin-top:14px;color:#475569">Review new pharmacy registrations and approve them here.</div>
+    <div style="margin-top:22px">
+     <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>Registered pharmacies</h3>
+      <button class="btn btn-info" onclick="companyLoadPharmacies()">Refresh</button>
      </div>
-     <div id="auth-otp-fields" class="hidden">
-      <input id="auth-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Email verification code" style="margin-bottom:8px">
-     </div>
-     <div id="auth-reset-fields" class="hidden">
-      <input id="reset-email" type="email" placeholder="Account email" autocomplete="email" style="margin-bottom:8px"><input id="reset-new-password" type="password" placeholder="New password" autocomplete="new-password" style="margin-bottom:8px">
-     </div>
-     <button id="auth-flow-action" class="btn btn-info" style="width:100%" onclick="submitAuthFlow()">Send verification code</button>
-     <button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="hideAuthFlow()">Back to sign in</button>
-     <div id="auth-flow-status" role="status" style="font-size:11px;margin-top:8px"></div>
+     <div id="company-pharmacy-list" style="overflow:auto;color:#64748b;font-size:13px">Loading pharmacy accounts…</div>
     </div>
-    <div id="login-sync-status" role="status" aria-live="polite" style="font-size:11px;margin-top:12px;color:#38bdf8;min-height:16px"></div>
    </div>
   </div>
   <div id="auth-modal" class="hidden">
@@ -1790,8 +1836,20 @@
     function initSubhaSupabase(){
         if(!window.supabase?.createClient) throw new Error("Supabase SDK did not load. Check internet connection.");
         if(!subhaCloudClient){
+            const timedFetch = async (input, init={}) => {
+              const controller = new AbortController();
+              const timer = setTimeout(() => controller.abort(), 20000);
+              try {
+                const response = await fetch(input, {...init, signal: controller.signal});
+                return response;
+              } catch (err) {
+                if (err && err.name === 'AbortError') throw new Error('Supabase request timed out after 20 seconds. Check mobile internet, Supabase project status, URL and API key.');
+                throw err;
+              } finally { clearTimeout(timer); }
+            };
             subhaCloudClient = window.supabase.createClient(SUBHA_SUPABASE_URL,SUBHA_SUPABASE_KEY,{
-              auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+              auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true},
+              global:{fetch:timedFetch,headers:{'X-Client-Info':'medical-software-mobile/1.0'}}
             });
         }
         return subhaCloudClient;
@@ -1889,7 +1947,7 @@
             status.textContent='Email verified and pharmacy registration submitted. Sign in after the company administrator activates the account.';
             btn.textContent='Registration submitted'; btn.disabled=true;
           } else if(authFlowMode==='forgot'){
-            const email=document.getElementById('reset-email').value.trim();
+            const email=COMPANY_ADMIN_EMAIL;
             const newPassword=document.getElementById('reset-new-password').value;
             const otp=document.getElementById('auth-otp').value.trim();
             if(!otp){
@@ -2009,57 +2067,181 @@
         document.body.removeChild(link);
     }
  
+    // Pharmacy-owner and company-admin authentication flows
+    let ownerFlowMode='register';
+    let ownerPending=null;
+    let ownerFlowStep='start';
+    function showLoginMode(mode){
+      const owner=mode==='owner';
+      document.getElementById('owner-login-panel').classList.toggle('hidden',!owner);
+      document.getElementById('company-login-panel').classList.toggle('hidden',owner);
+      document.getElementById('owner-tab').className='btn '+(owner?'btn-info':'btn-dark');
+      document.getElementById('company-tab').className='btn '+(!owner?'btn-info':'btn-dark');
+      document.getElementById('login-sync-status').textContent='';
+    }
+    function ownerStatus(msg,good=true){const el=document.getElementById('owner-auth-status');if(el){el.textContent=msg;el.style.color=good?'#0f766e':'#b91c1c';}}
+    function showOwnerFlow(mode){
+      ownerFlowMode=mode;ownerFlowStep='start';ownerPending=null;
+      const box=document.getElementById('owner-flow');box.classList.remove('hidden');
+      document.getElementById('owner-register-fields').classList.toggle('hidden',mode!=='register');
+      document.getElementById('owner-forgot-fields').classList.toggle('hidden',mode!=='forgot');
+      document.getElementById('owner-flow-otp').classList.add('hidden');
+      document.getElementById('owner-new-password-wrap').classList.add('hidden');
+      document.getElementById('owner-flow-title').textContent=mode==='register'?'Register new pharmacy':'Reset password';
+      document.getElementById('owner-flow-btn').textContent=mode==='register'?'Send verification code':'Send recovery code';
+      ownerStatus('');
+    }
+    function hideOwnerFlow(){document.getElementById('owner-flow').classList.add('hidden');ownerPending=null;ownerFlowStep='start';}
+    function randomTempPassword(){const a=new Uint8Array(24);crypto.getRandomValues(a);return Array.from(a,x=>x.toString(16).padStart(2,'0')).join('')+'Aa9!';}
+    async function ownerSendLoginOtp(){
+      const email=document.getElementById('owner-email').value.trim().toLowerCase();
+      const btn=document.getElementById('owner-otp-btn');
+      if(!email){ownerStatus('Enter your registered pharmacy email.',false);return;}
+      btn.disabled=true;ownerStatus('Checking account…');
+      try{
+        // Existing verified owners sign in with their password; OTP is used for first registration and recovery.
+        const pass=document.getElementById('owner-password').value;
+        if(!pass)throw new Error('Enter your password.');
+        const {data,error}=await initSubhaSupabase().auth.signInWithPassword({email,password:pass});
+        if(error)throw error;
+        subhaCloudUser=data.user;
+        if((data.user.email||'').toLowerCase()===COMPANY_ADMIN_EMAIL){await initSubhaSupabase().auth.signOut();subhaCloudUser=null;throw new Error('Use the Subha Medical administrator login.');}
+        await subhaCloudPull();
+        currentUser=(subhaCloudUser.email||'Pharmacy').split('@')[0];
+        document.getElementById('ph-name').value=currentUser;document.getElementById('shift-opener').value=currentUser;document.getElementById('header-user').innerText=currentUser;document.getElementById('ret-ph').value=currentUser;
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('owner-password').value='';
+        cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);updateShiftBadge();nav('dashboard');
+      }catch(e){ownerStatus(e.message||'Sign in failed.',false);}
+      finally{btn.disabled=false;}
+    }
+    async function ownerVerifyLoginOtp(){
+      // This button is intentionally not a recurring login path. OTP is only for initial verification.
+      ownerStatus('Use your password after your first email verification. For account recovery, choose Forgot password.',false);
+    }
+    async function submitOwnerFlow(){
+      const btn=document.getElementById('owner-flow-btn');btn.disabled=true;
+      try{
+        const client=initSubhaSupabase();
+        if(ownerFlowMode==='register' && ownerFlowStep==='start'){
+          const pharmacyName=document.getElementById('owner-reg-pharmacy').value.trim();
+          const ownerName=document.getElementById('owner-reg-name').value.trim();
+          const email=document.getElementById('owner-reg-email').value.trim().toLowerCase();
+          const password=document.getElementById('owner-reg-password').value;
+          if(!pharmacyName||!ownerName||!email||!password)throw new Error('Enter pharmacy name, owner name, email and password.');
+          if(password.length<8)throw new Error('Password must contain at least 8 characters.');
+          if(email===COMPANY_ADMIN_EMAIL)throw new Error('This email is reserved for Subha Medical administration.');
+          const {error}=await client.auth.signUp({email,password,options:{data:{full_name:ownerName,pharmacy_name:pharmacyName}}});
+          if(error)throw error;
+          ownerPending={pharmacyName,ownerName,email};ownerFlowStep='verify';
+          document.getElementById('owner-register-fields').classList.add('hidden');document.getElementById('owner-flow-otp').classList.remove('hidden');document.getElementById('owner-new-password-wrap').classList.add('hidden');
+          document.getElementById('owner-flow-title').textContent='Verify email and create password';btn.textContent='Verify OTP and create account';
+          ownerStatus('Verification code sent. Enter the email OTP and choose your password.');
+        }else if(ownerFlowMode==='register' && ownerFlowStep==='verify'){
+          const token=document.getElementById('owner-flow-code').value.trim();
+          if(!token)throw new Error('Enter the email verification code.');
+          const verifiedEmail=ownerPending.email;
+          const {data,error}=await client.auth.verifyOtp({email:verifiedEmail,token,type:'signup'});if(error)throw error;
+          subhaCloudUser=data.user;
+          const {data:regData,error:regError}=await client.rpc('medical_register_pharmacy',{p_pharmacy_name:ownerPending.pharmacyName,p_owner_name:ownerPending.ownerName});if(regError)throw regError;
+          await client.auth.signOut();subhaCloudUser=null;
+          document.getElementById('cloud-email').value=verifiedEmail;
+          document.getElementById('cloud-password').value='';
+          ownerPending=null;hideOwnerFlow();
+          ownerStatus('Email verified. Registration is pending Subha Medical approval. Your registered email and password will work after approval.');
+        }else if(ownerFlowMode==='forgot' && ownerFlowStep==='start'){
+          const email=(document.getElementById('cloud-email').value||'').trim().toLowerCase();if(!email)throw new Error('Enter your registered email in the email field above first.');
+          const {error}=await client.auth.resetPasswordForEmail(email);if(error)throw error;
+          ownerPending={email};ownerFlowStep='recovery';document.getElementById('owner-flow-otp').classList.remove('hidden');document.getElementById('owner-new-password-wrap').classList.remove('hidden');
+          document.getElementById('owner-flow-title').textContent='Verify recovery code';btn.textContent='Verify OTP and change password';ownerStatus('Recovery OTP sent to your registered email.');
+        }else if(ownerFlowMode==='forgot' && ownerFlowStep==='recovery'){
+          const token=document.getElementById('owner-flow-code').value.trim(),password=document.getElementById('owner-new-password').value;
+          if(!token)throw new Error('Enter the recovery OTP.');if(password.length<8)throw new Error('New password must contain at least 8 characters.');
+          const {error}=await client.auth.verifyOtp({email:ownerPending.email,token,type:'recovery'});if(error)throw error;
+          const {error:updateError}=await client.auth.updateUser({password});if(updateError)throw updateError;
+          await client.auth.signOut();hideOwnerFlow();ownerStatus('Password changed successfully. Sign in with your new password.');
+        }
+      }catch(e){ownerStatus(e.message||String(e),false);}
+      finally{btn.disabled=false;}
+    }
+ 
+    const COMPANY_ADMIN_EMAIL='subhamedical2325@gmail.com';
+    async function verifyCompanyAdmin(){
+      const email=(subhaCloudUser?.email||'').toLowerCase();
+      if(email!==COMPANY_ADMIN_EMAIL) throw new Error('This account is not authorized for company administration.');
+      const {data,error}=await initSubhaSupabase().rpc('medical_is_company_admin');
+      if(error) throw new Error('Company administrator permission is not configured in Supabase. '+error.message);
+      if(data!==true) throw new Error('Company administrator access is not enabled for this account in Supabase.');
+      return true;
+    }
+    async function companyLoadPharmacies(){
+      const target=document.getElementById('company-pharmacy-list'); target.textContent='Loading…';
+      try{
+        const {data,error}=await initSubhaSupabase().from('medical_pharmacies').select('id,pharmacy_code,pharmacy_name,status,subscription_plan,subscription_ends_at,created_at').order('created_at',{ascending:false});
+        if(error) throw error;
+        if(!data?.length){target.textContent='No pharmacy accounts registered yet.';return;}
+        target.innerHTML='<table style="width:100%;border-collapse:collapse"><thead><tr><th align="left">Pharmacy</th><th align="left">Pharmacy ID</th><th align="left">Status</th><th align="left">Approval</th></tr></thead><tbody>'+data.map(x=>'<tr style="border-top:1px solid #e2e8f0"><td style="padding:10px 6px">'+escapeHtml(x.pharmacy_name||'')+'</td><td style="padding:10px 6px">'+escapeHtml(x.pharmacy_code||x.id||'')+'</td><td style="padding:10px 6px">'+escapeHtml(x.status||'pending')+'</td><td style="padding:10px 6px"><button class="btn btn-success" data-id="'+escapeHtml(x.id)+'" data-status="active" onclick="companySetPharmacyStatus(this.dataset.id,this.dataset.status)">Approve</button> <button class="btn btn-danger" data-id="'+escapeHtml(x.id)+'" data-status="suspended" onclick="companySetPharmacyStatus(this.dataset.id,this.dataset.status)">Suspend</button></td></tr>').join('')+'</tbody></table>';
+      }catch(e){target.textContent='Could not load pharmacy list: '+(e.message||e);}
+    }
+ 
+    async function companySetPharmacyStatus(id,status){
+      const label=document.getElementById('company-admin-status');
+      try{
+        const {error}=await initSubhaSupabase().rpc('medical_company_set_pharmacy_status',{p_pharmacy_id:id,p_status:status,p_plan:null,p_ends_at:null});
+        if(error)throw error;
+        label.textContent=status==='active'?'Pharmacy approved. Owner can now sign in.':'Pharmacy suspended.';
+        await companyLoadPharmacies();
+      }catch(e){label.textContent='Could not update approval: '+(e.message||e);}
+    }
+    async function companyAdminSignOut(){await subhaCloudSignOut();document.getElementById('company-admin-screen').classList.add('hidden');}
+ 
     async function checkLogin() {
-        const status=document.getElementById('login-sync-status');
-        const button=document.getElementById('erp-login-button');
-        try{
-          if(button){button.disabled=true;button.textContent='Signing in…';}
-          if(status) status.textContent='Connecting securely…';
-          await subhaCloudSignIn();
-          if(status) status.textContent='Loading your pharmacy workspace…';
+      const status=document.getElementById('login-sync-status'),button=document.getElementById('erp-login-button');
+      try{
+        if(button){button.disabled=true;button.textContent='Verifying…';}
+        const email=(document.getElementById('cloud-email').value||'').trim().toLowerCase();
+        if(!email) throw new Error('Enter your email address.');
+        await subhaCloudSignIn();
+        if(email===COMPANY_ADMIN_EMAIL){
+          if(status)status.textContent='Checking Subha Medical administrator permission…';
+          await verifyCompanyAdmin();
+          document.getElementById('login-screen').classList.add('hidden');
+          document.getElementById('company-admin-screen').classList.remove('hidden');
+          document.getElementById('cloud-password').value='';
+          await companyLoadPharmacies();
+        }else{
+          if(status)status.textContent='Checking pharmacy approval and loading workspace…';
           await subhaCloudPull();
-          currentUser=(subhaCloudUser?.email||'Staff').split('@')[0];
-          document.getElementById('ph-name').value=currentUser;
-          document.getElementById('shift-opener').value=currentUser;
-          document.getElementById('header-user').innerText=currentUser;
-          document.getElementById('ret-ph').value=currentUser;
+          currentUser=(subhaCloudUser.email||'Staff').split('@')[0];
+          document.getElementById('ph-name').value=currentUser;document.getElementById('shift-opener').value=currentUser;document.getElementById('header-user').innerText=currentUser;document.getElementById('ret-ph').value=currentUser;
           document.getElementById('login-screen').classList.add('hidden');
           document.getElementById('cloud-password').value='';
-          cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);
-          updateShiftBadge();
-          nav('dashboard');
-        }catch(e){
-          console.error('Supabase login/pull failed',e);
-          if(status) status.textContent=e.message||'Sign-in failed. Check your credentials and connection.';
-          alert('Sign-in failed: '+(e.message||e));
-        }finally{
-          if(button){button.disabled=false;button.textContent='Sign in';}
+          cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);updateShiftBadge();nav('dashboard');
         }
+      }catch(e){
+        console.error('Sign-in failed',e);
+        if(subhaCloudUser){try{await initSubhaSupabase().auth.signOut();}catch(_){}subhaCloudUser=null;}
+        if(status)status.textContent='Login stopped: '+(e.message||'Check your email, password and internet connection.');
+      }finally{if(button){button.disabled=false;button.textContent='Secure sign in';}}
     }
  
     async function resumeSubhaSession(){
-        try{
-          const client=initSubhaSupabase();
-          const {data,error}=await client.auth.getSession();
-          if(error) throw error;
-          if(!data?.session?.user) return false;
-          subhaCloudUser=data.session.user;
-          await subhaCloudPull();
-          currentUser=(subhaCloudUser.email||'Staff').split('@')[0];
-          document.getElementById('ph-name').value=currentUser;
-          document.getElementById('shift-opener').value=currentUser;
-          document.getElementById('header-user').innerText=currentUser;
-          document.getElementById('ret-ph').value=currentUser;
+      try{
+        const client=initSubhaSupabase();const {data,error}=await client.auth.getSession();if(error)throw error;
+        if(!data?.session?.user)return false;
+        subhaCloudUser=data.session.user;
+        if((subhaCloudUser.email||'').toLowerCase()===COMPANY_ADMIN_EMAIL){
+          await verifyCompanyAdmin();
           document.getElementById('login-screen').classList.add('hidden');
-          cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);
-          updateShiftBadge();
-          nav('dashboard');
-          return true;
-        }catch(e){
-          console.warn('Saved Supabase session could not be restored:',e);
-          cloudStatus('Please sign in to continue',false);
-          return false;
+          document.getElementById('company-admin-screen').classList.remove('hidden');
+          await companyLoadPharmacies();return true;
         }
+        await subhaCloudPull();
+        currentUser=(subhaCloudUser.email||'Staff').split('@')[0];
+        document.getElementById('ph-name').value=currentUser;document.getElementById('shift-opener').value=currentUser;document.getElementById('header-user').innerText=currentUser;document.getElementById('ret-ph').value=currentUser;
+        document.getElementById('login-screen').classList.add('hidden');
+        cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);updateShiftBadge();nav('dashboard');return true;
+      }catch(e){console.warn('Saved session could not be restored:',e);try{await initSubhaSupabase().auth.signOut();}catch(_){}subhaCloudUser=null;return false;}
     }
  
     function doLogout(){ subhaCloudSignOut(); }
@@ -4599,234 +4781,4 @@ function _billApplyMemoryRows(rows){
             let searchDrug = document.getElementById('ledger-search').value;
             title = `Drug Wise Ledger: ${searchDrug}`; head.innerHTML = '<th>Date</th><th>Type</th><th>Ref/Batch</th><th>Qty</th>';
             document.getElementById('drug-ledger-selector').classList.remove('hidden'); let totalStock = 0;
-            db.stock.filter(s => s.name === searchDrug).forEach(s => { body.innerHTML += `<tr style="background:#f0fdf4"><td>Current</td><td><b>In Stock</b></td><td>${s.batch}</td><td>+${s.qty}</td></tr>`; totalStock += s.qty; });
-            db.sales.forEach(s => { s.items.forEach(item => { if(item.name === searchDrug) body.innerHTML += `<tr><td>${s.date.split(',')[0]}</td><td>Sale</td><td>Bill ${s.inv}</td><td style="color:red">-${item.qty}</td></tr>`; }); });
-            db.sales_returns.forEach(r => { if(r.name === searchDrug) body.innerHTML += `<tr><td>${r.date.split(',')[0]}</td><td>Sales Return</td><td>Bill ${r.inv}</td><td style="color:green">+${r.qty}</td></tr>`; });
-        }
-        else if (type === 'non_moving') {
-            title = "Non Moving Items (Stock > 0, No Sales in 90 Days)"; head.innerHTML = '<th>Medicine Name</th><th>Current Stock</th><th>Last Action</th>';
-            let soldSet = new Set(); let today = new Date();
-            db.sales.forEach(s => { let sDate = new Date(s.date.split(',')[0]); if(sDate && (today - sDate)/(1000*60*60*24) <= 90) s.items.forEach(i => soldSet.add(i.name)); });
-            db.stock.forEach(s => { if(s.qty > 0 && !soldSet.has(s.name)) body.innerHTML += `<tr><td>${s.name}</td><td style="color:red">${s.qty}</td><td>No sales > 90d</td></tr>`; });
-        }
-        else if (type === 'zero_stock') {
-            title = "Zero Stock / Missing Items Report"; head.innerHTML = '<th>Medicine Name</th><th>Status</th><th>Action</th>';
-            db.stock.filter(s => s.qty <= 0).forEach(s => { body.innerHTML += `<tr><td>${s.name}</td><td style="color:red; font-weight:bold">Out of Stock</td><td><button class="btn btn-sm btn-info" onclick="nav('purchase')">Order Now</button></td></tr>`; });
-        }
-        else if (type === 'audit_history') {
-            title = "Physical Stock Audit History"; head.innerHTML = '<th>Date</th><th>Auditor</th><th>Total Items</th><th>Adjustments Made</th>';
-            db.audits.forEach(a => { if(inRange(a.date)) body.innerHTML += `<tr><td>${a.date}</td><td>${a.auditor}</td><td>${a.totalAudited}</td><td>${a.adjusted} Items Corrected</td></tr>`; });
-        }
-        
-        currentReportTitle = title; titleEl.innerText = title; rangeEl.innerHTML = customReportHeaderAddon + (sDate ? `From: ${sDate} To: ${eDate}` : "(All Records)");
-    }
-    
-    function printCurrentReport() {
-        let content = `<div style="text-align:center;"><h3>${currentReportTitle}</h3><p>${document.getElementById('rpt-range').innerHTML}</p></div>${document.getElementById('rptTable').outerHTML}`;
-        const area=document.getElementById('printable-area'); area.innerHTML = content; area.style.display='block'; area.style.visibility='visible'; document.body.classList.add('report-print-mode');
-        const done=()=>{area.innerHTML='';area.removeAttribute('style');document.body.classList.remove('report-print-mode');window.removeEventListener('afterprint',done);};
-        window.addEventListener('afterprint',done,{once:true});
-        requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(()=>window.print(),250)));
-        setTimeout(()=>{if(document.body.classList.contains('report-print-mode'))done();},60000);
-    }
- 
-    function shareReportWA() {
-        if(!currentReportTitle) return alert("Generate a report first!");
-        let cleanRange = document.getElementById('rpt-range').innerText.replace(/\n/g, ' - ');
-        let shopNm = shopDetails.shopName || "Subha Medical";
-        let msg = `*${shopNm} REPORT*%0A*${currentReportTitle}*%0A_${cleanRange}_%0A%0A`;
-        let rows = document.querySelectorAll('#rptBody tr');
-        let count = 0;
-        rows.forEach(row => {
-            if(count < 20) {
-                let line = "";
-                row.querySelectorAll('td').forEach(c => { if(c.innerText !== 'Print' && c.innerText !== 'WA') line += c.innerText + " | "; });
-                msg += line + "%0A";
-            }
-            count++;
-        });
-        if(rows.length > 20) msg += `...and ${rows.length - 20} more rows.`;
-        window.open(`https://wa.me/?text=${msg}`, '_blank');
-    }
- 
-    function autoCalculateClosing() {
-        let ts = new Date().toLocaleDateString();
-        let cash = 0, upi = 0, card = 0, gt = 0;
-        db.sales.filter(s => s.date.includes(ts)).forEach(s => {
-            let amt = parseFloat(s.total) || 0; gt += amt;
-            if (s.pay.startsWith('Split')) {
-                let match = s.pay.match(/Cash:([\d.]+),\s*UPI:([\d.]+)/);
-                if (match) { cash += parseFloat(match[1]); upi += parseFloat(match[2]); }
-                else cash += amt; 
-            } else if (s.pay === 'Cash') cash += amt;
-            else if (s.pay.includes('UPI') || s.pay.includes('GPay')) upi += amt;
-            else if (s.pay.includes('Card')) card += amt;
-        });
- 
-        let expCash = parseFloat(db.op) + cash; globalExpectedCash = expCash; 
- 
-        document.getElementById('c-out').innerHTML = `
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; font-size:13px;">
-                <div>Opening Balance:</div> <div style="text-align:right; font-weight:bold;">₹${parseFloat(db.op).toFixed(2)}</div>
-                <div>Today's Sales:</div> <div style="text-align:right; font-weight:bold;">₹${gt.toFixed(2)}</div>
-            </div>
-            <hr style="border:1px dashed #cbd5e1; margin:10px 0;">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; font-size:13px;">
-                <div style="color:#6366f1;">UPI / Online Total:</div> <div style="text-align:right;">₹${upi.toFixed(2)}</div>
-                <div style="color:#7c3aed; font-weight:bold;">Card Swipe Total:</div> <div style="text-align:right; font-weight:bold; color:#7c3aed;">₹${card.toFixed(2)}</div>
-                <div style="color:#166534; font-weight:bold;">Cash Collected:</div> <div style="text-align:right; font-weight:bold;">₹${cash.toFixed(2)}</div>
-            </div>
-            <div style="margin-top:15px; text-align:center; padding:10px; background:white; border-radius:8px; border:1px solid #e2e8f0;">
-                <div style="font-size:11px; color:#64748b; text-transform:uppercase;">Expected Cash in Drawer</div>
-                <div style="font-size:24px; font-weight:800; color:#0f172a;">₹${expCash.toFixed(2)}</div>
-            </div>`;
-        
-        document.querySelectorAll('.cd-in').forEach(i => i.value = 0);
-        document.getElementById('cd-total').innerText = "Physical Total: ₹0";
-        document.getElementById('cash-diff').innerText = "Verify Cash to see result";
-        document.getElementById('cash-diff').style.background = "#fff";
-    }
- 
-    document.querySelectorAll('.d-in').forEach(i => { i.oninput = () => { let t = 0; document.querySelectorAll('.d-in').forEach(x => t += (parseInt(x.value)||0)*parseInt(x.dataset.v)); document.getElementById('d-total').innerText = "Total: ₹" + t; }; });
-    document.querySelectorAll('.cd-in').forEach(i => {
-        i.oninput = () => {
-            let t = 0; document.querySelectorAll('.cd-in').forEach(x => t += (parseInt(x.value)||0)*parseInt(x.dataset.v));
-            document.getElementById('cd-total').innerText = "Physical Total: ₹" + t;
-            let diff = t - globalExpectedCash; let el = document.getElementById('cash-diff');
-            if(diff < 0) { el.style.backgroundColor = '#fee2e2'; el.style.color = '#991b1b'; el.innerText = `⚠️ SHORTAGE: ₹${Math.abs(diff).toFixed(2)}`; } 
-            else if (diff > 0) { el.style.backgroundColor = '#dcfce7'; el.style.color = '#166534'; el.innerText = `✅ EXCESS: ₹${diff.toFixed(2)}`; } 
-            else { el.style.backgroundColor = '#dbeafe'; el.style.color = '#1e40af'; el.innerText = `✅ PERFECT MATCH`; }
-        };
-    });
- 
-    function getAdminWA() {
-        let wa = shopDetails.adminWA || shopDetails.phone || "";
-        if(!wa) alert("Please configure the Admin WhatsApp number in Settings.");
-        return wa;
-    }
- 
-    function shiftControl(type) {
-        if(type === 'open') {
-            let adminPhone = getAdminWA();
-            let t = 0; document.querySelectorAll('.d-in').forEach(x => t += (parseInt(x.value)||0)*parseInt(x.dataset.v));
-            db.op = t; db.shiftOpen = true; save(); updateShiftBadge();
-            if(adminPhone) window.open(`https://wa.me/91${adminPhone}?text=*Shift Start*%0AUser: ${currentUser}%0AOpening Cash: ₹${t}`);
-            nav('dashboard');
-        } 
-    }
- 
-    function sendClosingToAdmin() { 
-        let adminPhone = getAdminWA();
-        let rawHtmlStr = document.getElementById('c-out').innerText;
-        let diff = document.getElementById('cash-diff').innerText;
-        db.shiftOpen = false; save(); updateShiftBadge();
-        if(adminPhone) window.open(`https://wa.me/91${adminPhone}?text=${encodeURIComponent("*Shift Close*\n" + rawHtmlStr + "\nResult: " + diff)}`); 
-        nav('dashboard');
-    }
- 
-    function toggleReturnMode(mode) {
-        document.getElementById('ret-sales-panel').classList.add('hidden'); document.getElementById('ret-vendor-panel').classList.add('hidden');
-        if(mode === 'sales') document.getElementById('ret-sales-panel').classList.remove('hidden'); else document.getElementById('ret-vendor-panel').classList.remove('hidden');
-    }
-    function searchBill() {
-        let id = document.getElementById('ret-bill-no').value; currentRetBillIndex = db.sales.findIndex(s => s.inv === id || s.inv == id);
-        if(currentRetBillIndex === -1) return alert("Bill Not Found!");
-        let b = db.sales[currentRetBillIndex];
-        document.getElementById('ret-bill-details').classList.remove('hidden'); document.getElementById('rb-patient').innerText = b.patient;
-        document.getElementById('rb-date').innerText = b.date;
-        let tbody = document.getElementById('ret-bill-body'); tbody.innerHTML = '';
-        b.items.forEach((item, i) => { tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.batch}</td><td>${item.qty}</td><td>${item.total.toFixed(2)}</td><td style="display:flex; gap:5px; align-items:center;"><input type="number" id="ret-qty-${i}" value="1" min="1" max="${item.qty}" style="width:50px; padding:5px; border:1px solid #cbd5e1; border-radius:5px;"><button class="btn btn-warning" style="font-size:10px; padding: 5px;" onclick="returnPartialItem(${i})">Return</button></td></tr>`; });
-    }
-    function returnPartialItem(i) {
-        let b = db.sales[currentRetBillIndex]; let item = b.items[i]; let rQty = parseInt(document.getElementById(`ret-qty-${i}`).value);
-        if (isNaN(rQty) || rQty <= 0) return alert("Invalid Quantity");
-        if (rQty > item.qty) return alert(`Cannot return ${rQty}. Only ${item.qty} sold.`);
-        let r = document.getElementById('ret-reason').value; if(!r) return alert("Reason required");
-        db.sales_returns.push({ date: new Date().toLocaleString(), inv: b.inv, name: item.name, qty: rQty, reason: r, pharmacist: currentUser });
-        let sItem = db.stock.find(s => s.name === item.name && s.batch === item.batch); if(sItem) sItem.qty += rQty;
-        
-        let unitPrice = item.total / item.qty;
-        item.qty -= rQty; item.total -= (unitPrice * rQty);
-        b.total = (parseFloat(b.total) - (unitPrice * rQty)).toFixed(2);
-        
-        if(item.qty <= 0) b.items.splice(i, 1);
-        if(b.items.length === 0) { db.sales.splice(currentRetBillIndex, 1); document.getElementById('ret-bill-details').classList.add('hidden'); alert("Full bill cancelled"); } else { searchBill(); alert(`Returned ${rQty} units successfully.`); }
-        save(); syncUI();
-    }
-    function cancelFullBill() {
-        if(!confirm("Cancel entire bill?")) return;
-        let r = document.getElementById('ret-reason').value; if(!r) return alert("Reason required");
-        let b = db.sales[currentRetBillIndex];
-        b.items.forEach(item => { let sItem = db.stock.find(s => s.name === item.name && s.batch === item.batch); if(sItem) sItem.qty += item.qty; db.sales_returns.push({ date: new Date().toLocaleString(), inv: b.inv, name: item.name, qty: item.qty, reason: r + " (Full Cancel)", pharmacist: currentUser }); });
-        db.sales.splice(currentRetBillIndex, 1); save(); syncUI(); document.getElementById('ret-bill-details').classList.add('hidden'); alert("Bill Cancelled.");
-    }
-    function autoPopBatch() {
-        let n = document.getElementById('vr-name').value; let sel = document.getElementById('vr-batch'); sel.innerHTML = '<option value="">Select Batch</option>';
-        db.stock.filter(s => s.name === n).forEach(s => { sel.innerHTML += `<option value="${s.batch}">${s.batch} (Exp: ${s.expiry}, Qty: ${s.qty})</option>`; });
-    }
-    function fillVendorOnBatchChange() {
-        let item = db.stock.find(s => s.name === document.getElementById('vr-name').value && s.batch === document.getElementById('vr-batch').value);
-        document.getElementById('vr-vendor').value = item ? (item.vendor || "Unknown") : "";
-    }
-    function processVendorReturn() {
-        let n = document.getElementById('vr-name').value, b = document.getElementById('vr-batch').value, q = parseInt(document.getElementById('vr-qty').value);
-        let sItem = db.stock.find(s => s.name === n && s.batch === b);
-        if(!sItem || sItem.qty < q) return alert("Invalid Qty");
-        db.vendor_returns.push({ date: new Date().toLocaleString(), name: n, batch: b, qty: q, reason: document.getElementById('vr-reason').value });
-        sItem.qty -= q; save(); syncUI(); alert(`Successfully Returned ${q} ${n}`); clearReturnInputs();
-    }
-    function clearReturnInputs() {
-        document.getElementById('vr-name').value = ''; document.getElementById('vr-batch').innerHTML = '<option>Select Batch</option>';
-        document.getElementById('vr-vendor').value = ''; document.getElementById('vr-qty').value = '';
-        document.getElementById('vr-reason').value = '';
-    }
-    function clearSalesReturnUI() {
-        document.getElementById('ret-bill-no').value = ''; document.getElementById('ret-bill-details').classList.add('hidden');
-        document.getElementById('ret-reason').value = ''; currentRetBillIndex = -1;
-    }
- 
-    function copyCentralURL() {
-        const url = document.getElementById('gsheet-url').value.trim();
-        if(!url) return alert("Enter the Supabase connection first.");
-        navigator.clipboard?.writeText(url).then(() => alert("Central Sync URL copied."), () => prompt("Copy Central Sync URL:", url));
-    }
-    function openCentralURL() {
-        const url = document.getElementById('gsheet-url').value.trim();
-        if(!url) return alert("Enter the Supabase connection first.");
-        window.open(url, '_blank', 'noopener');
-    }
- 
-    // --- CENTRAL GOOGLE SHEET SYNC (revision-based multi-device) ---
-    // The central backend used by Subha Medical stores the database as {revision, db}.
-    // This frontend now speaks that exact protocol so the SAME /exec URL shares one
-    // central database between phones/computers instead of keeping each browser local.
-    let cloudRevision = Number(localStorage.getItem('subha_cloud_revision') || 0);
-    let syncInProgress = false;
-    autoSyncInterval = autoSyncInterval || null;
- 
-    function getCloudUrl(){
-        const el=document.getElementById('gsheet-url');
-        return (el ? el.value.trim() : '') || localStorage.getItem('subha_sheet_url') || '';
-    }
-    function getDeviceId(){
-        let id=localStorage.getItem('subha_device_id');
-        if(!id){ id='DEV-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10); localStorage.setItem('subha_device_id',id); }
-        return id;
-    }
-    function setSyncStatus(text,ok=true){
-        const el=document.getElementById('auto-sync-status');
-        if(el){ el.innerText=text; el.style.color=ok?'#166534':'#b91c1c'; }
-    }
-    async function cloudRequest(action,payload={}){
-        const url=getCloudUrl();
-        if(!url) throw new Error('Supabase connection is not configured.');
-        const qs=new URLSearchParams({action, t:Date.now().toString()});
-        const full=url+(url.includes('?')?'&':'?')+qs.toString();
-        const opts={method:action==='state'?'GET':'POST',redirect:'follow'};
-        if(action!=='state'){
-            opts.headers={'Content-Type':'text/plain;charset=utf-8'};
-            opts.body=JSON.stringify(payload);
-        }
-        const response=await fetch(full,opts);
-        const raw=await response.text();
-        if(!response.ok) throw new Error('Server retur
+            db.stock.filter(s => s.name === searchDrug).forEach(s => { body.innerHTML += `<tr style="background:#f0fdf4"><td>Current</td><td><b>In Stock</b></td><td>${s.batch}</td><td>+${s
