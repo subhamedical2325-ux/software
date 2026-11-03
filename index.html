@@ -1,8 +1,8 @@
-
+/* File is 293 KB. Showing the first 292 KB in the highlighted view to avoid running out of memory. Use the Editor tab to see the full file. */
  
 <html lang="en">
  <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Medical Software | Pharmacy ERP</title>
@@ -4781,4 +4781,4 @@ function _billApplyMemoryRows(rows){
             let searchDrug = document.getElementById('ledger-search').value;
             title = `Drug Wise Ledger: ${searchDrug}`; head.innerHTML = '<th>Date</th><th>Type</th><th>Ref/Batch</th><th>Qty</th>';
             document.getElementById('drug-ledger-selector').classList.remove('hidden'); let totalStock = 0;
-            db.stock.filter(s => s.name === searchDrug).forEach(s => { body.innerHTML += `<tr style="background:#f0fdf4"><td>Current</td><td><b>In Stock</b></td><td>${s.batch}</td><td>+${s
+            db.stock.filte
