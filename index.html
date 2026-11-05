@@ -1,4 +1,4 @@
-/* File is 293 KB. Showing the first 292 KB in the highlighted view to avoid running out of memory. Use the Editor tab to see the full file. */
+/* File is 295 KB. Showing the first 292 KB in the highlighted view to avoid running out of memory. Use the Editor tab to see the full file. */
  
 <html lang="en">
  <head></head>
@@ -291,8 +291,8 @@
     <section style="text-align:left;background:#fff;color:#0f172a;border-radius:16px;padding:18px">
      <h3 style="margin:0 0 5px">Sign in</h3>
      <p style="font-size:13px;color:#64748b;margin:0 0 14px">Use your registered email and password.</p>
-     <input type="email" id="cloud-email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Registered email address" autocomplete="off" autocapitalize="none" spellcheck="false" name="pharmacy-login-email"> <input type="password" id="cloud-password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Password" autocomplete="current-password" name="pharmacy-login-password" onkeypress="if(event.key==='Enter') checkLogin()">
-     <button id="erp-login-button" class="btn btn-success" style="width:100%;margin-top:8px" onclick="checkLogin()">Secure sign in</button>
+     <input type="email" id="cloud-email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Registered email address" autocomplete="off" autocapitalize="none" spellcheck="false" name="pharmacy-login-email"> <input type="password" id="cloud-password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Password" autocomplete="current-password" name="pharmacy-login-password">
+     <button type="button" id="erp-login-button" class="btn btn-success" style="width:100%;margin-top:8px">Secure sign in</button>
      <div class="auth-actions" style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px">
       <button type="button" class="btn btn-info auth-secondary" onclick="showOwnerFlow('register')">＋ New pharmacy registration</button>
       <button type="button" class="btn btn-dark auth-secondary" onclick="showOwnerFlow('forgot')">Forgot password?</button>
@@ -1833,6 +1833,25 @@
     const SUBHA_SUPABASE_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co";
     const SUBHA_SUPABASE_KEY = "sb_publishable_yjg6DKw0JTfU3eYayTfo_g_dyocz5kt";
  
+    // Ensure the Supabase browser SDK is available before attempting sign-in.
+    // The primary CDN can occasionally fail on mobile networks; try a second CDN once.
+    let subhaSdkLoadPromise = null;
+    async function ensureSubhaSupabaseSdk(){
+        if(window.supabase && typeof window.supabase.createClient === 'function') return true;
+        if(!subhaSdkLoadPromise){
+            subhaSdkLoadPromise = new Promise((resolve,reject)=>{
+                const script=document.createElement('script');
+                script.src='https://unpkg.com/@supabase/supabase-js@2';
+                script.async=true;
+                script.onload=()=>window.supabase && typeof window.supabase.createClient==='function'
+                    ? resolve(true) : reject(new Error('Supabase login library could not start.'));
+                script.onerror=()=>reject(new Error('Could not load the secure login service. Check internet and reload the page.'));
+                document.head.appendChild(script);
+            });
+        }
+        return subhaSdkLoadPromise;
+    }
+ 
     function initSubhaSupabase(){
         if(!window.supabase?.createClient) throw new Error("Supabase SDK did not load. Check internet connection.");
         if(!subhaCloudClient){
@@ -2198,9 +2217,14 @@
     async function checkLogin() {
       const status=document.getElementById('login-sync-status'),button=document.getElementById('erp-login-button');
       try{
-        if(button){button.disabled=true;button.textContent='Verifying…';}
-        const email=(document.getElementById('cloud-email').value||'').trim().toLowerCase();
-        if(!email) throw new Error('Enter your email address.');
+        if(button){button.disabled=true;button.textContent='Connecting…';}
+        if(status){status.style.color='#38bdf8';status.textContent='Connecting securely to Subha Medical…';}
+        const email=(document.getElementById('cloud-email')?.value||'').trim().toLowerCase();
+        const password=document.getElementById('cloud-password')?.value||'';
+        if(!email) throw new Error('Please enter your registered email address.');
+        if(!password) throw new Error('Please enter your password.');
+        await ensureSubhaSupabaseSdk();
+        if(button)button.textContent='Verifying…';
         await subhaCloudSignIn();
         if(email===COMPANY_ADMIN_EMAIL){
           if(status)status.textContent='Checking Subha Medical administrator permission…';
@@ -2221,7 +2245,7 @@
       }catch(e){
         console.error('Sign-in failed',e);
         if(subhaCloudUser){try{await initSubhaSupabase().auth.signOut();}catch(_){}subhaCloudUser=null;}
-        if(status)status.textContent='Login stopped: '+(e.message||'Check your email, password and internet connection.');
+        if(status){status.style.color='#fca5a5';status.textContent='Sign-in could not finish: '+(e.message||'Check your email, password and internet connection.');}
       }finally{if(button){button.disabled=false;button.textContent='Secure sign in';}}
     }
  
@@ -4765,18 +4789,4 @@ function _billApplyMemoryRows(rows){
             body.innerHTML += `<tr><td><b style="color:var(--purple);">Refill Conversion</b></td><td>${pendingRem} patients are due for refill today. Use the 'Auto-Send' feature in the Refill Desk to convert these into guaranteed sales.</td></tr>`;
         }
         else if(type === 'vendor_ret') {
-            title = "Vendor Return History"; head.innerHTML = '<th>Date</th><th>Item</th><th>Batch</th><th>Qty</th><th>Reason</th>';
-            db.vendor_returns.forEach(r => { if(inRange(r.date)) body.innerHTML += `<tr><td>${r.date.split(',')[0]}</td><td>${r.name}</td><td>${r.batch}</td><td>${r.qty}</td><td>${r.reason}</td></tr>`; });
-        }
-        else if(type === 'sales_ret') {
-            title = "Sales Return History"; head.innerHTML = '<th>Date</th><th>Bill / Inv No</th><th>Item</th><th>Qty</th><th>Reason</th><th>Staff</th>';
-            db.sales_returns.forEach(r => { if(inRange(r.date)) body.innerHTML += `<tr><td>${r.date.split(',')[0]}</td><td>${r.inv}</td><td>${r.name}</td><td>${r.qty}</td><td>${r.reason}</td><td>${r.pharmacist || '-'}</td></tr>`; });
-        }
-        else if(type === 'expiry') {
-            title = "Expiry Report (Next 3 Months)"; head.innerHTML = '<th>Medicine</th><th>Batch</th><th>Expiry</th><th>Qty</th>';
-            let today = new Date();
-            db.stock.forEach(s => { let diffDays = (new Date(s.expiry + "-01") - today) / (1000 * 60 * 60 * 24); if(diffDays < 90) body.innerHTML += `<tr><td>${s.name}</td><td>${s.batch}</td><td>${s.expiry}</td><td>${s.qty}</td></tr>`; });
-        }
-        else if(type === 'ledger') {
-            let searchDrug = document.getElementById('ledger-search').value;
-            title = `Drug Wise Ledger: ${searchDrug}`; head.innerHTML = '<th>Date</th><th>Type</th><th>Ref/Batch</th><t
+            title = "Vendor Return History"; head.innerH
