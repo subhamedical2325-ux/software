@@ -1,4 +1,4 @@
-/* File is 296 KB. Showing the first 292 KB in the highlighted view to avoid running out of memory. Use the Editor tab to see the full file. */
+
  
 <html lang="en">
  <head>
@@ -281,21 +281,31 @@
    </div>
   </div>
   <div id="login-screen">
-   <div class="login-box" style="width:min(92vw,390px);padding:24px 20px">
-    <div aria-label="Medical Software logo" style="width:56px;height:56px;margin:0 auto 10px;display:grid;place-items:center;border-radius:17px;background:linear-gradient(145deg,#0f766e,#2563eb)">
-     <svg viewBox="0 0 64 64" width="36" height="36" aria-hidden="true">
+   <div class="login-box" style="width:min(92vw,520px);padding:30px 24px">
+    <div aria-label="Medical Software logo" style="width:76px;height:76px;margin:0 auto 14px;display:grid;place-items:center;border-radius:22px;background:linear-gradient(145deg,#0f766e,#2563eb)">
+     <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
       <path d="M32 5 54 17.5v29L32 59 10 46.5v-29L32 5Z" fill="none" stroke="#fff" stroke-width="3.5" /><path d="M19 33h8l4-10 6 19 4-9h5" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" />
      </svg>
     </div>
-    <h2 style="margin:0;font-size:25px">Medical Software</h2>
-    <p style="opacity:.8;margin:5px 0 16px;font-size:14px">Pharmacy Management System</p>
-    <section style="text-align:left;background:#fff;color:#0f172a;border-radius:16px;padding:17px">
-     <h3 style="margin:0 0 4px;font-size:21px">Welcome back</h3>
-     <p style="font-size:13px;color:#64748b;margin:0 0 12px">Sign in to continue to your pharmacy workspace.</p>
+    <h1 style="margin:0;font-size:clamp(27px,6vw,36px);font-weight:800;letter-spacing:-1px">Medical Software</h1>
+    <p style="opacity:.82;margin:8px 0 24px;font-size:16px">Pharmacy Management System</p>
+    <div id="login-welcome-panel" style="background:#fff;color:#0f172a;border-radius:20px;padding:25px 20px;text-align:center">
+     <div style="width:54px;height:54px;margin:0 auto 13px;border-radius:16px;background:#e0f2fe;color:#0369a1;display:grid;place-items:center;font-size:25px">
+      <i class="fa-solid fa-prescription-bottle-medical" aria-hidden="true"></i>
+     </div>
+     <h2 style="margin:0 0 8px;font-size:25px">Welcome</h2>
+     <p style="margin:0 auto 20px;max-width:340px;color:#64748b;font-size:14px;line-height:1.6">Sign in to securely access your pharmacy workspace, billing and inventory.</p>
+     <button type="button" onclick="openMedicalLogin()" style="width:100%;min-height:56px;border:0;border-radius:14px;background:linear-gradient(100deg,#0d9488,#2563eb);color:#fff;font-size:16px;font-weight:800;box-shadow:0 10px 24px #0d948855"><i class="fa-solid fa-right-to-bracket" style="margin-right:8px"></i>Log In</button>
+    </div>
+    <section id="login-form-panel" class="hidden" style="text-align:left;background:#fff;color:#0f172a;border-radius:20px;padding:22px 19px">
+     <button type="button" onclick="backToMedicalWelcome()" style="border:0;background:transparent;color:#2563eb;font-weight:700;padding:0 0 15px;cursor:pointer"><i class="fa-solid fa-arrow-left"></i> Back</button>
+     <h3 style="margin:0 0 5px;font-size:24px">Secure Login</h3>
+     <p style="font-size:13px;color:#64748b;margin:0 0 12px">Enter your pharmacy credentials to continue.</p>
      <form id="erp-login-form" onsubmit="event.preventDefault();checkLogin();">
-      <input type="text" id="cloud-email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Email address or staff username" autocomplete="username" autocapitalize="none" spellcheck="false" required> <input type="text" id="staff-pharmacy-code" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Pharmacy code (staff login only)" autocomplete="off" autocapitalize="characters" spellcheck="false"> <input type="password" id="cloud-password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Password" autocomplete="current-password" required>
-      <button type="submit" id="erp-login-button" class="btn btn-success" style="width:100%;margin-top:8px;min-height:52px">Sign in securely</button>
+      <label for="staff-pharmacy-code" style="display:block;font-size:13px;font-weight:700;color:#334155;margin-top:7px">Pharmacy Code</label> <input type="text" id="staff-pharmacy-code" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Enter pharmacy code" autocomplete="off" autocapitalize="characters" spellcheck="false"> <label for="cloud-email" style="display:block;font-size:13px;font-weight:700;color:#334155;margin-top:7px">Username / Email</label> <input type="text" id="cloud-email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Enter username or registered email" autocomplete="username" autocapitalize="none" spellcheck="false" required> <label for="cloud-password" style="display:block;font-size:13px;font-weight:700;color:#334155;margin-top:7px">Password</label> <input type="password" id="cloud-password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Enter password" autocomplete="current-password" required>
+      <button type="submit" id="erp-login-button" class="btn btn-success" style="width:100%;margin-top:12px;min-height:54px">Sign in securely</button>
      </form>
+     <p style="font-size:11px;color:#64748b;line-height:1.5;margin:13px 0 0">Company Admin: leave Pharmacy Code blank. Pharmacy owners and staff: enter your pharmacy code.</p>
     </section>
     <div id="login-sync-status" role="status" aria-live="polite" style="display:block;font-size:12px;margin-top:12px;min-height:18px;color:#cbd5e1;overflow-wrap:anywhere"></div>
    </div>
@@ -2220,6 +2230,18 @@
     }
     async function companyAdminSignOut(){await subhaCloudSignOut();document.getElementById('company-admin-screen').classList.add('hidden');}
  
+    function openMedicalLogin(){
+      document.getElementById('login-welcome-panel')?.classList.add('hidden');
+      document.getElementById('login-form-panel')?.classList.remove('hidden');
+      document.getElementById('login-sync-status').textContent='';
+      setTimeout(()=>document.getElementById('staff-pharmacy-code')?.focus(),80);
+    }
+    function backToMedicalWelcome(){
+      document.getElementById('login-form-panel')?.classList.add('hidden');
+      document.getElementById('login-welcome-panel')?.classList.remove('hidden');
+      document.getElementById('login-sync-status').textContent='';
+    }
+ 
     async function checkLogin() {
       if(location.protocol==='file:' || location.protocol==='content:'){
         const localStatus=document.getElementById('login-sync-status');
@@ -2234,27 +2256,35 @@
       const isStaffUsername=!email.includes('@');
       const password=document.getElementById('cloud-password')?.value||'';
       const show=(message,good=false)=>{if(status){status.textContent=message;status.style.color=good?'#55d6a8':'#fca5a5';}};
-      if(!loginId){show('Enter your email address or staff username.');document.getElementById('cloud-email')?.focus();return;}
-      if(isStaffUsername&&!pharmacyCode){show('Enter your pharmacy code for staff login.');document.getElementById('staff-pharmacy-code')?.focus();return;}
+      const isCompanyAdmin=!isStaffUsername&&email===COMPANY_ADMIN_EMAIL;
+      if(!loginId){show('Enter your username or registered email.');document.getElementById('cloud-email')?.focus();return;}
+      if(!isCompanyAdmin&&!pharmacyCode){show('Enter your pharmacy code.');document.getElementById('staff-pharmacy-code')?.focus();return;}
       if(!password){show('Enter your password.');document.getElementById('cloud-password')?.focus();return;}
       try{
         if(button){button.disabled=true;button.textContent='Connecting…';}
         show('Loading secure sign-in service…',true);
         await ensureSubhaSupabaseSdk();
-        show(isStaffUsername?'Verifying pharmacy code and staff username…':'Verifying your email and password…',true);
+        show(isCompanyAdmin?'Verifying Company Admin account…':(isStaffUsername?'Verifying pharmacy code and staff username…':'Verifying pharmacy code, email and password…'),true);
         if(button)button.textContent='Verifying…';
         const authEmail=isStaffUsername?await resolveMedicalStaffLogin(loginId,pharmacyCode):email;
         await subhaCloudSignIn(authEmail);
-        if(!isStaffUsername&&email===COMPANY_ADMIN_EMAIL){
+        if(isCompanyAdmin){
           show('Opening administrator workspace…',true);
           await verifyCompanyAdmin();
           document.getElementById('login-screen').classList.add('hidden');
           document.getElementById('company-admin-screen').classList.remove('hidden');
           document.getElementById('cloud-password').value='';
+          document.getElementById('staff-pharmacy-code').value='';
           await companyLoadPharmacies();
         }else{
           show('Loading your pharmacy workspace…',true);
           await subhaCloudPull();
+          const tenantCode=String(subhaTenantContext?.pharmacy_code||subhaTenantContext?.code||'').trim().toLowerCase();
+          if(tenantCode && tenantCode!==pharmacyCode.toLowerCase()){
+            await initSubhaSupabase().auth.signOut();
+            subhaCloudUser=null;
+            throw new Error('The pharmacy code does not match this account. Check the code provided by your pharmacy owner.');
+          }
           currentUser=subhaTenantContext?.username|| (isStaffUsername?loginId:(subhaCloudUser.email||'Staff').split('@')[0]);
           document.getElementById('ph-name').value=currentUser;
           document.getElementById('shift-opener').value=currentUser;
@@ -4760,45 +4790,4 @@ function _billApplyMemoryRows(rows){
                     else if(s.pay.startsWith('Split')) {
                         let m = s.pay.match(/Cash:([\d.]+),\s*UPI:([\d.]+)/);
                         if(m) { staffData[ph].cash += parseFloat(m[1]); staffData[ph].upi += parseFloat(m[2]); }
-                        else staffData[ph].cash += parseFloat(s.total);
-                    }
-                }
-            });
-            for(let ph in staffData) {
-                let d = staffData[ph];
-                grandInv += d.inv; grandTotal += d.total;
-                let billsStr = `<div style="max-height: 80px; overflow-y: auto; font-size: 10px;">${d.bills.join(', ')}</div>`;
-                body.innerHTML += `<tr><td><b>${ph}</b></td><td>${d.inv}</td><td style="max-width:200px;">${billsStr}</td><td>₹${d.cash.toFixed(2)}</td><td>₹${d.upi.toFixed(2)}</td><td>₹${d.card.toFixed(2)}</td><td style="color:var(--success); font-weight:bold;">₹${d.total.toFixed(2)}</td></tr>`;
-            }
-            body.innerHTML += `<tr style="background:#f1f5f9; font-weight:bold;"><td>GRAND TOTAL</td><td>${grandInv}</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="color:var(--accent);">₹${grandTotal.toFixed(2)}</td></tr>`;
-        }
-        else if(type === 'sched_custom') {
-            let selectedSched = document.getElementById('rpt-sched-type').value;
-            let schedMeaning = "";
-            if(selectedSched === 'H') schedMeaning = "Prescription only. Cannot be sold without a registered medical practitioner's Rx.";
-            else if(selectedSched === 'H1') schedMeaning = "High-risk antibiotics/habit-forming. Must maintain a separate register. Retain records for 3 years.";
-            else if(selectedSched === 'X') schedMeaning = "Narcotics & Psychotropic drugs. Requires a duplicate prescription. Strict inventory logs required.";
-            else if(selectedSched === 'G') schedMeaning = "Medical supervision required. Carries a warning label.";
- 
-            title = `Schedule ${selectedSched} Drug Register`;
-            customReportHeaderAddon = `<div class='ai-report-guide'><b>AI Compliance Guide (${selectedSched}):</b> ${schedMeaning}</div>`;
-            head.innerHTML = '<th>Date</th><th>Bill / Inv No</th><th>Patient</th><th>Doctor</th><th>Drug Name</th><th>Sch</th><th>Qty</th>';
-            db.sales.forEach(s => {
-                if(inRange(s.date)) {
-                    s.items.forEach(item => {
-                        if(item.schedule && item.schedule === selectedSched) {
-                            body.innerHTML += `<tr><td>${s.date.split(',')[0]}</td><td>${s.inv}</td><td>${s.patient}</td><td>${s.dr}</td><td>${item.name}</td><td>${item.schedule}</td><td>${item.qty}</td></tr>`;
-                        }
-                    });
-                }
-            });
-        }
-        else if (type === 'ai_summary') {
-            title = "🤖 Strong AI Business Analysis";
-            head.innerHTML = '<th>Insight Category</th><th>AI Accurate Details</th>';
-            let todayStr = new Date().toLocaleDateString();
-            let todaySales = db.sales.filter(s => s.date.includes(todayStr));
-            let totalRev = todaySales.reduce((sum, s) => sum + parseFloat(s.total), 0);
-            
-            let fastItem = "None"; let maxQ = 0; let itemMap = {};
-            todaySales.forEach(s => s.items.forE
+                        else staffData[ph].cash +
