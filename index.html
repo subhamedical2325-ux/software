@@ -1,4 +1,4 @@
-/* File is 294 KB. Showing the first 292 KB in the highlighted view to avoid running out of memory. Use the Editor tab to see the full file. */
+/* File is 296 KB. Showing the first 292 KB in the highlighted view to avoid running out of memory. Use the Editor tab to see the full file. */
  
 <html lang="en">
  <head>
@@ -293,7 +293,7 @@
      <h3 style="margin:0 0 4px;font-size:21px">Welcome back</h3>
      <p style="font-size:13px;color:#64748b;margin:0 0 12px">Sign in to continue to your pharmacy workspace.</p>
      <form id="erp-login-form" onsubmit="event.preventDefault();checkLogin();">
-      <input type="email" id="cloud-email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Email address" autocomplete="username" autocapitalize="none" spellcheck="false" required> <input type="password" id="cloud-password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Password" autocomplete="current-password" required>
+      <input type="text" id="cloud-email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Email address or staff username" autocomplete="username" autocapitalize="none" spellcheck="false" required> <input type="text" id="staff-pharmacy-code" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Pharmacy code (staff login only)" autocomplete="off" autocapitalize="characters" spellcheck="false"> <input type="password" id="cloud-password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Password" autocomplete="current-password" required>
       <button type="submit" id="erp-login-button" class="btn btn-success" style="width:100%;margin-top:8px;min-height:52px">Sign in securely</button>
      </form>
     </section>
@@ -1871,10 +1871,23 @@
         const b=document.getElementById('subha-cloud-status');
         [a,b].forEach(el=>{if(el){el.textContent=message;el.style.color=good?'#55d6a8':'#ff9b9b';}});
     }
-    async function subhaCloudSignIn(){
-        const email=(document.getElementById('cloud-email')?.value||'').trim();
+    const MEDICAL_STAFF_FUNCTION_URL='https://adrndxmckbcaxhfxmhbd.supabase.co/functions/v1/medical-staff-admin-';
+    async function resolveMedicalStaffLogin(username, pharmacyCode){
+        const response=await fetch(MEDICAL_STAFF_FUNCTION_URL,{
+          method:'POST',
+          headers:{'Content-Type':'application/json','apikey':SUBHA_SUPABASE_KEY,'Authorization':'Bearer '+SUBHA_SUPABASE_KEY},
+          body:JSON.stringify({action:'resolve_login',username:username.trim().toLowerCase(),pharmacy_code:pharmacyCode.trim()})
+        });
+        let result={};try{result=await response.json();}catch(_){}
+        if(!response.ok) throw new Error(result.error||result.message||'Staff login could not be verified. Check pharmacy code and username.');
+        const resolvedEmail=result.email||result.synthetic_email||result.data?.email;
+        if(!resolvedEmail) throw new Error('Staff login service did not return a sign-in account. Check the deployed Edge Function response.');
+        return resolvedEmail;
+    }
+    async function subhaCloudSignIn(loginEmail){
+        const email=loginEmail||(document.getElementById('cloud-email')?.value||'').trim();
         const password=document.getElementById('cloud-password')?.value||'';
-        if(!email||!password) throw new Error("Enter your email and password.");
+        if(!email||!password) throw new Error("Enter your username or email and password.");
         const client=initSubhaSupabase();
         const {data,error}=await client.auth.signInWithPassword({email,password});
         if(error) throw error;
@@ -2215,19 +2228,24 @@
       }
       const status=document.getElementById('login-sync-status');
       const button=document.getElementById('erp-login-button');
-      const email=(document.getElementById('cloud-email')?.value||'').trim().toLowerCase();
+      const loginId=(document.getElementById('cloud-email')?.value||'').trim();
+      const email=loginId.toLowerCase();
+      const pharmacyCode=(document.getElementById('staff-pharmacy-code')?.value||'').trim();
+      const isStaffUsername=!email.includes('@');
       const password=document.getElementById('cloud-password')?.value||'';
       const show=(message,good=false)=>{if(status){status.textContent=message;status.style.color=good?'#55d6a8':'#fca5a5';}};
-      if(!email){show('Enter your registered email address.');document.getElementById('cloud-email')?.focus();return;}
+      if(!loginId){show('Enter your email address or staff username.');document.getElementById('cloud-email')?.focus();return;}
+      if(isStaffUsername&&!pharmacyCode){show('Enter your pharmacy code for staff login.');document.getElementById('staff-pharmacy-code')?.focus();return;}
       if(!password){show('Enter your password.');document.getElementById('cloud-password')?.focus();return;}
       try{
         if(button){button.disabled=true;button.textContent='Connecting…';}
         show('Loading secure sign-in service…',true);
         await ensureSubhaSupabaseSdk();
-        show('Verifying your email and password…',true);
+        show(isStaffUsername?'Verifying pharmacy code and staff username…':'Verifying your email and password…',true);
         if(button)button.textContent='Verifying…';
-        await subhaCloudSignIn();
-        if(email===COMPANY_ADMIN_EMAIL){
+        const authEmail=isStaffUsername?await resolveMedicalStaffLogin(loginId,pharmacyCode):email;
+        await subhaCloudSignIn(authEmail);
+        if(!isStaffUsername&&email===COMPANY_ADMIN_EMAIL){
           show('Opening administrator workspace…',true);
           await verifyCompanyAdmin();
           document.getElementById('login-screen').classList.add('hidden');
@@ -2237,13 +2255,14 @@
         }else{
           show('Loading your pharmacy workspace…',true);
           await subhaCloudPull();
-          currentUser=(subhaCloudUser.email||'Staff').split('@')[0];
+          currentUser=subhaTenantContext?.username|| (isStaffUsername?loginId:(subhaCloudUser.email||'Staff').split('@')[0]);
           document.getElementById('ph-name').value=currentUser;
           document.getElementById('shift-opener').value=currentUser;
           document.getElementById('header-user').innerText=currentUser;
           document.getElementById('ret-ph').value=currentUser;
           document.getElementById('login-screen').classList.add('hidden');
           document.getElementById('cloud-password').value='';
+          document.getElementById('staff-pharmacy-code').value='';
           cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);
           updateShiftBadge();nav('dashboard');
         }
@@ -2269,7 +2288,7 @@
           await companyLoadPharmacies();return true;
         }
         await subhaCloudPull();
-        currentUser=(subhaCloudUser.email||'Staff').split('@')[0];
+        currentUser=subhaTenantContext?.username||(subhaCloudUser.email||'Staff').split('@')[0];
         document.getElementById('ph-name').value=currentUser;document.getElementById('shift-opener').value=currentUser;document.getElementById('header-user').innerText=currentUser;document.getElementById('ret-ph').value=currentUser;
         document.getElementById('login-screen').classList.add('hidden');
         cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);updateShiftBadge();nav('dashboard');return true;
@@ -4782,24 +4801,4 @@ function _billApplyMemoryRows(rows){
             let totalRev = todaySales.reduce((sum, s) => sum + parseFloat(s.total), 0);
             
             let fastItem = "None"; let maxQ = 0; let itemMap = {};
-            todaySales.forEach(s => s.items.forEach(i => {
-                itemMap[i.name] = (itemMap[i.name]||0) + i.qty;
-                if(itemMap[i.name] > maxQ) { maxQ = itemMap[i.name]; fastItem = i.name; }
-            }));
- 
-            body.innerHTML += `<tr><td><b style="color:var(--success);">Today's Revenue Tracker</b></td><td>Accurately tracked <b>₹${totalRev.toFixed(2)}</b> across ${todaySales.length} bills generated today.</td></tr>`;
-            if (fastItem !== "None") body.innerHTML += `<tr><td><b style="color:var(--accent);">Top Moving Item Today</b></td><td><b>${fastItem}</b> is selling fast (${maxQ} units sold today). Ensure adequate stock is maintained.</td></tr>`;
-            
-            let lowStockCount = db.stock.filter(s => s.qty <= (s.minLevel || 10)).length;
-            body.innerHTML += `<tr><td><b style="color:var(--warning);">Inventory Health Scan</b></td><td>${lowStockCount} items are critically below their minimum stock levels. Recommended action: Open Purchase Order generator.</td></tr>`;
-            
-            let pendingRem = db.reminders.filter(r => r.date <= new Date().toISOString().split('T')[0]).length;
-            body.innerHTML += `<tr><td><b style="color:var(--purple);">Refill Conversion</b></td><td>${pendingRem} patients are due for refill today. Use the 'Auto-Send' feature in the Refill Desk to convert these into guaranteed sales.</td></tr>`;
-        }
-        else if(type === 'vendor_ret') {
-            title = "Vendor Return History"; head.innerHTML = '<th>Date</th><th>Item</th><th>Batch</th><th>Qty</th><th>Reason</th>';
-            db.vendor_returns.forEach(r => { if(inRange(r.date)) body.innerHTML += `<tr><td>${r.date.split(',')[0]}</td><td>${r.name}</td><td>${r.batch}</td><td>${r.qty}</td><td>${r.reason}</td></tr>`; });
-        }
-        else if(type === 'sales_ret') {
-            title = "Sales Return History"; head.innerHTML = '<th>Date</th><th>Bill / Inv No</th><th>Item</th><th>Qty</th><th>Reason</th><th>Staff</th>';
-         
+            todaySales.forEach(s => s.items.forE
