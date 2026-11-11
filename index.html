@@ -1,4 +1,5 @@
-
+/* File is 294 KB. Showing the first 292 KB in the highlighted view to avoid running out of memory. Use the Editor tab to see the full file. */
+ 
 <html lang="en">
  <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,6 +35,7 @@
         .login-box { text-align:center;width:min(92vw,390px);padding:30px 26px;border:1px solid #ffffff20;border-radius:26px;background:linear-gradient(155deg,#172554,#0f172a 65%);box-shadow:0 25px 70px #0008;backdrop-filter:blur(16px) }
         .login-box .name-input{background:#f8fafc;color:#0f172a;border:1px solid #dbeafe;border-radius:13px;text-align:left;padding:15px 16px;margin:8px 0}
         .login-box .btn-success{border-radius:13px;padding:14px;font-weight:800;letter-spacing:.3px;background:linear-gradient(100deg,#0d9488,#2563eb);box-shadow:0 10px 24px #0d948855}
+        @media(max-width:520px){#login-screen{padding:14px 0;overflow:auto}#login-screen .login-box{margin:auto;padding:20px 16px!important;border-radius:22px}#login-screen .name-input{min-height:50px;font-size:16px;margin:6px 0}#login-screen .btn-success{min-height:50px;padding:12px}}
         #company-admin-screen{position:fixed;inset:0;z-index:9998;background:#f1f5f9;color:#0f172a;overflow:auto;padding:24px}
         .company-panel{max-width:900px;margin:5vh auto;background:white;border:1px solid #e2e8f0;border-radius:22px;padding:24px;box-shadow:0 20px 60px #0f172a18}
         .company-panel input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:10px;margin:6px 0 12px}
@@ -279,43 +281,23 @@
    </div>
   </div>
   <div id="login-screen">
-   <div class="login-box" style="width:min(94vw,470px)">
-    <div aria-label="Medical Software logo" style="width:62px;height:62px;margin:0 auto 14px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#0f766e,#2563eb)">
-     <svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true">
+   <div class="login-box" style="width:min(92vw,390px);padding:24px 20px">
+    <div aria-label="Medical Software logo" style="width:56px;height:56px;margin:0 auto 10px;display:grid;place-items:center;border-radius:17px;background:linear-gradient(145deg,#0f766e,#2563eb)">
+     <svg viewBox="0 0 64 64" width="36" height="36" aria-hidden="true">
       <path d="M32 5 54 17.5v29L32 59 10 46.5v-29L32 5Z" fill="none" stroke="#fff" stroke-width="3.5" /><path d="M19 33h8l4-10 6 19 4-9h5" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" />
      </svg>
     </div>
-    <h2 style="margin:0">Medical Software</h2>
-    <p style="opacity:.8;margin:7px 0 20px">Pharmacy Management System</p>
-    <section style="text-align:left;background:#fff;color:#0f172a;border-radius:16px;padding:18px">
-     <h3 style="margin:0 0 5px">Sign in</h3>
-     <p style="font-size:13px;color:#64748b;margin:0 0 14px">Use your registered email and password.</p>
-     <input type="email" id="cloud-email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Registered email address" autocomplete="off" autocapitalize="none" spellcheck="false" name="pharmacy-login-email"> <input type="password" id="cloud-password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Password" autocomplete="current-password" name="pharmacy-login-password">
-     <button type="button" id="erp-login-button" class="btn btn-success" style="width:100%;margin-top:8px;touch-action:manipulation;position:relative;z-index:5;pointer-events:auto" onclick="if(typeof checkLogin==='function'){checkLogin();}else{var s=document.getElementById('login-sync-status');if(s)s.textContent='Login service is still loading. Please refresh this page and try again.';}">Secure sign in</button>
-     <div class="auth-actions" style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px">
-      <button type="button" class="btn btn-info auth-secondary" onclick="showOwnerFlow('register')">＋ New pharmacy registration</button>
-      <button type="button" class="btn btn-dark auth-secondary" onclick="showOwnerFlow('forgot')">Forgot password?</button>
-     </div>
-     <div id="owner-flow" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid #e2e8f0">
-      <h3 id="owner-flow-title" style="margin:0 0 10px">Register new pharmacy</h3>
-      <div id="owner-register-fields">
-       <input id="owner-reg-pharmacy" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Pharmacy name"> <input id="owner-reg-name" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Owner name"> <input id="owner-reg-email" type="email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Owner email"> <input id="owner-reg-password" type="password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Create password (minimum 8 characters)" autocomplete="new-password">
-      </div>
-      <div id="owner-forgot-fields" class="hidden">
-       <p style="font-size:13px;color:#64748b">Enter your registered email in the sign-in email field above. We will send a recovery OTP to that address.</p>
-      </div>
-      <div id="owner-flow-otp" class="hidden">
-       <input id="owner-flow-code" class="name-input" style="width:100%;box-sizing:border-box" inputmode="numeric" autocomplete="one-time-code" placeholder="Email verification code">
-      </div>
-      <div id="owner-new-password-wrap" class="hidden">
-       <input id="owner-new-password" type="password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="New password (minimum 8 characters)" autocomplete="new-password">
-      </div>
-      <button id="owner-flow-btn" class="btn btn-info" style="width:100%" onclick="submitOwnerFlow()">Send verification code</button>
-      <button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="hideOwnerFlow()">Back to sign in</button>
-     </div>
-     <div id="owner-auth-status" role="status" aria-live="polite" style="font-size:12px;color:#475569;margin-top:10px;min-height:18px"></div>
+    <h2 style="margin:0;font-size:25px">Medical Software</h2>
+    <p style="opacity:.8;margin:5px 0 16px;font-size:14px">Pharmacy Management System</p>
+    <section style="text-align:left;background:#fff;color:#0f172a;border-radius:16px;padding:17px">
+     <h3 style="margin:0 0 4px;font-size:21px">Welcome back</h3>
+     <p style="font-size:13px;color:#64748b;margin:0 0 12px">Sign in to continue to your pharmacy workspace.</p>
+     <form id="erp-login-form" onsubmit="event.preventDefault();checkLogin();">
+      <input type="email" id="cloud-email" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Email address" autocomplete="username" autocapitalize="none" spellcheck="false" required> <input type="password" id="cloud-password" class="name-input" style="width:100%;box-sizing:border-box" placeholder="Password" autocomplete="current-password" required>
+      <button type="submit" id="erp-login-button" class="btn btn-success" style="width:100%;margin-top:8px;min-height:52px">Sign in securely</button>
+     </form>
     </section>
-    <div id="login-sync-status" role="status" aria-live="polite" style="display:block;min-height:22px;margin-top:10px;overflow-wrap:anywhere"></div>
+    <div id="login-sync-status" role="status" aria-live="polite" style="display:block;font-size:12px;margin-top:12px;min-height:18px;color:#cbd5e1;overflow-wrap:anywhere"></div>
    </div>
   </div>
   <div id="company-admin-screen" class="hidden">
@@ -1832,8 +1814,6 @@
     const SUBHA_SUPABASE_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co";
     const SUBHA_SUPABASE_KEY = "sb_publishable_yjg6DKw0JTfU3eYayTfo_g_dyocz5kt";
  
-    // Ensure the Supabase browser SDK is available before attempting sign-in.
-    // The primary CDN can occasionally fail on mobile networks; try a second CDN once.
     let subhaSdkLoadPromise = null;
     async function ensureSubhaSupabaseSdk(){
         if(window.supabase && typeof window.supabase.createClient === 'function') return true;
@@ -1844,30 +1824,29 @@
                     'https://unpkg.com/@supabase/supabase-js@2'
                 ];
                 let lastError = null;
-                for (const src of sources) {
-                    try {
+                for(const src of sources){
+                    try{
                         await new Promise((resolve,reject)=>{
                             const script=document.createElement('script');
                             let settled=false;
-                            const finish=(fn,value)=>{if(settled)return;settled=true;clearTimeout(timer);script.onload=null;script.onerror=null;fn(value);};
-                            const timer=setTimeout(()=>{script.remove();finish(reject,new Error('Secure login library timed out.'))},10000);
+                            const timer=setTimeout(()=>finish(reject,new Error('Secure login library timed out loading from '+new URL(src).hostname+'.')),12000);
+                            function finish(fn,value){if(settled)return;settled=true;clearTimeout(timer);script.onload=null;script.onerror=null;fn(value);}
                             script.src=src;script.async=true;
-                            script.onload=()=>window.supabase && typeof window.supabase.createClient==='function'
-                                ? finish(resolve,true) : finish(reject,new Error('Secure login library did not initialize.'));
-                            script.onerror=()=>finish(reject,new Error('Could not reach '+new URL(src).hostname+'.'));
+                            script.onload=()=>window.supabase && typeof window.supabase.createClient==='function' ? finish(resolve,true) : finish(reject,new Error('Secure login library did not initialize.'));
+                            script.onerror=()=>finish(reject,new Error('Could not load '+new URL(src).hostname+'.'));
                             document.head.appendChild(script);
                         });
                         if(window.supabase && typeof window.supabase.createClient==='function') return true;
-                    } catch(err) { lastError=err; }
+                    }catch(err){lastError=err;}
                 }
-                throw new Error('Cannot connect to the secure login library. Check mobile internet, disable data-saving/content blockers, then reopen this file. '+(lastError?.message||''));
-            })().catch(err=>{subhaSdkLoadPromise=null;throw err;});
+                throw new Error('Cannot load the secure sign-in service. Please open the published website with internet access and try again. '+(lastError?.message||''));
+            })().finally(()=>{subhaSdkLoadPromise=null;});
         }
         return subhaSdkLoadPromise;
     }
  
     function initSubhaSupabase(){
-        if(!window.supabase?.createClient) throw new Error("Supabase SDK did not load. Check internet connection.");
+        if(!window.supabase?.createClient) throw new Error("Secure sign-in library is not loaded yet. Please try again.");
         if(!subhaCloudClient){
             const timedFetch = async (input, init={}) => {
               const controller = new AbortController();
@@ -2132,7 +2111,6 @@
       if(!email){ownerStatus('Enter your registered pharmacy email.',false);return;}
       btn.disabled=true;ownerStatus('Checking account…');
       try{
-        await ensureSubhaSupabaseSdk();
         // Existing verified owners sign in with their password; OTP is used for first registration and recovery.
         const pass=document.getElementById('owner-password').value;
         if(!pass)throw new Error('Enter your password.');
@@ -2156,8 +2134,6 @@
     async function submitOwnerFlow(){
       const btn=document.getElementById('owner-flow-btn');btn.disabled=true;
       try{
-        // Load the Supabase SDK before creating a client (important on mobile/offline-start browsers).
-        await ensureSubhaSupabaseSdk();
         const client=initSubhaSupabase();
         if(ownerFlowMode==='register' && ownerFlowStep==='start'){
           const pharmacyName=document.getElementById('owner-reg-pharmacy').value.trim();
@@ -2203,25 +2179,12 @@
  
     const COMPANY_ADMIN_EMAIL='subhamedical2325@gmail.com';
     async function verifyCompanyAdmin(){
-      // The Supabase password-authenticated identity is checked first. Keep the
-      // company-admin screen reachable for the configured owner account even
-      // when the optional UI permission RPC is unavailable. Database reads and
-      // admin mutations remain protected by Supabase RLS / SECURITY DEFINER RPCs.
-      const email=(subhaCloudUser?.email||'').trim().toLowerCase();
+      const email=(subhaCloudUser?.email||'').toLowerCase();
       if(email!==COMPANY_ADMIN_EMAIL) throw new Error('This account is not authorized for company administration.');
-      try{
-        const {data,error}=await initSubhaSupabase().rpc('medical_is_company_admin');
-        if(!error && data===true) return true;
-        console.warn('Company-admin UI permission RPC did not confirm access; continuing with the authenticated owner email. Database permissions still apply.',error||data);
-        const status=document.getElementById('login-sync-status');
-        if(status) status.textContent='Signed in. Opening owner panel; database permissions will be checked for each action.';
-        return true;
-      }catch(err){
-        console.warn('Company-admin UI permission check unavailable; continuing with authenticated owner email.',err);
-        const status=document.getElementById('login-sync-status');
-        if(status) status.textContent='Signed in. Opening owner panel; database permissions will be checked for each action.';
-        return true;
-      }
+      const {data,error}=await initSubhaSupabase().rpc('medical_is_company_admin');
+      if(error) throw new Error('Company administrator permission is not configured in Supabase. '+error.message);
+      if(data!==true) throw new Error('Company administrator access is not enabled for this account in Supabase.');
+      return true;
     }
     async function companyLoadPharmacies(){
       const target=document.getElementById('company-pharmacy-list'); target.textContent='Loading…';
@@ -2245,40 +2208,53 @@
     async function companyAdminSignOut(){await subhaCloudSignOut();document.getElementById('company-admin-screen').classList.add('hidden');}
  
     async function checkLogin() {
-      const status=document.getElementById('login-sync-status'),button=document.getElementById('erp-login-button');
+      if(location.protocol==='file:' || location.protocol==='content:'){
+        const localStatus=document.getElementById('login-sync-status');
+        if(localStatus){localStatus.textContent='Please sign in from the published HTTPS website, not from the downloaded HTML file.';localStatus.style.color='#fca5a5';}
+        return;
+      }
+      const status=document.getElementById('login-sync-status');
+      const button=document.getElementById('erp-login-button');
+      const email=(document.getElementById('cloud-email')?.value||'').trim().toLowerCase();
+      const password=document.getElementById('cloud-password')?.value||'';
+      const show=(message,good=false)=>{if(status){status.textContent=message;status.style.color=good?'#55d6a8':'#fca5a5';}};
+      if(!email){show('Enter your registered email address.');document.getElementById('cloud-email')?.focus();return;}
+      if(!password){show('Enter your password.');document.getElementById('cloud-password')?.focus();return;}
       try{
         if(button){button.disabled=true;button.textContent='Connecting…';}
-        if(status){status.style.color='#38bdf8';status.textContent='Connecting securely to Subha Medical…';}
-        const email=(document.getElementById('cloud-email')?.value||'').trim().toLowerCase();
-        const password=document.getElementById('cloud-password')?.value||'';
-        if(!email) throw new Error('Please enter your registered email address.');
-        if(!password) throw new Error('Please enter your password.');
-        if(status)status.textContent='Loading secure sign-in service…';
+        show('Loading secure sign-in service…',true);
         await ensureSubhaSupabaseSdk();
-        if(status)status.textContent='Checking your email and password…';
+        show('Verifying your email and password…',true);
         if(button)button.textContent='Verifying…';
         await subhaCloudSignIn();
         if(email===COMPANY_ADMIN_EMAIL){
-          if(status)status.textContent='Checking Subha Medical administrator permission…';
+          show('Opening administrator workspace…',true);
           await verifyCompanyAdmin();
           document.getElementById('login-screen').classList.add('hidden');
           document.getElementById('company-admin-screen').classList.remove('hidden');
           document.getElementById('cloud-password').value='';
           await companyLoadPharmacies();
         }else{
-          if(status)status.textContent='Checking pharmacy approval and loading workspace…';
+          show('Loading your pharmacy workspace…',true);
           await subhaCloudPull();
           currentUser=(subhaCloudUser.email||'Staff').split('@')[0];
-          document.getElementById('ph-name').value=currentUser;document.getElementById('shift-opener').value=currentUser;document.getElementById('header-user').innerText=currentUser;document.getElementById('ret-ph').value=currentUser;
+          document.getElementById('ph-name').value=currentUser;
+          document.getElementById('shift-opener').value=currentUser;
+          document.getElementById('header-user').innerText=currentUser;
+          document.getElementById('ret-ph').value=currentUser;
           document.getElementById('login-screen').classList.add('hidden');
           document.getElementById('cloud-password').value='';
-          cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);updateShiftBadge();nav('dashboard');
+          cloudStatus('Connected • '+(subhaTenantContext?.pharmacy_name||'Pharmacy workspace'),true);
+          updateShiftBadge();nav('dashboard');
         }
       }catch(e){
         console.error('Sign-in failed',e);
         if(subhaCloudUser){try{await initSubhaSupabase().auth.signOut();}catch(_){}subhaCloudUser=null;}
-        if(status){status.style.color='#fca5a5';status.textContent='Sign-in could not finish: '+(e?.message||String(e)||'Check your email, password and internet connection.');}
-      }finally{if(button){button.disabled=false;button.textContent='Secure sign in';}}
+        const message=(e&&e.message)?e.message:String(e||'Unknown sign-in error');
+        show('Sign-in failed: '+message+' If this is a new pharmacy account, it must be approved first.');
+      }finally{
+        if(button){button.disabled=false;button.textContent='Sign in securely';}
+      }
     }
  
     async function resumeSubhaSession(){
@@ -4787,4 +4763,43 @@ function _billApplyMemoryRows(rows){
  
             title = `Schedule ${selectedSched} Drug Register`;
             customReportHeaderAddon = `<div class='ai-report-guide'><b>AI Compliance Guide (${selectedSched}):</b> ${schedMeaning}</div>`;
-            head.innerHTML = '<th>Date</th><th>Bill / Inv No</th><th>Patient</th><th>Doctor</th><th>Drug Name</th><th>Sch</th><th>Qty</t
+            head.innerHTML = '<th>Date</th><th>Bill / Inv No</th><th>Patient</th><th>Doctor</th><th>Drug Name</th><th>Sch</th><th>Qty</th>';
+            db.sales.forEach(s => {
+                if(inRange(s.date)) {
+                    s.items.forEach(item => {
+                        if(item.schedule && item.schedule === selectedSched) {
+                            body.innerHTML += `<tr><td>${s.date.split(',')[0]}</td><td>${s.inv}</td><td>${s.patient}</td><td>${s.dr}</td><td>${item.name}</td><td>${item.schedule}</td><td>${item.qty}</td></tr>`;
+                        }
+                    });
+                }
+            });
+        }
+        else if (type === 'ai_summary') {
+            title = "🤖 Strong AI Business Analysis";
+            head.innerHTML = '<th>Insight Category</th><th>AI Accurate Details</th>';
+            let todayStr = new Date().toLocaleDateString();
+            let todaySales = db.sales.filter(s => s.date.includes(todayStr));
+            let totalRev = todaySales.reduce((sum, s) => sum + parseFloat(s.total), 0);
+            
+            let fastItem = "None"; let maxQ = 0; let itemMap = {};
+            todaySales.forEach(s => s.items.forEach(i => {
+                itemMap[i.name] = (itemMap[i.name]||0) + i.qty;
+                if(itemMap[i.name] > maxQ) { maxQ = itemMap[i.name]; fastItem = i.name; }
+            }));
+ 
+            body.innerHTML += `<tr><td><b style="color:var(--success);">Today's Revenue Tracker</b></td><td>Accurately tracked <b>₹${totalRev.toFixed(2)}</b> across ${todaySales.length} bills generated today.</td></tr>`;
+            if (fastItem !== "None") body.innerHTML += `<tr><td><b style="color:var(--accent);">Top Moving Item Today</b></td><td><b>${fastItem}</b> is selling fast (${maxQ} units sold today). Ensure adequate stock is maintained.</td></tr>`;
+            
+            let lowStockCount = db.stock.filter(s => s.qty <= (s.minLevel || 10)).length;
+            body.innerHTML += `<tr><td><b style="color:var(--warning);">Inventory Health Scan</b></td><td>${lowStockCount} items are critically below their minimum stock levels. Recommended action: Open Purchase Order generator.</td></tr>`;
+            
+            let pendingRem = db.reminders.filter(r => r.date <= new Date().toISOString().split('T')[0]).length;
+            body.innerHTML += `<tr><td><b style="color:var(--purple);">Refill Conversion</b></td><td>${pendingRem} patients are due for refill today. Use the 'Auto-Send' feature in the Refill Desk to convert these into guaranteed sales.</td></tr>`;
+        }
+        else if(type === 'vendor_ret') {
+            title = "Vendor Return History"; head.innerHTML = '<th>Date</th><th>Item</th><th>Batch</th><th>Qty</th><th>Reason</th>';
+            db.vendor_returns.forEach(r => { if(inRange(r.date)) body.innerHTML += `<tr><td>${r.date.split(',')[0]}</td><td>${r.name}</td><td>${r.batch}</td><td>${r.qty}</td><td>${r.reason}</td></tr>`; });
+        }
+        else if(type === 'sales_ret') {
+            title = "Sales Return History"; head.innerHTML = '<th>Date</th><th>Bill / Inv No</th><th>Item</th><th>Qty</th><th>Reason</th><th>Staff</th>';
+         
