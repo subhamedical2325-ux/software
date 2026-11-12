@@ -1,5 +1,4 @@
 
- 
 <html lang="en">
  <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -2300,7 +2299,17 @@
         console.error('Sign-in failed',e);
         if(subhaCloudUser){try{await initSubhaSupabase().auth.signOut();}catch(_){}subhaCloudUser=null;}
         const message=(e&&e.message)?e.message:String(e||'Unknown sign-in error');
-        show('Sign-in failed: '+message+' If this is a new pharmacy account, it must be approved first.');
+        let hint = ' Check the registered email, password and internet connection.';
+        if (/medical_my_pharmacy_context|medical_pharmacy_state|medical_save_pharmacy_state|function .* does not exist|PGRST/i.test(message)) {
+          hint = ' Supabase database setup is incomplete: verify the required pharmacy tables, RPC functions and Row Level Security policies.';
+        } else if (/Invalid login credentials/i.test(message)) {
+          hint = ' The email/password combination was rejected by Supabase Auth.';
+        } else if (/pharmacy code/i.test(message)) {
+          hint = ' Confirm the exact pharmacy code assigned after registration approval.';
+        } else if (/Failed to fetch|NetworkError|timed out|Cannot load/i.test(message)) {
+          hint = ' Check the Supabase project status, API URL/key, browser internet and allowed network access.';
+        }
+        show('Sign-in failed: ' + message + hint + ' New pharmacy accounts must be approved first.');
       }finally{
         if(button){button.disabled=false;button.textContent='Sign in securely';}
       }
@@ -4778,16 +4787,4 @@ function _billApplyMemoryRows(rows){
                 if(inRange(s.date)) {
                     let ph = s.pharmacist || "Admin";
                     if(uFilter && ph !== uFilter) return;
-                    if(!staffData[ph]) staffData[ph] = { inv: 0, bills: [], cash: 0, upi: 0, card: 0, total: 0 };
-                    
-                    staffData[ph].inv++; 
-                    staffData[ph].bills.push(s.inv); 
-                    staffData[ph].total += parseFloat(s.total);
- 
-                    if(s.pay === 'Cash') staffData[ph].cash += parseFloat(s.total);
-                    else if(s.pay.includes('UPI') || s.pay.includes('GPay')) staffData[ph].upi += parseFloat(s.total);
-                    else if(s.pay.includes('Card')) staffData[ph].card += parseFloat(s.total);
-                    else if(s.pay.startsWith('Split')) {
-                        let m = s.pay.match(/Cash:([\d.]+),\s*UPI:([\d.]+)/);
-                        if(m) { staffData[ph].cash += parseFloat(m[1]); staffData[ph].upi += parseFloat(m[2]); }
-                        else staffData[ph].cash +
+                  
