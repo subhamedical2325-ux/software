@@ -3,7 +3,7 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Subha Medical | Billing Software</title>
+  <title>Pharmacy Software</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -179,6 +179,19 @@ td{color:#424258}
 .billing-cart-panel{position:sticky;top:84px}
 @media(max-width:850px){.billing-layout{grid-template-columns:1fr}.billing-cart-panel{position:static}.bill-product-list{max-height:38vh}}
 @media(max-width:480px){.bill-meta{grid-template-columns:1fr}.billing-layout .panel{padding:13px}.bill-product{padding:9px 3px}}
+ 
+/* Professional pharmacy POS styling inspired by modern Medics-style counters */
+.pos-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 21px;margin:-7px 0 16px;border:1px solid #dce9ee;border-radius:14px;background:linear-gradient(110deg,#f0fbfb,#f7f9ff)}
+.pos-toolbar>div:first-child{display:flex;flex-direction:column;gap:4px}.pos-toolbar>div:first-child>strong{font-size:20px;color:#17334a}.pos-toolbar>div:first-child>small{font-size:11px;color:#728397}.pos-kicker,.pos-section-label{font-size:9px;font-weight:800;letter-spacing:1.25px;color:#168b91}
+.pos-invoice-meta{display:flex;gap:22px;flex-wrap:wrap}.pos-invoice-meta span{display:flex;flex-direction:column;gap:4px;font-size:9px;color:#758596;letter-spacing:.6px}.pos-invoice-meta strong{font-size:12px;color:#213b50;letter-spacing:0}
+.billing-layout{grid-template-columns:minmax(0,1.18fr) minmax(340px,.82fr);gap:16px}.billing-search-panel,.billing-cart-panel{border:1px solid #e0e9ee;border-radius:13px;box-shadow:0 5px 20px #17334a08}.billing-search-panel .panel-head h3,.billing-cart-panel h3{font-size:16px;color:#20384b;margin-top:4px}
+.pos-search-wrap{position:relative}.pos-search-wrap>span{position:absolute;left:14px;top:7px;font-size:25px;color:#168b91;z-index:1}.pos-search-wrap input{border:1px solid #cbdde4!important;border-radius:10px!important;background:#fbfefe!important;font-size:13px}.pos-search-wrap input:focus{box-shadow:0 0 0 3px #168b9118;border-color:#168b91!important}
+.pos-customer-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:17px 0 10px;padding-bottom:9px;border-bottom:1px solid #e9eff2}.pos-customer-heading strong{font-size:12px;color:#294357}.pos-customer-heading small{font-size:10px;color:#82909d}
+.billing-search-panel .field label,.billing-cart-panel .field label{color:#536b7c}.billing-search-panel .field input,.billing-cart-panel .field input,.billing-cart-panel .field select{border-color:#dce6eb;border-radius:8px}.bill-product{padding:13px 9px;border-bottom:1px solid #edf1f3}.bill-product:hover{background:#f6fbfc}.bill-product strong{color:#243e52}.bill-product .btn{background:#e7f6f5;color:#087f83}.bill-product .btn:hover{background:#d5efed}
+.bill-cart-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:13px;border-bottom:1px solid #e9eff2}.billing-cart-panel{background:linear-gradient(180deg,#fff,#fcfefe)}.billing-cart-panel .cart-line{grid-template-columns:minmax(0,1fr) 62px 76px 30px;gap:6px}.billing-cart-panel .cart-line input{width:58px}.bill-total-box{margin-top:13px;padding:12px 14px;background:#f5fafb;border:1px solid #e3eef0;border-radius:10px}.bill-total-box .total-row.final{color:#087f83;font-size:21px}.billing-cart-panel>.btn.full{background:#087f83;box-shadow:0 5px 12px #087f8325}.billing-cart-panel>.btn.full:hover{background:#066d71}
+@media(max-width:850px){.billing-layout{grid-template-columns:1fr}.billing-cart-panel{position:static}.pos-invoice-meta{gap:12px}}
+@media(max-width:480px){.pos-toolbar{padding:14px}.pos-toolbar>div:first-child>strong{font-size:17px}.pos-invoice-meta{width:100%;justify-content:space-between}.pos-customer-heading{align-items:flex-start;flex-direction:column}.billing-cart-panel .cart-line{grid-template-columns:minmax(0,1fr) 54px 68px 25px}.billing-cart-panel .cart-line input{width:50px}}
+ 
 </style>
  </head>
  <body>
@@ -200,8 +213,8 @@ td{color:#424258}
     <div class="brand">
      <div class="brand-logo">S</div>
      <div style="flex:1">
-      <h1>Subha Medical</h1>
-      <p>Pharmacy Billing &amp; Management</p>
+      <h1>Pharmacy Software</h1>
+      <p>Billing &amp; Management</p>
      </div>
     </div>
     <div class="auth-tabs">
@@ -244,7 +257,7 @@ td{color:#424258}
      <div class="field">
       <label>Create password</label><input id="regPassword" type="password" minlength="8" required>
      </div>
-     <button class="btn full" type="submit" id="registerButton">Send registration OTP</button>
+     <button class="btn full" type="submit" id="registerButton">Send first-time registration OTP</button>
     </form>
     <div id="registerOtpPanel" class="hidden" style="margin-top:18px;padding:16px;border:1px solid #dce8e8;border-radius:12px;background:#f8fdfc">
      <h3 style="margin:0 0 7px;font-size:16px">Verify pharmacy email</h3>
@@ -280,7 +293,7 @@ td{color:#424258}
     <div class="side-brand">
      <div class="side-icon">S</div>
      <div>
-      <strong>SUBHA MEDICAL</strong><small>Billing &amp; Management</small>
+      <strong>PHARMACY SOFTWARE</strong><small>Billing &amp; Management</small>
      </div>
     </div>
     <div class="nav-title">MAIN MENU</div>
@@ -429,7 +442,7 @@ $("registerForm").addEventListener("submit",async e=>{
   $("registerOtpPanel").classList.remove("hidden");$("registerOtp").focus();
   authMessage("Verification code requested. Check "+pendingRegistrationEmail+" and enter the OTP to finish pharmacy registration.","success");
  }catch(err){authMessage(err.message||"Could not send registration OTP.");}
- finally{btn.disabled=false;btn.textContent="Send registration OTP";}
+ finally{btn.disabled=false;btn.textContent="Send first-time registration OTP";}
 });
  
 async function verifyPharmacyRegistrationOtp(){
@@ -657,7 +670,7 @@ function renderProducts(){
  ${pageHead("Medicine inventory","Manage products, batch numbers and expiry",button+`<button class="btn light" onclick="navigate('itemmaster')">Item Master</button><button class="btn light" onclick="navigate('audit')">Stock Audit</button>`)}
  <div class="panel">
  <div class="panel-head"><h3>Products (${products.length})</h3><input class="search" placeholder="Search medicine / brand / barcode" oninput="filterProducts(this.value)"></div>
- <div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Brand</th><th>Batch</th><th>Expiry</th><th>MRP</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead><tbody id="productRows"></tbody></table></div>
+ <div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Brand</th><th>Batch</th><th>Expiry</th><th>MRP</th><th>Purchase cost</th><th>Stock</th><th>Action</th></tr></thead><tbody id="productRows"></tbody></table></div>
  </div>`;
  fillProductRows(products);
 }
@@ -665,7 +678,7 @@ function fillProductRows(list){
  $("productRows").innerHTML=list.length?list.map(p=>`<tr>
  <td><b>${esc(p.name)}</b><br><small>${esc(p.barcode||"")}</small></td>
  <td>${esc(p.brand||"-")}</td><td>${esc(p.batch_number||"-")}</td>
- <td>${esc(p.expiry_date||"-")}</td><td>${money(p.mrp)}</td><td>${money(p.selling_price)}</td>
+ <td>${esc(p.expiry_date||"-")}</td><td>${money(p.mrp)}</td><td>${money(p.purchase_price)}</td>
  <td>${p.stock} ${esc(p.unit||"PCS")}</td>
  <td>${canManage()?`<button class="btn light" onclick="editProduct('${p.id}')">Edit</button> <button class="btn danger" onclick="deleteProduct('${p.id}')">Delete</button>`:"-"}</td>
  </tr>`).join(""):`<tr><td colspan="8" class="empty">No medicines found.</td></tr>`;
@@ -688,8 +701,7 @@ function productModal(p=null){
  ${field("Expiry date","expiry_date",p?.expiry_date,"","date")}
  ${field("MRP","mrp",p?.mrp??0,"required","number")}
  ${field("Purchase price","purchase_price",p?.purchase_price??0,"","number")}
- ${field("Selling price","selling_price",p?.selling_price??0,"required","number")}
- ${field("GST %","gst_percent",p?.gst_percent??0,"","number")}
+  ${field("GST %","gst_percent",p?.gst_percent??0,"","number")}
  ${field("Stock","stock",p?.stock??0,"required","number")}
  ${field("Unit","unit",p?.unit||"PCS")}
  ${field("Tablets per strip","tablets_per_strip",p?.tablets_per_strip??1,"","number")}
@@ -697,7 +709,7 @@ function productModal(p=null){
  $("productForm").onsubmit=async e=>{
   e.preventDefault();
   const d=Object.fromEntries(new FormData(e.target));
-  ["mrp","purchase_price","selling_price","gst_percent","stock","tablets_per_strip"].forEach(k=>d[k]=Number(d[k]||0));
+  ["mrp","purchase_price","gst_percent","stock","tablets_per_strip"].forEach(k=>d[k]=Number(d[k]||0));
   try{
    if(p){
     const {error}=await sb.from("ms_products").update(d).eq("id",p.id).eq("pharmacy_id",pharmacyId());
@@ -775,26 +787,38 @@ function supplierModal(){
 }
  
  
-function renderBilling(){
+async function renderBilling(){
+ try{const {data}=await sb.from("ms_members").select("full_name,role").eq("pharmacy_id",pharmacyId()).eq("is_active",true);window.pharmacyStaff=data||[];}catch(e){window.pharmacyStaff=[];}
  $("pageContent").innerHTML=`
- ${pageHead("POS Billing","Fast medicine search, batch-aware stock selection and clear checkout")}
+ ${pageHead("POS Billing","Professional pharmacy counter · Fast billing · Batch and schedule control")}
+ <div class="pos-toolbar">
+  <div><span class="pos-kicker">PHARMACY POINT OF SALE</span><strong>New Sales Invoice</strong><small>Scan, search, add medicines and checkout from one screen.</small></div>
+  <div class="pos-invoice-meta"><span>INVOICE<strong id="billInvoicePreview">SM-${Date.now().toString().slice(-8)}</strong></span><span>DATE & TIME<strong id="billDatePreview">${new Date().toLocaleString()}</strong></span><span>COUNTER<strong> ${esc(currentMember?.full_name||"Main Counter")}</strong></span></div>
+ </div>
  <div class="billing-layout">
   <div class="panel billing-search-panel">
-   <div class="panel-head"><h3>Find medicine</h3><span class="badge green">Live pharmacy stock</span></div>
-   <input class="search" style="width:100%;max-width:none;padding:13px" id="billSearch" placeholder="Type medicine name, brand or scan barcode..." oninput="searchBill(this.value)" onkeydown="if(event.key==='Enter'){const first=document.querySelector('[data-bill-product]');if(first)first.click();}">
+   <div class="panel-head"><div><span class="pos-section-label">01 · CUSTOMER & ITEMS</span><h3>Medicine search</h3></div><span class="badge green">Live stock</span></div>
+   <div class="pos-search-wrap"><span>⌕</span><input class="search" style="width:100%;max-width:none;padding:14px 14px 14px 42px" id="billSearch" placeholder="Search medicine, brand, salt or scan barcode..." oninput="searchBill(this.value)" onkeydown="if(event.key==='Enter'){const first=document.querySelector('[data-bill-product]');if(first)first.click();}"></div>
+   <div class="pos-customer-heading"><strong>Customer details</strong><small>Phone number lookup automatically fills saved details</small></div>
    <div class="bill-meta" style="margin-top:12px">
-    <div class="field"><label>Customer</label><select id="billCustomer"><option value="">Walk-in customer</option>${customers.map(c=>`<option value="${c.id}">${esc(c.name)}${c.phone?" · "+esc(c.phone):""}</option>`).join("")}</select></div>
+    <div class="field"><label>Customer phone number</label><input id="billPhone" type="tel" placeholder="Enter customer mobile number" onblur="lookupBillCustomer(this.value)"></div>
+    <div class="field"><label>Customer name</label><input id="billCustomerName" list="billCustomerNames" placeholder="Customer name"><datalist id="billCustomerNames">${[...new Set(customers.map(c=>c.name).filter(Boolean))].map(n=>`<option value="${esc(n)}">`).join("")}</datalist></div>
+    <div class="field"><label>Customer address</label><input id="billCustomerAddress" placeholder="Customer address"></div>
+    <div class="field"><label>Doctor name</label><input id="billDoctor" list="billDoctorNames" placeholder="Doctor name"><datalist id="billDoctorNames">${[...new Set(customers.map(c=>c.doctor_name).filter(Boolean))].map(n=>`<option value="${esc(n)}">`).join("")}</datalist></div>
+    <div class="field"><label>Pharmacist name (editable)</label><input id="billPharmacist" list="pharmacistNames" placeholder="Pharmacist name" value="${esc(currentMember?.full_name||"")}"><datalist id="pharmacistNames">${staffNameOptions()}</datalist></div>
+    <div class="field"><label>Billing staff</label><input id="billStaffName" value="${esc(currentMember?.full_name||currentUser?.email||"")}" readonly></div>
     <div class="field"><label>Barcode scanner</label><input id="billBarcode" placeholder="Scan / enter barcode" onkeydown="if(event.key==='Enter'){event.preventDefault();addBarcodeToBill(this.value)}"></div>
+    <div class="field"><label>Prescription upload (scheduled medicines)</label><input id="billPrescription" type="file" accept="image/*,.pdf"><small class="feature-note">Attach the valid prescription before billing a scheduled medicine.</small></div>
    </div>
    <div id="billResults" class="bill-product-list" style="margin-top:12px"><div class="empty">Search for a medicine to add it to the bill.</div></div>
   </div>
   <div class="panel billing-cart-panel">
-   <div class="bill-cart-head"><h3>Current bill</h3><button class="btn light" style="padding:7px 10px" onclick="clearCart()">Clear bill</button></div>
+   <div class="bill-cart-head"><div><span class="pos-section-label">02 · CHECKOUT</span><h3>Current bill</h3></div><button class="btn light" style="padding:7px 10px" onclick="clearCart()">Clear bill</button></div>
    <div id="cartItems"></div>
    <div class="bill-total-box">
     <div class="total-row"><span>Subtotal</span><b id="billSubtotal">₹0.00</b></div>
     <div class="total-row"><span>GST included</span><b id="billGst">₹0.00</b></div>
-    <div class="field" style="margin:8px 0"><label>Discount (₹)</label><input id="billDiscount" type="number" min="0" step="0.01" value="0" oninput="renderCart()"></div>
+    <div class="field" style="margin:8px 0"><label>Discount (₹) — maximum allowed by 20% minimum profit</label><input id="billDiscount" type="number" min="0" step="0.01" value="0" oninput="renderCart()"><small id="discountLimitNote" class="feature-note"></small></div>
     <div class="total-row final"><span>Net payable</span><b id="billTotal">₹0.00</b></div>
    </div>
    <div class="bill-meta">
@@ -811,10 +835,22 @@ function searchBill(q){
  const list=products.filter(p=>(p.name+" "+(p.brand||"")+" "+(p.barcode||"")+" "+(p.batch_number||"")).toLowerCase().includes(String(q||"").toLowerCase())).slice(0,30);
  $("billResults").innerHTML=list.map(p=>`
   <div class="bill-product">
-   <div><strong>${esc(p.name)}</strong><small>${esc(p.brand||"")} · Batch ${esc(p.batch_number||"-")} · Expiry ${esc(p.expiry_date||"-")}</small><small>Stock: <b>${esc(p.stock)} ${esc(p.unit||"PCS")}</b> · MRP ${money(p.mrp)} · GST ${esc(p.gst_percent||0)}%</small></div>
-   <div style="text-align:right"><b>${money(p.selling_price)}</b><br><button class="btn light" data-bill-product onclick="addToCart('${p.id}')">Add item</button></div>
+   <div><strong>${esc(p.name)}</strong><small>${esc(p.brand||"")} · Batch ${esc(p.batch_number||"-")} · Expiry ${esc(p.expiry_date||"-")}</small><small>Stock: <b>${esc(p.stock)} ${esc(p.unit||"PCS")}</b> · Schedule ${esc(p.schedule||p.drug_schedule||"Not set")} · MRP ${money(p.mrp)} · GST ${esc(p.gst_percent||0)}% · Minimum bill price ${money(Number(p.purchase_price||0)*1.2)}</small></div>
+   <div style="text-align:right"><b>${money(p.mrp)}</b><br><small>${esc(p.schedule||p.drug_schedule||"Schedule not set")}</small><br><button class="btn light" data-bill-product onclick="addToCart('${p.id}')">Add item</button></div>
   </div>`).join("")||`<div class="empty">No matching medicine found in this pharmacy.</div>`;
 }
+function staffNameOptions(){
+ const names=(window.pharmacyStaff||[]).map(x=>x.full_name).filter(Boolean);
+ return [...new Set(names)].map(n=>`<option value="${esc(n)}">`).join("");
+}
+async function lookupBillCustomer(phone){
+ phone=String(phone||"").replace(/\D/g,"");if(phone.length<7)return;
+ try{const {data,error}=await sb.from("ms_customers").select("*").eq("pharmacy_id",pharmacyId()).eq("phone",phone).limit(1).maybeSingle();if(error)throw error;
+ if(data){$("billCustomerName").value=data.name||"";$("billCustomerAddress").value=data.address||"";$("billDoctor").value=data.doctor_name||"";window.billCustomerId=data.id;}
+ else window.billCustomerId=null;
+ }catch(e){console.warn("Customer lookup:",e.message);}
+}
+async function fileAsDataUrl(file){if(!file)return null;return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});}
 function addBarcodeToBill(code){
  const p=products.find(x=>String(x.barcode||"").trim().toLowerCase()===String(code||"").trim().toLowerCase());
  if(!p)return notify("No medicine found for this barcode.");
@@ -823,6 +859,7 @@ function addBarcodeToBill(code){
 function clearCart(){if(!cart.length)return; if(!confirm("Clear all items from this bill?"))return;cart=[];if($("billDiscount"))$("billDiscount").value=0;renderCart();}
 function addToCart(id){
  const p=products.find(x=>x.id===id);if(!p)return;
+ const sch=String(p.schedule||p.drug_schedule||"").toUpperCase().replace(/SCHEDULE/g,"").trim();if((sch==="H"||sch==="H1"||sch==="X") && !$("billPrescription")?.files?.[0])return notify("Prescription upload is required for this scheduled medicine.");
  if(Number(p.stock)<=0)return notify("This medicine is out of stock.");
  const item=cart.find(x=>x.id===id);
  if(item){if(item.qty+1>Number(p.stock))return notify("Insufficient stock.");item.qty++;}
@@ -840,21 +877,27 @@ function changeQty(id,qty){
 }
 function removeCart(id){cart=cart.filter(x=>x.id!==id);renderCart();}
 function calculateBill(){
- const subtotal=cart.reduce((a,p)=>a+p.qty*Number(p.selling_price),0);
- const gst=cart.reduce((a,p)=>a+(p.qty*Number(p.selling_price)*Number(p.gst_percent||0)/(100+Number(p.gst_percent||0))),0);
- const discount=Math.max(0,Number($("billDiscount")?.value||0));
- return {subtotal,gst,discount,total:Math.max(0,subtotal-discount)};
+ // MRP is the billing rate. A minimum 20% profit over purchase cost is mandatory.
+ const subtotal=cart.reduce((a,p)=>a+p.qty*Number(p.mrp||0),0);
+ const gst=cart.reduce((a,p)=>a+(p.qty*Number(p.mrp||0)*Number(p.gst_percent||0)/(100+Number(p.gst_percent||0))),0);
+ const maxDiscount=cart.reduce((a,p)=>a+Math.max(0,p.qty*(Number(p.mrp||0)-Number(p.purchase_price||0)*1.20)),0);
+ const requestedDiscount=Math.max(0,Number($("billDiscount")?.value||0));
+ const discount=Math.min(requestedDiscount,maxDiscount);
+ return {subtotal,gst,discount,maxDiscount,total:Math.max(0,subtotal-discount),discountRejected:requestedDiscount>maxDiscount+0.001};
 }
 function renderCart(){
  if(!$("cartItems"))return;
  $("cartItems").innerHTML=cart.map(p=>`
  <div class="cart-line">
- <div><b>${esc(p.name)}</b><br><small>${money(p.selling_price)} each</small></div>
+ <div><b>${esc(p.name)}</b><br><small>${money(p.mrp)} each</small></div>
  <input type="number" min="1" max="${p.stock}" value="${p.qty}" onchange="changeQty('${p.id}',this.value)">
- <b>${money(p.qty*p.selling_price)}</b>
+ <b>${money(p.qty*p.mrp)}</b>
  <button class="close" onclick="removeCart('${p.id}')">×</button>
  </div>`).join("")||`<div class="empty">Add medicines to this bill.</div>`;
  const t=calculateBill();
+ const discountInput=$("billDiscount");
+ if(discountInput && t.discountRejected){discountInput.value=t.maxDiscount.toFixed(2);notify("Discount reduced: minimum 20% profit on purchase cost must be maintained.");}
+ if($("discountLimitNote"))$("discountLimitNote").textContent=`Maximum permitted discount: ${money(t.maxDiscount)}. Minimum 20% profit on purchase cost is protected.`;
  $("billSubtotal").textContent=money(t.subtotal);
  $("billGst").textContent=money(t.gst);
  $("billTotal").textContent=money(t.total);
@@ -863,6 +906,8 @@ async function completeSale(){
  if(!cart.length)return notify("Add at least one medicine.");
  const t=calculateBill();
  if(t.total<=0)return notify("Bill total must be greater than zero.");
+ if(t.discountRejected)return notify("Discount exceeds the allowed limit. Minimum 20% profit on purchase cost is required.");
+ for(const item of cart){const minPrice=Number(item.purchase_price||0)*1.20;if(Number(item.mrp||0)+0.001<minPrice)return notify(`${item.name}: MRP is below purchase cost + 20% profit. Cannot bill this item.`);}
  for(const item of cart){
   const p=products.find(x=>x.id===item.id);
   if(!p||item.qty>Number(p.stock))return notify("Stock changed. Refresh and try again.");
@@ -870,10 +915,22 @@ async function completeSale(){
  const invoice="SM-"+Date.now();
  const payment=$("billPayment").value;
  try{
+  let customerId=window.billCustomerId||null;
+  const phone=$("billPhone")?.value.trim()||"",customerName=$("billCustomerName")?.value.trim()||"";
+  if(phone||customerName){
+   const customerPayload={pharmacy_id:pharmacyId(),name:customerName||"Customer",phone,address:$("billCustomerAddress")?.value.trim()||"",doctor_name:$("billDoctor")?.value.trim()||""};
+   const existing=phone?customers.find(c=>String(c.phone||"").replace(/\D/g,"")===phone.replace(/\D/g,"")):null;
+   if(existing){customerId=existing.id;const {error}=await sb.from("ms_customers").update(customerPayload).eq("id",customerId);if(error)throw error;}
+   else {const {data,error}=await sb.from("ms_customers").insert(customerPayload).select("id").single();if(error)throw error;customerId=data.id;}
+  }
+  const prescriptionData=await fileAsDataUrl($("billPrescription")?.files?.[0]);
   const sale={
    pharmacy_id:pharmacyId(),
    invoice_number:invoice,
-   customer_id:$("billCustomer").value||null,
+   customer_id:customerId,
+   customer_name:customerName,customer_phone:phone,customer_address:$("billCustomerAddress")?.value.trim()||"",doctor_name:$("billDoctor")?.value.trim()||"",
+   pharmacist_name:$("billPharmacist")?.value.trim()||"",billing_staff_name:currentMember?.full_name||currentUser.email,
+   prescription_data_url:prescriptionData,
    subtotal:t.subtotal,
    discount:t.discount,
    gst_amount:t.gst,
@@ -887,9 +944,9 @@ async function completeSale(){
   const lines=cart.map(p=>({
    pharmacy_id:pharmacyId(),sale_id:created.id,product_id:p.id,
    product_name:p.name,batch_number:p.batch_number,
-   quantity:p.qty,unit_price:p.selling_price,
+   quantity:p.qty,unit_price:p.mrp,
    gst_percent:p.gst_percent,
-   line_total:p.qty*p.selling_price
+   line_total:p.qty*p.mrp
   }));
   const {error:itemError}=await sb.from("ms_sale_items").insert(lines);
   if(itemError)throw itemError;
@@ -915,15 +972,16 @@ function printInvoice(sale,items,t){
  if(!w)return notify("Allow pop-ups to print the invoice.");
  const size=pharmacySettings.print_paper_size||"80mm";
  const width=size==="58mm"?"58mm":size==="80mm"?"80mm":"210mm";
- const header=pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"SUBHA MEDICAL";
+ const header=currentPharmacy?.pharmacy_name||pharmacySettings.print_header||"Pharmacy";
+ const logo=pharmacySettings.logo_data_url?`<img src="${pharmacySettings.logo_data_url}" style="max-width:100px;max-height:65px;display:block;margin:0 auto 6px">`:"";
  const footer=pharmacySettings.print_footer||"Thank you. Visit again!";
  const upi=pharmacySettings.upi_id?`<p style="text-align:center;font-size:11px">UPI: ${esc(pharmacySettings.upi_id)}</p>`:"";
  w.document.write(`<!DOCTYPE html><html><head><title>${esc(sale.invoice_number)}</title>
  <style>@page{size:${width} auto;margin:5mm}body{font-family:Arial;padding:8px;color:#222;max-width:${width==="210mm"?"190mm":width};margin:auto;font-size:12px}h1{text-align:center;font-size:18px;margin:4px}p{text-align:center;margin:5px 0}table{width:100%;border-collapse:collapse;margin-top:12px}td,th{border-bottom:1px solid #ddd;padding:6px 3px;text-align:left;font-size:11px}.right{text-align:right}.total{font-size:17px;font-weight:bold}</style>
- </head><body><h1>${esc(header)}</h1><p>${esc(currentPharmacy?.address||"")}</p><p>${esc(currentPharmacy?.phone||"")}</p>
- <hr><p>Invoice: ${esc(sale.invoice_number)}<br>${new Date(sale.created_at).toLocaleString()}</p>
+ </head><body>${logo}<h1>${esc(header)}</h1><p>${esc(currentPharmacy?.address||"")}</p><p>${esc(currentPharmacy?.phone||"")}</p>
+ <hr><p>Invoice: ${esc(sale.invoice_number)}<br>${new Date(sale.created_at).toLocaleString()}</p><p style="text-align:left">Customer: ${esc($("billCustomerName")?.value||"Walk-in")} · Phone: ${esc($("billPhone")?.value||"-")}<br>Address: ${esc($("billCustomerAddress")?.value||"-")}<br>Doctor: ${esc($("billDoctor")?.value||"-")}<br>Pharmacist: ${esc($("billPharmacist")?.value||"-")}<br>Billing staff: ${esc(currentMember?.full_name||currentUser.email)}</p>
  <table><tr><th>Medicine</th><th>Qty</th><th>Rate</th><th class="right">Amount</th></tr>
- ${items.map(p=>`<tr><td>${esc(p.name)}</td><td>${p.qty}</td><td>${money(p.selling_price)}</td><td class="right">${money(p.qty*p.selling_price)}</td></tr>`).join("")}
+ ${items.map(p=>`<tr><td>${esc(p.name)}</td><td>${p.qty}</td><td>${money(p.mrp)}</td><td class="right">${money(p.qty*p.mrp)}</td></tr>`).join("")}
  </table><p class="right">Subtotal: ${money(t.subtotal)}<br>Discount: ${money(t.discount)}<br>GST included: ${money(t.gst)}</p>
  <p class="right total">Total: ${money(t.total)}</p>${upi}<hr><p>${esc(footer)}</p>
  <script>window.onload=()=>window.print();<\/script></body></html>`);
@@ -933,7 +991,7 @@ function printInvoice(sale,items,t){
 let activeQrScanner = null;
 function renderFeatureSetup(title,description){$("pageContent").innerHTML=`${pageHead(title,"Advanced pharmacy workflow")}<div class="panel"><div class="notice"><b>Database setup required</b><br>${esc(description)}</div><p class="feature-note">This option is included in the existing Subha Medical interface. It is not saving data to browser-only storage or to the old ERP schema.</p></div>`;}
 function renderScanner(){$("pageContent").innerHTML=`${pageHead("Barcode Scanner","Scan a medicine barcode or enter it manually")}<div class="panel"><div class="field"><label>Barcode / product code</label><input id="scanBarcodeInput" class="feature-input" placeholder="Scan with a USB scanner or type barcode" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupScannedBarcode(this.value)}"></div><div class="feature-tools"><button class="btn" onclick="lookupScannedBarcode(document.getElementById('scanBarcodeInput').value)">Find medicine</button><button class="btn light" onclick="startCameraScanner()">Open camera scanner</button><button class="btn danger" onclick="stopCameraScanner()">Stop camera</button></div><div id="qr-reader" style="max-width:420px;width:100%;margin:12px auto"></div><div id="scanResult" class="feature-note">Camera scanning requires browser camera permission and HTTPS.</div></div><div class="panel"><h3>Barcode matches</h3><div id="scanMatches" class="feature-note">Enter or scan a barcode to search this pharmacy's inventory.</div></div>`;}
-function lookupScannedBarcode(code){code=String(code||"").trim();if(!code)return notify("Enter or scan a barcode.");const found=products.filter(p=>String(p.barcode||"").toLowerCase()===code.toLowerCase());$("scanMatches").innerHTML=found.length?found.map(p=>`<div class="total-row"><span><b>${esc(p.name)}</b><br><small>${esc(p.brand||"")} · Batch ${esc(p.batch_number||"-")} · Stock ${esc(p.stock)}</small></span><span><b>${money(p.selling_price)}</b><br><button class="btn light" onclick="scannerAddToBill('${p.id}')">Add to bill</button></span></div>`).join(""):`<div class="empty">No medicine found for barcode ${esc(code)}.</div>`;}
+function lookupScannedBarcode(code){code=String(code||"").trim();if(!code)return notify("Enter or scan a barcode.");const found=products.filter(p=>String(p.barcode||"").toLowerCase()===code.toLowerCase());$("scanMatches").innerHTML=found.length?found.map(p=>`<div class="total-row"><span><b>${esc(p.name)}</b><br><small>${esc(p.brand||"")} · Batch ${esc(p.batch_number||"-")} · Stock ${esc(p.stock)}</small></span><span><b>${money(p.mrp)}</b><br><button class="btn light" onclick="scannerAddToBill('${p.id}')">Add to bill</button></span></div>`).join(""):`<div class="empty">No medicine found for barcode ${esc(code)}.</div>`;}
 function scannerAddToBill(id){addToCart(id);notify("Medicine added to current bill.");}
 async function startCameraScanner(){if(typeof Html5Qrcode==="undefined")return notify("Camera scanner library could not load. Use the manual barcode field.");try{await stopCameraScanner();activeQrScanner=new Html5Qrcode("qr-reader");await activeQrScanner.start({facingMode:"environment"},{fps:10,qrbox:{width:240,height:140}},code=>{$("scanBarcodeInput").value=code;lookupScannedBarcode(code);notify("Barcode scanned.");},()=>{});$("scanResult").textContent="Camera is active. Point it at a medicine barcode.";}catch(e){notify("Camera could not start: "+(e.message||e));}}
 async function stopCameraScanner(){if(!activeQrScanner)return;try{if(activeQrScanner.isScanning)await activeQrScanner.stop();await activeQrScanner.clear();}catch(e){}activeQrScanner=null;}
@@ -946,7 +1004,7 @@ function filterAuditRows(q){fillAuditRows(products.filter(p=>(p.name+" "+(p.bran
 async function saveStockAudit(){if(!pharmacyId())return notify("Pharmacy context is missing.");const items=auditProducts.map(p=>{const el=document.querySelector(`[data-count-id="${p.id}"]`);return el?{product_id:p.id,name:p.name,system_stock:Number(p.stock||0),counted_stock:Number(el.value),difference:Number(el.value)-Number(p.stock||0)}:null;}).filter(Boolean);if(!items.length)return notify("No counted products found.");try{const {error}=await sb.from("ms_audit_logs").insert({pharmacy_id:pharmacyId(),user_id:currentUser.id,action:"stock_audit",details:{items,recorded_at:new Date().toISOString()}});if(error)throw error;notify("Stock audit report saved.");loadAuditHistory();}catch(e){notify("Could not save audit: "+e.message);}}
 async function loadAuditHistory(){const host=$("auditHistory");if(!host)return;host.textContent="Loading audit history...";try{const {data,error}=await sb.from("ms_audit_logs").select("id,action,details,created_at").eq("pharmacy_id",pharmacyId()).eq("action","stock_audit").order("created_at",{ascending:false}).limit(15);if(error)throw error;host.innerHTML=data?.length?`<h3 style="margin:12px 0">Recent audits</h3>`+data.map(a=>{const it=a.details?.items||[];const changed=it.filter(x=>Number(x.difference)!==0).length;return `<div class="total-row"><span>${new Date(a.created_at).toLocaleString()}<br><small>${it.length} products · ${changed} differences</small></span><b>${changed?changed+" differences":"Matched"}</b></div>`;}).join(""):`No saved audits yet.`;}catch(e){host.textContent="Audit history unavailable: "+e.message;}}
 function renderItemMaster(){$("pageContent").innerHTML=`${pageHead("Item Master","Quick product master search across your pharmacy inventory")}<div class="panel"><div class="panel-head"><h3>Medicine master (${products.length})</h3><input class="search" placeholder="Name, brand, category, batch or barcode" oninput="filterItemMaster(this.value)"></div><div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Brand</th><th>Category</th><th>Barcode</th><th>Batch / Expiry</th><th>GST</th><th>Price</th><th>Stock</th></tr></thead><tbody id="itemMasterRows"></tbody></table></div></div>`;fillItemMaster(products);}
-function fillItemMaster(list){const el=$("itemMasterRows");if(!el)return;el.innerHTML=list.length?list.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${esc(p.brand||"-")}</td><td>${esc(p.category||"-")}</td><td>${esc(p.barcode||"-")}</td><td>${esc(p.batch_number||"-")}<br><small>${esc(p.expiry_date||"No expiry")}</small></td><td>${esc(p.gst_percent||0)}%</td><td>${money(p.selling_price)}</td><td>${esc(p.stock)} ${esc(p.unit||"PCS")}</td></tr>`).join(""):`<tr><td colspan="8" class="empty">No medicines found.</td></tr>`;}
+function fillItemMaster(list){const el=$("itemMasterRows");if(!el)return;el.innerHTML=list.length?list.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${esc(p.brand||"-")}</td><td>${esc(p.category||"-")}</td><td>${esc(p.barcode||"-")}</td><td>${esc(p.batch_number||"-")}<br><small>${esc(p.expiry_date||"No expiry")}</small></td><td>${esc(p.gst_percent||0)}%</td><td>${money(p.mrp)}</td><td>${esc(p.stock)} ${esc(p.unit||"PCS")}</td></tr>`).join(""):`<tr><td colspan="8" class="empty">No medicines found.</td></tr>`;}
 function filterItemMaster(q){q=String(q||"").toLowerCase();fillItemMaster(products.filter(p=>[p.name,p.brand,p.category,p.barcode,p.batch_number].join(" ").toLowerCase().includes(q)));}
 function renderManufacturers(){const brands=[...new Set(products.map(p=>String(p.brand||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));$("pageContent").innerHTML=`${pageHead("Manufacturers","Manufacturer / brand directory from your existing medicine master")}<div class="panel"><div class="panel-head"><h3>Brands (${brands.length})</h3><input class="search" placeholder="Search brand" oninput="filterManufacturerRows(this.value)"></div><div class="table-wrap"><table><thead><tr><th>Brand / Manufacturer</th><th>Products</th><th>Categories</th></tr></thead><tbody id="manufacturerRows"></tbody></table></div></div><p class="feature-note">This directory reads existing product brand/category values; it does not create a second manufacturer database.</p>`;fillManufacturerRows(brands);}
 function fillManufacturerRows(brands){const el=$("manufacturerRows");if(!el)return;el.innerHTML=brands.length?brands.map(b=>{const ps=products.filter(p=>String(p.brand||"").trim()===b);const cats=[...new Set(ps.map(p=>p.category).filter(Boolean))];return `<tr><td><b>${esc(b)}</b></td><td>${ps.length}</td><td>${esc(cats.join(", ")||"-")}</td></tr>`;}).join(""):`<tr><td colspan="3" class="empty">No brand names are saved in inventory yet.</td></tr>`;}
@@ -969,7 +1027,7 @@ function renderBillOCR(){
   <textarea id="billOcrText" rows="7" style="width:100%;border:1px solid var(--border);border-radius:9px;padding:12px;resize:vertical" placeholder="Read invoice text appears here. You can correct it before converting to rows."></textarea>
  </div>
  <div class="panel"><div class="panel-head"><h3>Verify invoice items before stock inward</h3><span class="badge">Editable</span></div>
-  <div class="table-wrap"><table style="min-width:1050px"><thead><tr><th>Existing medicine</th><th>Batch</th><th>Expiry</th><th>Qty</th><th>Purchase rate</th><th>MRP</th><th>Selling price</th><th>GST %</th><th>Action</th></tr></thead><tbody id="ocrPurchaseRows"><tr><td colspan="9" class="empty">Read an invoice or add rows manually.</td></tr></tbody></table></div>
+  <div class="table-wrap"><table style="min-width:1050px"><thead><tr><th>Existing medicine</th><th>Batch</th><th>Expiry</th><th>Qty</th><th>Purchase rate</th><th>MRP</th><th>GST %</th><th>Action</th></tr></thead><tbody id="ocrPurchaseRows"><tr><td colspan="8" class="empty">Read an invoice or add rows manually.</td></tr></tbody></table></div>
   <div class="feature-tools"><button class="btn" onclick="postVerifiedPurchase()">Verify & Add to Stock</button><button class="btn light" onclick="navigate('products')">Open medicine master</button></div>
   <p class="feature-note">Only existing medicines can be posted in this workflow. If an invoice contains a new medicine, add it to Inventory first, then return and select it here. This prevents accidental duplicate medicine records.</p>
  </div>
@@ -1003,14 +1061,14 @@ function parseSupplierInvoiceText(){
   if(name.length<3)continue;
   const match=products.find(p=>name.toLowerCase().includes(String(p.name||"").toLowerCase())||String(p.name||"").toLowerCase().includes(name.toLowerCase()));
   if(!match)continue;
-  parsed.push({product_id:match.id,batch_number:match.batch_number||"",expiry_date:match.expiry_date||"",quantity:Math.max(1,Math.round(nums[0])),purchase_rate:nums[1]||match.purchase_price||0,mrp:nums[2]||match.mrp||0,selling_price:match.selling_price||0,gst_percent:match.gst_percent||0});
+  parsed.push({product_id:match.id,batch_number:match.batch_number||"",expiry_date:match.expiry_date||"",quantity:Math.max(1,Math.round(nums[0])),purchase_rate:nums[1]||match.purchase_price||0,mrp:nums[2]||match.mrp||0,gst_percent:match.gst_percent||0});
  }
  ocrPurchaseRows=parsed;
  if(!parsed.length){addOcrPurchaseRow();$("billOcrStatus").textContent="No confident medicine matches found. Add rows manually and select each existing medicine.";}
  else{$("billOcrStatus").textContent=`Found ${parsed.length} possible medicine row(s). Please verify every field.`;}
  renderOcrPurchaseRows();
 }
-function addOcrPurchaseRow(){ocrPurchaseRows.push({product_id:"",batch_number:"",expiry_date:"",quantity:1,purchase_rate:0,mrp:0,selling_price:0,gst_percent:0});renderOcrPurchaseRows();}
+function addOcrPurchaseRow(){ocrPurchaseRows.push({product_id:"",batch_number:"",expiry_date:"",quantity:1,purchase_rate:0,mrp:0,gst_percent:0});renderOcrPurchaseRows();}
 function renderOcrPurchaseRows(){
  const host=$("ocrPurchaseRows");if(!host)return;
  host.innerHTML=ocrPurchaseRows.length?ocrPurchaseRows.map((r,i)=>`<tr>
@@ -1020,11 +1078,11 @@ function renderOcrPurchaseRows(){
  <td><input class="feature-input" type="number" min="1" step="1" value="${Number(r.quantity)||1}" onchange="updateOcrRow(${i},'quantity',this.value)"></td>
  <td><input class="feature-input" type="number" min="0" step=".01" value="${Number(r.purchase_rate)||0}" onchange="updateOcrRow(${i},'purchase_rate',this.value)"></td>
  <td><input class="feature-input" type="number" min="0" step=".01" value="${Number(r.mrp)||0}" onchange="updateOcrRow(${i},'mrp',this.value)"></td>
- <td><input class="feature-input" type="number" min="0" step=".01" value="${Number(r.selling_price)||0}" onchange="updateOcrRow(${i},'selling_price',this.value)"></td>
+ 
  <td><input class="feature-input" type="number" min="0" step=".01" value="${Number(r.gst_percent)||0}" onchange="updateOcrRow(${i},'gst_percent',this.value)"></td>
- <td><button class="btn danger" onclick="removeOcrRow(${i})">Remove</button></td></tr>`).join(""):`<tr><td colspan="9" class="empty">No invoice rows. Add a row to begin.</td></tr>`;
+ <td><button class="btn danger" onclick="removeOcrRow(${i})">Remove</button></td></tr>`).join(""):`<tr><td colspan="8" class="empty">No invoice rows. Add a row to begin.</td></tr>`;
 }
-function updateOcrRow(i,key,value){if(!ocrPurchaseRows[i])return;ocrPurchaseRows[i][key]=["quantity","purchase_rate","mrp","selling_price","gst_percent"].includes(key)?Number(value):value;}
+function updateOcrRow(i,key,value){if(!ocrPurchaseRows[i])return;ocrPurchaseRows[i][key]=["quantity","purchase_rate","mrp","gst_percent"].includes(key)?Number(value):value;}
 function removeOcrRow(i){ocrPurchaseRows.splice(i,1);renderOcrPurchaseRows();}
 async function postVerifiedPurchase(){
  if(!canManage())return notify("Only Owner/Admin can post purchase stock.");
@@ -1034,7 +1092,7 @@ async function postVerifiedPurchase(){
  for(const [i,r] of ocrPurchaseRows.entries()){
   if(!r.product_id||!products.some(p=>p.id===r.product_id))return notify(`Select a valid existing medicine in row ${i+1}.`);
   if(!(Number(r.quantity)>0))return notify(`Enter a valid quantity in row ${i+1}.`);
-  if(Number(r.purchase_rate)<0||Number(r.mrp)<0||Number(r.selling_price)<0)return notify(`Check prices in row ${i+1}.`);
+  if(Number(r.purchase_rate)<0||Number(r.mrp)<0)return notify(`Check prices in row ${i+1}.`);
  }
  if(!confirm(`Post invoice ${invoice} and add ${ocrPurchaseRows.reduce((a,r)=>a+Number(r.quantity),0)} units to stock?`))return;
  try{
@@ -1056,6 +1114,13 @@ function renderPurchases(){
  
 let activeReportRows=[];
 let activeReportTitle="Sales register";
+async function loadScheduledDrugReport(){
+ const host=$("scheduledDrugReport");if(!host)return;host.innerHTML="Loading scheduled drug register…";
+ try{const {data,error}=await sb.from("ms_scheduled_drug_sales_report").select("*").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(1000);if(error)throw error;
+ activeReportRows=data||[];activeReportTitle="Scheduled drug register";
+ host.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Date</th><th>Invoice</th><th>Medicine</th><th>Schedule</th><th>Batch</th><th>Qty</th><th>Customer / Phone</th><th>Doctor</th><th>Pharmacist</th><th>Billing staff</th><th>Prescription</th></tr></thead><tbody>${data.map(r=>`<tr><td>${new Date(r.created_at).toLocaleString()}</td><td>${esc(r.invoice_number||"")}</td><td>${esc(r.product_name||"")}</td><td>${esc(r.schedule||r.drug_schedule||"")}</td><td>${esc(r.batch_number||"")}</td><td>${esc(r.quantity||0)}</td><td>${esc(r.customer_name||"-")}<br>${esc(r.customer_phone||"")}</td><td>${esc(r.doctor_name||"-")}</td><td>${esc(r.pharmacist_name||"-")}</td><td>${esc(r.billing_staff_name||"-")}</td><td>${r.prescription_attached?"Attached":"Not attached"}</td></tr>`).join("")}</tbody></table></div>`:"No scheduled drug sales found.";
+ }catch(e){host.innerHTML=`<div class="notice">Scheduled drug report unavailable: ${esc(e.message)}. Run the supplied SQL migration and check table permissions.</div>`;}
+}
 function renderReports(){
  const total=sales.reduce((a,x)=>a+Number(x.total||0),0);
  $("pageContent").innerHTML=`
@@ -1066,6 +1131,7 @@ function renderReports(){
   <div class="stat"><small>Products</small><h2>${products.length}</h2></div>
   <div class="stat"><small>Customers</small><h2>${customers.length}</h2></div>
  </div>
+ <div class="panel"><h3>Scheduled drug register</h3><p class="feature-note">View sales of medicines marked with Schedule H, H1 or X, including prescription attachment status, customer, doctor, pharmacist and billing staff.</p><button class="btn" onclick="loadScheduledDrugReport()">Open scheduled drug report</button><div id="scheduledDrugReport" style="margin-top:12px"></div></div>
  <div class="panel">
   <div class="panel-head"><h3>Report filters</h3><div class="actions"><button class="btn light" onclick="exportActiveReport()">Export CSV</button><button class="btn light" onclick="printActiveReport()">Print</button></div></div>
   <div class="form-grid">
@@ -1112,7 +1178,7 @@ async function runReport(type){
    return setReport("Daily sales summary",["Date","Bills","Sales total","GST"],Object.keys(groups).sort().reverse().map(d=>[d,groups[d].count,money(groups[d].total),money(groups[d].gst)]));
   }
   if(type==="stock"){
-   return setReport("Stock register",["Medicine","Brand","Batch","Expiry","MRP","Purchase rate","Selling rate","Stock","GST"],products.map(p=>[p.name,p.brand,p.batch_number,p.expiry_date,p.mrp,p.purchase_price,p.selling_price,p.stock,p.gst_percent]));
+   return setReport("Stock register",["Medicine","Brand","Batch","Expiry","MRP","Purchase cost","Stock","GST"],products.map(p=>[p.name,p.brand,p.batch_number,p.expiry_date,p.mrp,p.purchase_price,p.stock,p.gst_percent]));
   }
   if(type==="low_stock"){
    return setReport("Low stock report",["Medicine","Batch","Stock","Unit","Reorder threshold"],products.filter(p=>Number(p.stock)>0&&Number(p.stock)<=10).map(p=>[p.name,p.batch_number,p.stock,p.unit,10]));
@@ -1167,6 +1233,7 @@ function printActiveReport(){
  w.document.write("<html><head><title>"+esc(activeReportTitle)+"</title><style>@page{size:"+((pharmacySettings.print_paper_size==="A4")?"A4":"A4")+";margin:12mm}body{font-family:Arial;padding:10px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:11px}h2{text-align:center}</style></head><body><h2>"+esc(pharmacySettings.print_header||"SUBHA MEDICAL")+" — "+esc(activeReportTitle)+"</h2>"+host.innerHTML+"<script>window.onload=()=>window.print();<\\/script></body></html>");w.document.close();
 }
 async function renderStaff(){
+ window.pharmacyStaff=[];
  if(!canManage()){notify("Owner / Admin permission required.");return navigate("dashboard");}
  const pid=pharmacyId();
  $("pageContent").innerHTML=`${pageHead("Staff Management","Owner controls staff accounts, roles and access")}
@@ -1228,6 +1295,7 @@ async function renderSettings(){
  <div class="panel"><h3>Pharmacy profile</h3><form id="pharmacySettingsForm"><div class="form-grid">${field("Pharmacy name","pharmacy_name",p.pharmacy_name||"",owner?"required":"disabled")}${field("Owner name","owner_name",p.owner_name||"",owner?"required":"disabled")}${field("Phone number","phone",p.phone||"",owner?"":"disabled")}${field("Address","address",p.address||"",owner?"":"disabled")}</div><div class="total-row"><span>Customer ID / Pharmacy Code</span><b>${esc(p.pharmacy_code||"Super Admin")}</b></div><div class="total-row"><span>Approval status</span><b>${esc(p.approval_status||"-")}</b></div>${owner?'<button class="btn" style="margin-top:14px">Save Pharmacy Profile</button>':''}</form></div>
  <div class="panel"><h3>UPI payment setup & QR generator</h3><p class="feature-note">Only Owner/Admin can set or change the UPI ID. Pharmacist and cashier accounts cannot edit these fields.</p>
  <form id="upiSettingsForm"><div class="form-grid">${field("UPI ID (VPA)","upi_id",pharmacySettings.upi_id||"",owner?"":"disabled")}${field("UPI display / account name","upi_name",pharmacySettings.upi_name||p.pharmacy_name||"",owner?"":"disabled")}</div><div class="feature-tools">${owner?'<button class="btn">Save UPI Setup</button>':''}<button type="button" class="btn light" onclick="generateUpiQr()">Generate UPI QR</button></div></form><div id="upiQrPreview" style="margin-top:15px;text-align:center"></div></div>
+ <div class="panel"><h3>Pharmacy bill logo</h3><p class="feature-note">Upload your pharmacy logo. It is printed on invoices; the pharmacy name and address come from the profile above.</p><div class="field"><label>Logo image</label><input id="pharmacyLogoUpload" type="file" accept="image/*"></div><div id="pharmacyLogoPreview">${pharmacySettings.logo_data_url?`<img src="${pharmacySettings.logo_data_url}" style="max-width:150px;max-height:90px">`:"No logo uploaded"}</div>${owner?'<button class="btn" type="button" onclick="savePharmacyLogo()">Save bill logo</button>':''}</div>
  <div class="panel"><h3>Print page setup</h3><p class="feature-note">Choose the receipt layout used by bill printing and the page width used for report printing.</p>
  <form id="printSettingsForm"><div class="form-grid"><div class="field"><label>Bill paper size</label><select name="print_paper_size" ${owner?"":"disabled"}><option value="80mm" ${pharmacySettings.print_paper_size==="80mm"?"selected":""}>80 mm thermal</option><option value="58mm" ${pharmacySettings.print_paper_size==="58mm"?"selected":""}>58 mm thermal</option><option value="A4" ${pharmacySettings.print_paper_size==="A4"?"selected":""}>A4</option></select></div>${field("Print header","print_header",pharmacySettings.print_header||p.pharmacy_name||"Subha Medical",owner?"":"disabled")}${field("Print footer","print_footer",pharmacySettings.print_footer||"Thank you. Visit again!",owner?"":"disabled")}</div>${owner?'<button class="btn" style="margin-top:12px">Save Print Setup</button>':''}</form></div>
  <div class="panel"><h3>Staff management</h3><button class="btn" onclick="navigate('staff')">Open Staff Management / Edit Staff</button></div>
@@ -1237,6 +1305,7 @@ async function renderSettings(){
  const pr=$("printSettingsForm");if(owner)pr.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(pr));try{const {error}=await sb.from("ms_pharmacy_settings").upsert({pharmacy_id:pharmacyId(),...d},{onConflict:"pharmacy_id"});if(error)throw error;pharmacySettings={...pharmacySettings,...d};notify("Print setup saved.");}catch(err){notify("Print setup failed: "+err.message);}};
  if(pharmacySettings.upi_id)generateUpiQr();
 }
+async function savePharmacyLogo(){if(!canManage())return notify("Owner/Admin only.");const file=$("pharmacyLogoUpload")?.files?.[0];if(!file)return notify("Choose a logo image first.");if(file.size>1_500_000)return notify("Please use a logo smaller than 1.5 MB.");try{const logo_data_url=await fileAsDataUrl(file);const {error}=await sb.from("ms_pharmacy_settings").upsert({pharmacy_id:pharmacyId(),logo_data_url},{onConflict:"pharmacy_id"});if(error)throw error;pharmacySettings.logo_data_url=logo_data_url;notify("Bill logo saved.");renderSettings();}catch(e){notify("Logo save failed: "+e.message);}}
 function generateUpiQr(){
  if(!canManage())return notify("Only Owner/Admin can generate or manage the pharmacy UPI QR.");
  const upi=($("upi_id")?.value||pharmacySettings.upi_id||"").trim(),name=($("upi_name")?.value||pharmacySettings.upi_name||currentPharmacy?.pharmacy_name||"Subha Medical").trim();
