@@ -9,6 +9,8 @@
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
   <style>
 :root {
   --primary:#5946a8;
@@ -192,6 +194,111 @@ td{color:#424258}
 @media(max-width:850px){.billing-layout{grid-template-columns:1fr}.billing-cart-panel{position:static}.pos-invoice-meta{gap:12px}}
 @media(max-width:480px){.pos-toolbar{padding:14px}.pos-toolbar>div:first-child>strong{font-size:17px}.pos-invoice-meta{width:100%;justify-content:space-between}.pos-customer-heading{align-items:flex-start;flex-direction:column}.billing-cart-panel .cart-line{grid-template-columns:minmax(0,1fr) 54px 68px 25px}.billing-cart-panel .cart-line input{width:50px}}
  
+.panel,.stat{transition:transform .18s ease,box-shadow .18s ease}.panel:hover,.stat:hover{transform:translateY(-2px);box-shadow:0 10px 26px #172b4d0d}.btn{transition:transform .15s ease,box-shadow .15s ease}.btn:active{transform:scale(.98)}
+.audit-checklist{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}.audit-check{display:flex;align-items:flex-start;gap:9px;padding:10px;border:1px solid var(--border);border-radius:9px;background:#fbfbfe;font-size:12px}.audit-check input{margin-top:2px}.audit-history-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:12px}.audit-history-item small{color:var(--muted)}
+@media(max-width:560px){.audit-checklist{grid-template-columns:1fr}}
+ 
+/* Compact pharmacy workstation layout */
+.auth-wrap{padding:12px!important}.auth-card{max-width:370px!important;padding:20px 22px!important;border-radius:13px!important;margin:8px auto!important}.brand{margin-bottom:13px!important;padding-bottom:10px!important}.brand-logo{width:42px!important;height:42px!important;flex-basis:42px!important;border-radius:11px!important;font-size:21px!important}.brand h1{font-size:19px!important}.brand p{font-size:11px!important}.auth-tabs{margin-bottom:16px!important}.auth-tabs button{padding:9px!important;font-size:12px!important}.auth-card #loginForm:before{font-size:21px!important;margin-bottom:12px!important}.auth-card .field{margin-bottom:10px!important}.auth-card .field label{font-size:11px!important}.auth-card .field input,.auth-card .field select{padding:9px 10px!important;font-size:13px!important}.auth-card .btn.full{min-height:38px!important}.auth-card #loginForm>div:last-child .btn{font-size:11px!important;padding:8px 10px!important}
+.content{padding:17px!important}.topbar{height:58px!important;padding:0 18px!important}.page-head{margin-bottom:14px!important}.page-head h2{font-size:19px!important}.panel,.stat{padding:14px!important;border-radius:10px!important}.panel{margin-top:12px!important}.panel-head{margin-bottom:10px!important}.table-wrap{border:1px solid var(--border);border-radius:8px}table{min-width:560px!important}th{position:sticky;top:0;z-index:1;background:#f4f7fa!important;font-size:10px!important;white-space:nowrap}td,th{padding:8px 9px!important;font-size:11px!important;line-height:1.35}td .btn{padding:6px 8px!important;font-size:10px!important}.search{padding:8px 10px!important;font-size:12px!important}
+.billing-layout{grid-template-columns:minmax(0,1.12fr) minmax(350px,.88fr)!important;gap:12px!important}.billing-search-panel,.billing-cart-panel{padding:13px!important}.billing-cart-panel{position:sticky;top:68px!important;max-height:calc(100vh - 82px);overflow:auto}.bill-product-list{max-height:calc(100vh - 250px)!important}.bill-product{grid-template-columns:minmax(0,1fr) auto!important;padding:8px 6px!important;gap:7px!important}.bill-product strong{font-size:12px!important}.bill-product small{font-size:10px!important}.bill-product .btn{padding:6px 8px!important}.bill-scan-row{display:flex;gap:7px;margin:9px 0}.bill-scan-row input{min-width:0;flex:1;border:1px solid var(--border);border-radius:8px;padding:9px;font-size:12px}.bill-scan-row .btn{padding:8px 10px;font-size:11px}.bill-customer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}.bill-customer-grid .field input{padding:8px!important;font-size:11px!important}.bill-customer-grid .field label{font-size:10px!important}.bill-prescription-field{grid-column:1/-1}.bill-items-heading{display:flex;justify-content:space-between;align-items:center;margin:12px 0 4px;padding-top:9px;border-top:1px solid var(--border);font-size:11px}.bill-items-heading small{color:var(--muted);font-size:10px}.billing-cart-panel .cart-line{grid-template-columns:minmax(0,1fr) 54px 68px 25px!important;gap:5px!important;padding:7px 0!important}.billing-cart-panel .cart-line input{width:50px!important;padding:5px!important}.billing-cart-panel .cart-line b{font-size:11px}.bill-total-box{padding:9px 10px!important;margin-top:8px!important}.bill-total-box .total-row{padding:5px 0!important;font-size:11px!important}.bill-total-box .total-row.final{font-size:17px!important}.bill-total-box .field{margin:6px 0!important}.bill-total-box .field input{padding:7px!important;font-size:12px!important}.payment-head{display:flex;align-items:center;justify-content:space-between;margin:11px 0 7px;font-size:12px}.split-toggle{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--primary);font-weight:700}.split-payment-box{border:1px solid #dce8e8;background:#f8fcfc;padding:9px;border-radius:9px}.split-payment-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.split-payment-grid .field{margin:0}.split-payment-grid label{font-size:10px}.split-payment-grid input{width:100%;padding:8px;border:1px solid var(--border);border-radius:7px;font-size:12px}.split-total-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:10px}.split-total-line b{font-size:12px}.split-total-line span{color:var(--muted)}
+@media(max-width:900px){.billing-layout{grid-template-columns:1fr!important}.billing-cart-panel{position:static!important;max-height:none!important;overflow:visible!important}.bill-product-list{max-height:38vh!important}}
+@media(max-width:560px){.auth-card{max-width:360px!important;padding:18px!important}.content{padding:10px!important}.billing-layout .panel{padding:10px!important}.bill-customer-grid{grid-template-columns:1fr 1fr!important}.bill-product-list{max-height:32vh!important}.pos-toolbar{padding:11px!important}.pos-toolbar>div:first-child>strong{font-size:16px!important}.pos-invoice-meta{gap:8px!important}.pos-invoice-meta strong{font-size:10px!important}}
+ 
+ 
+/* Reference-matched Subha Medical login, POS and data-grid system */
+.auth-wrap{min-height:100vh;padding:0!important;display:grid!important;grid-template-columns:minmax(0,1fr) minmax(390px,.92fr)!important;align-items:stretch!important;justify-content:stretch!important;background:#fff!important;gap:0!important}
+.auth-visual{display:flex!important;position:relative;overflow:hidden;align-items:center;justify-content:center;padding:clamp(28px,6vw,86px);background:linear-gradient(145deg,#159e91,#087f7b 60%,#075d68);color:#fff;min-height:100vh}
+.auth-visual:before{content:"";position:absolute;width:620px;height:620px;border:1px solid #ffffff25;border-radius:50%;right:-250px;top:10%;left:auto;opacity:1}
+.auth-visual:after{content:"";position:absolute;width:440px;height:440px;border:1px solid #ffffff20;border-radius:50%;right:-150px;bottom:-220px;left:auto;top:auto;opacity:1}
+.auth-visual-inner{max-width:520px;width:100%;text-align:left;color:#fff}
+.auth-visual-mark{width:54px;height:54px;border-radius:14px;background:#ffffff22;border:1px solid #ffffff40;box-shadow:none;margin:0 0 54px}
+.auth-visual-mark span{font-size:28px;color:#fff;background:none;-webkit-text-fill-color:#fff}
+.auth-visual-inner h2{font-size:clamp(30px,3.8vw,48px);line-height:1.15;color:#fff;max-width:480px;margin:0 0 18px}
+.auth-visual-inner p{font-size:14px;color:#e3fffb;line-height:1.8;max-width:410px}
+.auth-visual-points{margin-top:34px}.auth-visual-points span{background:#ffffff18;border:1px solid #ffffff38;color:#fff}
+.auth-card{max-width:520px;width:100%;min-height:100vh;margin:0 auto;padding:clamp(28px,5vw,68px);border-radius:0;box-shadow:none;justify-content:center}
+.auth-card .brand{border:0;margin-bottom:38px;padding:0}.auth-card .brand-logo{width:44px;height:44px;flex-basis:44px;border-radius:12px;background:#10988e;box-shadow:none;font-size:22px}
+.auth-card .brand h1{font-size:20px}.auth-card .brand p{font-size:11px}
+.auth-card #loginForm:before{content:"Staff Login";font-size:28px;margin-bottom:7px}
+.auth-card #loginForm:after{content:"Sign in to access your pharmacy management workspace.";display:block;color:#7a8790;font-size:12px;margin:-1px 0 22px}
+.auth-card .field label{color:#435a61;font-size:11px}.auth-card .field input,.auth-card .field select{border:1px solid #dce5e7;border-radius:7px;padding:12px;font-size:13px}
+.auth-card .btn.full{background:#10988e;border-radius:7px;min-height:43px}.auth-card .btn.full:hover{background:#087f78}
+.auth-card .btn.light{background:#fff;border:1px solid #e0e7e8;color:#3e6768}
+.auth-tabs{margin-bottom:24px}.auth-tabs button.active{color:#087f78}
+/* POS frame: narrow navy rail, editable medicine grid and dedicated checkout */
+:root{--primary:#078b87;--primary-dark:#066e70;--bg:#f4f6f8;--border:#e1e7eb;--text:#233746}
+.sidebar{width:66px!important;padding:14px 7px!important;background:#102b42!important}
+.side-brand{justify-content:center;padding:5px 0 18px;border-bottom:1px solid #ffffff18}.side-brand>div:last-child{display:none}.side-icon{width:38px;height:38px;border-radius:10px;background:#087f83;color:#fff}
+.nav-title{display:none}.nav{font-size:0!important;text-align:center!important;padding:12px 4px!important;margin:4px 0!important;color:#c6d6df!important}.nav span{font-size:15px!important;width:auto!important}.nav:hover,.nav.active{background:#1d4966!important;color:#fff!important}
+.main{margin-left:66px!important}.topbar{height:54px!important;padding:0 20px!important}.content{padding:16px!important;max-width:none!important}
+.page-head{margin-bottom:12px!important}.page-head h2{font-size:18px!important}.page-head p{font-size:10px!important}
+.billing-layout{display:grid!important;grid-template-columns:minmax(0,1fr) 285px!important;gap:10px!important;align-items:stretch!important}
+.billing-search-panel,.billing-cart-panel{padding:12px!important;border:1px solid #dfe6ea!important;border-radius:9px!important;box-shadow:none!important;background:#fff!important}
+.billing-search-panel{min-width:0}.billing-cart-panel{position:sticky!important;top:64px!important;max-height:calc(100vh - 74px)!important;overflow:auto!important}
+.pos-toolbar{padding:8px 12px!important;margin:0 0 10px!important;border-radius:8px!important;background:#fff!important;border:1px solid #e1e7eb!important}.pos-toolbar>div:first-child>strong{font-size:15px!important}.pos-toolbar>div:first-child>small{font-size:9px!important}.pos-invoice-meta{gap:12px!important}.pos-invoice-meta span{font-size:8px!important}.pos-invoice-meta strong{font-size:10px!important}
+.billing-search-panel .panel-head{margin-bottom:8px!important}.billing-search-panel .panel-head h3,.billing-cart-panel h3{font-size:13px!important}.pos-section-label{font-size:8px!important}
+.pos-search-wrap input{height:36px!important;padding:8px 10px 8px 34px!important;font-size:11px!important}.pos-search-wrap>span{font-size:19px!important;top:5px!important;left:10px!important}
+.bill-scan-row{margin:6px 0!important}.bill-scan-row input{padding:7px!important;font-size:10px!important}.bill-scan-row .btn{padding:6px 8px!important;font-size:10px!important}
+.bill-results-table{width:100%;border-collapse:separate;border-spacing:0;min-width:0!important}.bill-results-table th{position:sticky;top:0;background:#f5f8fa!important;color:#687b88!important;font-size:8px!important;white-space:nowrap}.bill-results-table td,.bill-results-table th{padding:7px 6px!important;font-size:10px!important;border-bottom:1px solid #edf1f3!important}.bill-results-table td input,.bill-results-table td select{max-width:66px;padding:5px;border:1px solid #dce4e8;border-radius:5px;font-size:10px}.bill-results-table .medicine-name{font-weight:700;color:#263e50}.bill-results-table .medicine-sub{display:block;color:#85929b;font-size:8px;margin-top:2px}.bill-results-table .btn{padding:5px 7px!important;font-size:9px!important}
+#billResults{max-height:calc(100vh - 260px);overflow:auto}.bill-product{display:grid;grid-template-columns:minmax(0,1fr) auto!important;padding:7px 5px!important}.bill-product strong{font-size:10px!important}.bill-product small{font-size:8px!important}
+.bill-customer-grid{grid-template-columns:1fr!important;gap:5px!important}.bill-customer-grid .field input{padding:7px!important;font-size:10px!important}.bill-customer-grid .field label{font-size:9px!important}.bill-prescription-field{grid-column:auto!important}
+.bill-items-heading{margin:8px 0 3px!important;font-size:10px!important}.billing-cart-panel .cart-line{grid-template-columns:minmax(0,1fr) 40px 58px 20px!important;gap:4px!important;padding:6px 0!important}.billing-cart-panel .cart-line input{width:38px!important;padding:4px!important;font-size:10px!important}.billing-cart-panel .cart-line b{font-size:10px!important}.billing-cart-panel .cart-line small{font-size:8px!important}
+.bill-total-box{margin-top:8px!important;padding:8px!important;background:#fff!important;border:0!important;border-top:1px solid #e7ecef!important}.bill-total-box .total-row{font-size:10px!important;padding:4px 0!important}.bill-total-box .total-row.final{font-size:17px!important;color:#1e394b!important}.bill-total-box .field label{font-size:9px!important}.bill-total-box .field input{padding:6px!important;font-size:10px!important}
+.payment-head{margin:8px 0 6px!important;font-size:10px!important}.split-toggle{font-size:9px!important}.split-payment-box{padding:7px!important}.split-payment-grid{gap:5px!important}.split-payment-grid label{font-size:9px!important}.split-payment-grid input{padding:6px!important;font-size:10px!important}.split-total-line{font-size:9px!important}.split-total-line b{font-size:10px!important}
+.billing-cart-panel>.btn.full{min-height:38px!important;margin-top:8px!important;font-size:11px!important;background:#f0a629!important;color:#35270b!important;box-shadow:none!important}
+/* Dense spreadsheet-like data tables throughout inventory, reports and setup */
+.table-wrap{overflow:auto!important;border:1px solid #e2e8ec!important;border-radius:8px!important;background:#fff!important}table{width:100%;border-collapse:separate!important;border-spacing:0!important;min-width:650px!important}thead th{position:sticky!important;top:0!important;z-index:2!important;background:#f4f7f9!important;color:#647887!important;font-size:9px!important;font-weight:800!important;letter-spacing:.35px!important;text-transform:uppercase!important;white-space:nowrap!important;padding:8px 9px!important;border-bottom:1px solid #dfe7eb!important}tbody td{font-size:10px!important;padding:7px 9px!important;border-bottom:1px solid #edf1f3!important;vertical-align:middle!important;white-space:nowrap}tbody tr:hover{background:#f5fafb!important}tbody tr:last-child td{border-bottom:0!important}tbody td input,tbody td select{font-size:10px!important;padding:5px 6px!important;border:1px solid #dce4e8!important;border-radius:5px!important;max-width:140px}tbody td .btn{font-size:9px!important;padding:5px 7px!important;border-radius:5px!important}
+@media(max-width:900px){.billing-layout{grid-template-columns:minmax(0,1fr) 265px!important}.content{padding:10px!important}.billing-cart-panel{top:60px!important}}
+@media(max-width:700px){.auth-wrap{grid-template-columns:1fr!important;min-height:100dvh!important}.auth-visual{min-height:185px!important;padding:22px 24px!important;align-items:flex-end!important}.auth-visual-mark{width:34px;height:34px;border-radius:9px;margin-bottom:12px}.auth-visual-mark span{font-size:18px}.auth-visual-inner h2{font-size:21px;margin-bottom:6px}.auth-visual-inner p{font-size:10px;line-height:1.45}.auth-visual-points{margin-top:10px;gap:5px}.auth-visual-points span{font-size:9px;padding:5px 8px}.auth-card{min-height:auto!important;max-width:none!important;padding:25px 22px!important;margin:0!important}.auth-card .brand{margin-bottom:20px!important}.auth-card #loginForm:before{font-size:23px!important}.sidebar{width:54px!important}.main{margin-left:54px!important}.side-icon{width:34px;height:34px}.nav{padding:10px 2px!important}.topbar{padding:0 10px!important}.content{padding:8px!important}.pos-toolbar{gap:7px!important}.pos-invoice-meta{width:100%;justify-content:space-between}.billing-layout{grid-template-columns:minmax(0,1fr)!important}.billing-cart-panel{position:static!important;max-height:none!important;overflow:visible!important}.billing-search-panel{order:1}.billing-cart-panel{order:2}.bill-customer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.bill-prescription-field{grid-column:1/-1!important}#billResults{max-height:230px!important}.bill-results-table{min-width:0!important}.bill-results-table th,.bill-results-table td{font-size:9px!important;padding:6px 4px!important}}
+@media(max-width:390px){.bill-customer-grid{grid-template-columns:1fr!important}.pos-invoice-meta span{font-size:7px!important}.pos-invoice-meta strong{font-size:9px!important}}
+/* FINAL CLEANUP: strict auth/app separation, compact sign-in and icon-only navigation */
+html,body{min-height:100%;margin:0}
+body.auth-mode{background:#f5f8fa!important;overflow-x:hidden}
+body.auth-mode #appScreen{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
+body.app-mode #authScreen{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
+body.auth-mode #authScreen{display:flex!important;min-height:100svh!important;height:auto!important;align-items:center!important;justify-content:center!important;padding:20px!important;background:#f5f8fa!important}
+body.auth-mode .auth-visual{display:none!important}
+body.auth-mode .auth-card{width:min(100%,420px)!important;max-width:420px!important;min-height:0!important;height:auto!important;margin:0 auto!important;padding:24px!important;border:1px solid #e5ebef!important;border-radius:16px!important;box-shadow:0 12px 36px #1d344510!important;align-self:center!important}
+body.auth-mode .auth-card .brand{margin:0 0 18px!important;padding:0 0 14px!important;border-bottom:1px solid #edf1f3!important}
+body.auth-mode .auth-card .brand-logo{width:38px!important;height:38px!important;flex-basis:38px!important;font-size:18px!important}
+body.auth-mode .auth-tabs{margin:0 0 20px!important;max-width:none!important}
+body.auth-mode .auth-tabs button{padding:10px 8px!important;font-size:13px!important}
+body.auth-mode .auth-card #loginForm:before{font-size:22px!important;margin:0 0 16px!important}
+body.auth-mode .auth-card #loginForm:after{font-size:11px!important;margin:0 0 16px!important}
+body.auth-mode .auth-card .field{margin:0 0 12px!important}
+body.auth-mode .auth-card .field label{display:block;font-size:12px!important;margin:0 0 5px!important}
+body.auth-mode .auth-card .field input,body.auth-mode .auth-card .field select{width:100%!important;box-sizing:border-box!important;min-height:42px!important;padding:10px 11px!important;font-size:14px!important;border-radius:8px!important;background:#fff!important}
+body.auth-mode .auth-card .btn.full{min-height:42px!important;margin-top:3px!important;font-size:14px!important}
+body.auth-mode .auth-card #loginForm>div:last-child{display:flex!important;justify-content:space-between!important;gap:8px!important;margin-top:12px!important}
+body.auth-mode .auth-card #loginForm>div:last-child .btn{font-size:11px!important;padding:8px 10px!important;white-space:normal!important}
+body.auth-mode #authMessage{font-size:12px!important;margin-top:10px!important}
+/* Compact icon rail; hover/focus labels remain available as tooltips */
+#sidebar{width:62px!important;padding:12px 7px!important;background:#102b42!important;overflow-x:hidden!important}
+#sidebar .side-brand{justify-content:center!important;padding:4px 0 15px!important}
+#sidebar .side-brand>div:last-child{display:none!important}
+#sidebar .side-icon{width:38px!important;height:38px!important;border-radius:11px!important;background:#0b8f89!important;color:#fff!important}
+#sidebar .nav-title{display:none!important}
+#sidebar .nav{width:100%!important;height:42px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:0!important;padding:8px 4px!important;margin:3px 0!important;border-radius:9px!important;font-size:0!important;white-space:nowrap!important;overflow:hidden!important}
+#sidebar .nav span{display:inline-grid!important;place-items:center!important;width:22px!important;height:22px!important;font-size:17px!important;line-height:1!important}
+#sidebar .nav.active,#sidebar .nav:hover{background:#1c4a65!important;color:#fff!important}
+#sidebar>div:last-child{padding:14px 0 4px!important}
+#sidebar>div:last-child .btn{font-size:0!important;padding:9px 0!important;min-height:38px!important}
+#sidebar>div:last-child .btn:after{content:'↪';font-size:17px!important}
+.main{margin-left:62px!important;min-width:0!important}
+.topbar{height:54px!important;padding:0 16px!important}
+.content{min-width:0!important}
+@media(max-width:700px){
+ body.auth-mode #authScreen{padding:14px!important;min-height:100svh!important}
+ body.auth-mode .auth-card{padding:20px!important;border-radius:14px!important}
+ #sidebar{width:54px!important;padding:10px 5px!important}
+ #sidebar .nav{height:39px!important}
+ #sidebar .nav span{font-size:16px!important}
+ .main{margin-left:54px!important}
+ .topbar{padding:0 9px!important}
+ .content{padding:9px!important}
+}
+ 
 </style>
  </head>
  <body>
@@ -213,8 +320,8 @@ td{color:#424258}
     <div class="brand">
      <div class="brand-logo">S</div>
      <div style="flex:1">
-      <h1>Pharmacy Software</h1>
-      <p>Billing &amp; Management</p>
+      <h1>Subha Medical</h1>
+      <p>Medical Software · Pharmacy Management</p>
      </div>
     </div>
     <div class="auth-tabs">
@@ -226,10 +333,10 @@ td{color:#424258}
       <label>Customer ID <span style="color:#d84c59">*</span></label><input id="loginCustomerId" autocomplete="organization" placeholder="Enter pharmacy code (Super Admin leave blank)">
      </div>
      <div class="field">
-      <label>Username <span style="color:#d84c59">*</span></label><input id="loginEmail" type="email" required autocomplete="username" placeholder="Your registered email address">
+      <label>Username <span style="color:#d84c59">*</span></label><input id="loginEmail" type="email" required autocomplete="off" placeholder="Your registered email address">
      </div>
      <div class="field">
-      <label>Password <span style="color:#d84c59">*</span></label><input id="loginPassword" type="password" required autocomplete="current-password" placeholder="Enter password">
+      <label>Password <span style="color:#d84c59">*</span></label><input id="loginPassword" type="password" required autocomplete="new-password" placeholder="Enter password">
      </div>
      <button class="btn full" type="submit" id="loginButton">Log In</button>
      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap">
@@ -375,8 +482,10 @@ const money = n => "₹" + Number(n || 0).toFixed(2);
 const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({
  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
 }[c]));
+const PRIMARY_ADMIN_EMAIL="subhamedical2325@gmail.com";
+const isPrimaryAdmin = () => String(currentUser?.email||"").toLowerCase()===PRIMARY_ADMIN_EMAIL;
 const isSuper = () => currentMember?.role === "super_admin";
-const canManage = () => ["owner","admin","super_admin"].includes(currentMember?.role);
+const canManage = () => isPrimaryAdmin() || ["owner","admin","super_admin"].includes(currentMember?.role);
 const pharmacyId = () => currentMember?.pharmacy_id;
  
 function notify(message){
@@ -415,7 +524,7 @@ $("loginForm").addEventListener("submit",async e=>{
   });
   if(error)throw error;
   await loadApplication(data.user,requestedPharmacyId);
- }catch(err){authMessage(err.message||"Login failed");}
+ }catch(err){document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");$("appScreen").classList.add("hidden");$("authScreen").classList.remove("hidden");authMessage(err.message||"Login failed");}
  finally{btn.disabled=false;btn.textContent="Log In";}
 });
  
@@ -462,7 +571,7 @@ async function verifyPharmacyRegistrationOtp(){
   $("registerOtpPanel").classList.add("hidden");$("registerForm").reset();pendingRegistrationData=null;pendingRegistrationVerified=false;
   authMessage("Email verified. Pharmacy registration submitted. Pharmacy code: "+(registration?.pharmacy_code||"created")+". Approval is pending.","success");
   await loadApplication(user);
- }catch(err){authMessage(err.message||"OTP verification or pharmacy registration failed.");}
+ }catch(err){document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");$("appScreen").classList.add("hidden");$("authScreen").classList.remove("hidden");authMessage(err.message||"OTP verification or pharmacy registration failed.");}
  finally{btn.disabled=false;btn.textContent="Verify OTP & Register";}
 }
  
@@ -496,6 +605,7 @@ async function verifyForgotPasswordOtp(){
 }
  
 async function logout(){
+ document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");
  await sb.auth.signOut();
  currentUser=null;currentMember=null;currentPharmacy=null;
  $("appScreen").classList.add("hidden");
@@ -505,6 +615,7 @@ async function logout(){
  
 async function loadApplication(user,requestedPharmacyId=null){
  currentUser=user;
+ document.body.classList.remove("auth-mode");document.body.classList.add("app-mode");
  $("authScreen").classList.add("hidden");
  $("appScreen").classList.remove("hidden");
  $("userLabel").textContent=user.email||"Account";
@@ -576,7 +687,7 @@ async function refreshData(){
  for(const r of [p,c,s,sup])if(r.error)throw r.error;
  products=p.data||[];customers=c.data||[];sales=s.data||[];suppliers=sup.data||[];
  const cfg=await sb.from("ms_pharmacy_settings").select("*").eq("pharmacy_id",pid).maybeSingle();
- if(!cfg.error)pharmacySettings=cfg.data||{};
+ if(!cfg.error){const row=cfg.data||{};pharmacySettings={...(row.settings||{}),...row, ...(row.settings||{})};pharmacySettings.logo_data_url=row.logo_data_url||pharmacySettings.logo_data_url||"";}
 }
  
 function navigate(page){
@@ -790,54 +901,64 @@ function supplierModal(){
 async function renderBilling(){
  try{const {data}=await sb.from("ms_members").select("full_name,role").eq("pharmacy_id",pharmacyId()).eq("is_active",true);window.pharmacyStaff=data||[];}catch(e){window.pharmacyStaff=[];}
  $("pageContent").innerHTML=`
- ${pageHead("POS Billing","Professional pharmacy counter · Fast billing · Batch and schedule control")}
- <div class="pos-toolbar">
-  <div><span class="pos-kicker">PHARMACY POINT OF SALE</span><strong>New Sales Invoice</strong><small>Scan, search, add medicines and checkout from one screen.</small></div>
-  <div class="pos-invoice-meta"><span>INVOICE<strong id="billInvoicePreview">SM-${Date.now().toString().slice(-8)}</strong></span><span>DATE & TIME<strong id="billDatePreview">${new Date().toLocaleString()}</strong></span><span>COUNTER<strong> ${esc(currentMember?.full_name||"Main Counter")}</strong></span></div>
- </div>
+ ${pageHead("POS Billing","Fast pharmacy counter · Barcode · Split payment")}
+ <div class="pos-toolbar"><div><span class="pos-kicker">SUBHA MEDICAL · POINT OF SALE</span><strong>New Bill</strong><small>Search medicines, edit quantities and complete checkout.</small></div><div class="pos-invoice-meta"><span>INVOICE<strong id="billInvoicePreview">SM-${Date.now().toString().slice(-8)}</strong></span><span>DATE<strong id="billDatePreview">${new Date().toLocaleString()}</strong></span></div></div>
  <div class="billing-layout">
-  <div class="panel billing-search-panel">
-   <div class="panel-head"><div><span class="pos-section-label">01 · CUSTOMER & ITEMS</span><h3>Medicine search</h3></div><span class="badge green">Live stock</span></div>
-   <div class="pos-search-wrap"><span>⌕</span><input class="search" style="width:100%;max-width:none;padding:14px 14px 14px 42px" id="billSearch" placeholder="Search medicine, brand, salt or scan barcode..." oninput="searchBill(this.value)" onkeydown="if(event.key==='Enter'){const first=document.querySelector('[data-bill-product]');if(first)first.click();}"></div>
-   <div class="pos-customer-heading"><strong>Customer details</strong><small>Phone number lookup automatically fills saved details</small></div>
-   <div class="bill-meta" style="margin-top:12px">
-    <div class="field"><label>Customer phone number</label><input id="billPhone" type="tel" placeholder="Enter customer mobile number" onblur="lookupBillCustomer(this.value)"></div>
-    <div class="field"><label>Customer name</label><input id="billCustomerName" list="billCustomerNames" placeholder="Customer name"><datalist id="billCustomerNames">${[...new Set(customers.map(c=>c.name).filter(Boolean))].map(n=>`<option value="${esc(n)}">`).join("")}</datalist></div>
-    <div class="field"><label>Customer address</label><input id="billCustomerAddress" placeholder="Customer address"></div>
-    <div class="field"><label>Doctor name</label><input id="billDoctor" list="billDoctorNames" placeholder="Doctor name"><datalist id="billDoctorNames">${[...new Set(customers.map(c=>c.doctor_name).filter(Boolean))].map(n=>`<option value="${esc(n)}">`).join("")}</datalist></div>
-    <div class="field"><label>Pharmacist name (editable)</label><input id="billPharmacist" list="pharmacistNames" placeholder="Pharmacist name" value="${esc(currentMember?.full_name||"")}"><datalist id="pharmacistNames">${staffNameOptions()}</datalist></div>
-    <div class="field"><label>Billing staff</label><input id="billStaffName" value="${esc(currentMember?.full_name||currentUser?.email||"")}" readonly></div>
-    <div class="field"><label>Barcode scanner</label><input id="billBarcode" placeholder="Scan / enter barcode" onkeydown="if(event.key==='Enter'){event.preventDefault();addBarcodeToBill(this.value)}"></div>
-    <div class="field"><label>Prescription upload (scheduled medicines)</label><input id="billPrescription" type="file" accept="image/*,.pdf"><small class="feature-note">Attach the valid prescription before billing a scheduled medicine.</small></div>
-   </div>
-   <div id="billResults" class="bill-product-list" style="margin-top:12px"><div class="empty">Search for a medicine to add it to the bill.</div></div>
-  </div>
-  <div class="panel billing-cart-panel">
-   <div class="bill-cart-head"><div><span class="pos-section-label">02 · CHECKOUT</span><h3>Current bill</h3></div><button class="btn light" style="padding:7px 10px" onclick="clearCart()">Clear bill</button></div>
+  <section class="panel billing-search-panel"><div class="panel-head"><div><span class="pos-section-label">MEDICINE SEARCH</span><h3>Scan barcode or type medicine name</h3></div><span class="badge green">Live stock</span></div>
+   <div class="pos-search-wrap"><span>⌕</span><input class="search" style="width:100%;max-width:none;padding:12px 12px 12px 38px" id="billSearch" placeholder="Scan barcode or search medicine / generic name (F2)" oninput="searchBill(this.value)" onkeydown="if(event.key==='Enter'){const first=document.querySelector('[data-bill-product]');if(first)first.click();}"></div>
+   <div class="bill-scan-row"><input id="billBarcode" placeholder="Barcode input" onkeydown="if(event.key==='Enter'){event.preventDefault();addBarcodeToBill(this.value)}"><button class="btn light" onclick="addBarcodeToBill($('billBarcode').value)">Add</button></div>
+   <div id="billResults"><div class="empty">Search or scan a medicine to add it to this invoice.</div></div>
+   <div class="bill-items-heading"><b>Invoice items</b><small id="billItemCount">${cart.length} items · Edit quantity / rate / discount</small></div>
    <div id="cartItems"></div>
-   <div class="bill-total-box">
-    <div class="total-row"><span>Subtotal</span><b id="billSubtotal">₹0.00</b></div>
-    <div class="total-row"><span>GST included</span><b id="billGst">₹0.00</b></div>
-    <div class="field" style="margin:8px 0"><label>Discount (₹) — maximum allowed by 20% minimum profit</label><input id="billDiscount" type="number" min="0" step="0.01" value="0" oninput="renderCart()"><small id="discountLimitNote" class="feature-note"></small></div>
-    <div class="total-row final"><span>Net payable</span><b id="billTotal">₹0.00</b></div>
+   <div class="feature-tools"><button class="btn light" onclick="clearCart()">Clear bill</button><button class="btn light" onclick="if($('billSearch'))$('billSearch').focus()">Add medicine (F2)</button></div>
+  </section>
+  <section class="panel billing-cart-panel"><div class="bill-cart-head"><div><span class="pos-section-label">CUSTOMER & CHECKOUT</span><h3>Payment summary</h3></div><span class="badge">${esc(currentMember?.full_name||"Counter")}</span></div>
+   <div class="bill-meta bill-customer-grid">
+    <div class="field"><label>Customer name</label><input id="billCustomerName" list="billCustomerNames" placeholder="Walk-in customer"><datalist id="billCustomerNames">${[...new Set(customers.map(c=>c.name).filter(Boolean))].map(n=>`<option value="${esc(n)}">`).join("")}</datalist></div>
+    <div class="field"><label>Mobile number</label><input id="billPhone" type="tel" placeholder="Customer mobile" onblur="lookupBillCustomer(this.value)"></div>
+    <div class="field"><label>Pharmacist name</label><input id="billPharmacist" list="pharmacistNames" placeholder="Pharmacist" value="${esc(currentMember?.full_name||"")}"><datalist id="pharmacistNames">${staffNameOptions()}</datalist></div>
+    <div class="field"><label>Doctor name</label><input id="billDoctor" list="billDoctorNames" placeholder="Doctor"><datalist id="billDoctorNames">${[...new Set(customers.map(c=>c.doctor_name).filter(Boolean))].map(n=>`<option value="${esc(n)}">`).join("")}</datalist></div>
+    <div class="field"><label>Customer address</label><input id="billCustomerAddress" placeholder="Address"></div>
+    <div class="field"><label>Prescription</label><input id="billPrescription" type="file" accept="image/*,.pdf"></div>
+    <input id="billStaffName" type="hidden" value="${esc(currentMember?.full_name||currentUser?.email||"")}">
    </div>
-   <div class="bill-meta">
-    <div class="field"><label>Payment method</label><select id="billPayment"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option><option value="credit">Credit</option></select></div>
-    <div class="field"><label>Payment status</label><input value="Cashier confirmation required" disabled></div>
-   </div>
-   <button class="btn full" style="margin-top:13px;min-height:48px" onclick="completeSale()">Complete & Print Bill</button>
-   <p class="feature-note" style="margin:9px 0 0">For UPI, verify payment in your UPI app before completing the bill. Selecting UPI does not confirm payment automatically.</p>
-  </div>
+   <div class="bill-total-box"><div class="total-row"><span>Items</span><b id="billItemCountSide">${cart.length}</b></div><div class="total-row"><span>Subtotal</span><b id="billSubtotal">₹0.00</b></div><div class="total-row"><span>GST included</span><b id="billGst">₹0.00</b></div>
+    <div class="field" style="margin:8px 0"><label>Bill discount (₹)</label><input id="billDiscount" type="number" min="0" step="0.01" value="0" oninput="renderCart()"><small id="discountLimitNote" class="feature-note"></small></div>
+    <div class="total-row final"><span>Net payable</span><b id="billTotal">₹0.00</b></div></div>
+   <div class="payment-head"><b>Payment mode</b><label class="split-toggle"><input id="splitPaymentToggle" type="checkbox" onchange="toggleSplitPayment()"> Split payment</label></div>
+   <div id="singlePaymentBox" class="bill-meta"><div class="field"><label>Payment method</label><select id="billPayment"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option><option value="credit">Credit</option></select></div></div>
+   <div id="splitPaymentBox" class="split-payment-box hidden"><div class="split-payment-grid"><div class="field"><label>Cash (₹)</label><input id="splitCash" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>UPI (₹)</label><input id="splitUpi" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Card (₹)</label><input id="splitCard" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Credit (₹)</label><input id="splitCredit" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div></div><div class="split-total-line"><span>Allocated</span><b id="splitAllocated">₹0.00</b><span>Balance</span><b id="splitBalance">₹0.00</b></div><small id="splitPaymentHint" class="feature-note">Enter amounts to match the net payable.</small></div>
+   <button class="btn full" style="margin-top:13px;min-height:45px" onclick="completeSale()">Complete Sale · Save & Print (F12)</button>
+   <p class="feature-note" style="margin:8px 0 0">Verify UPI/card payment before completing the bill.</p>
+  </section>
  </div>`;
- renderCart();
+ renderCart();searchBill("");
+}
+function toggleSplitPayment(){
+ const enabled=$("splitPaymentToggle")?.checked;
+ $("singlePaymentBox")?.classList.toggle("hidden",enabled);
+ $("splitPaymentBox")?.classList.toggle("hidden",!enabled);
+ if(enabled){["splitCash","splitUpi","splitCard","splitCredit"].forEach(id=>{if($(id))$(id).value="0";});syncSplitPayment();}
+}
+function syncSplitPayment(){
+ const vals=["splitCash","splitUpi","splitCard","splitCredit"].map(id=>Math.max(0,Number($(id)?.value||0)));
+ const allocated=vals.reduce((a,b)=>a+b,0), due=calculateBill().total, balance=due-allocated;
+ if($("splitAllocated"))$("splitAllocated").textContent=money(allocated);
+ if($("splitBalance"))$("splitBalance").textContent=money(balance);
+ const hint=$("splitPaymentHint");if(hint){hint.textContent=Math.abs(balance)<0.005?"Payment allocation matches the bill total.":balance>0?`Remaining amount to allocate: ${money(balance)}`:`Over-allocated by ${money(Math.abs(balance))}`;hint.style.color=Math.abs(balance)<0.005?"#15966a":"#d84c59";}
+}
+function getBillPayment(){
+ if(!$("splitPaymentToggle")?.checked)return {method:$("billPayment").value,status:$("billPayment").value==="credit"?"pending":"paid"};
+ const keys=["cash","upi","card","credit"],vals=keys.map(k=>Math.max(0,Number($("split"+k[0].toUpperCase()+k.slice(1))?.value||0)));
+ const total=vals.reduce((a,b)=>a+b,0),due=calculateBill().total;
+ if(vals.some(v=>!Number.isFinite(v))||Math.abs(total-due)>0.009)throw new Error(`Split payment amounts must total exactly ${money(due)}.`);
+ if(!vals.some(v=>v>0))throw new Error("Enter at least one split payment amount.");
+ const method="split:"+keys.map((k,i)=>`${k}=${vals[i].toFixed(2)}`).filter((x,i)=>vals[i]>0).join(";");
+ return {method,status:vals[3]>0?"pending":"paid"};
 }
 function searchBill(q){
- const list=products.filter(p=>(p.name+" "+(p.brand||"")+" "+(p.barcode||"")+" "+(p.batch_number||"")).toLowerCase().includes(String(q||"").toLowerCase())).slice(0,30);
- $("billResults").innerHTML=list.map(p=>`
-  <div class="bill-product">
-   <div><strong>${esc(p.name)}</strong><small>${esc(p.brand||"")} · Batch ${esc(p.batch_number||"-")} · Expiry ${esc(p.expiry_date||"-")}</small><small>Stock: <b>${esc(p.stock)} ${esc(p.unit||"PCS")}</b> · Schedule ${esc(p.schedule||p.drug_schedule||"Not set")} · MRP ${money(p.mrp)} · GST ${esc(p.gst_percent||0)}% · Minimum bill price ${money(Number(p.purchase_price||0)*1.2)}</small></div>
-   <div style="text-align:right"><b>${money(p.mrp)}</b><br><small>${esc(p.schedule||p.drug_schedule||"Schedule not set")}</small><br><button class="btn light" data-bill-product onclick="addToCart('${p.id}')">Add item</button></div>
-  </div>`).join("")||`<div class="empty">No matching medicine found in this pharmacy.</div>`;
+ const list=products.filter(p=>(p.name+" "+(p.brand||"")+" "+(p.barcode||"")+" "+(p.batch_number||"")).toLowerCase().includes(String(q||"").toLowerCase())).slice(0,80);
+ $("billResults").innerHTML=list.length?`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Stock</th><th>Unit</th><th>MRP</th><th>GST</th><th></th></tr></thead><tbody>${list.map(p=>`<tr><td><span class="medicine-name">${esc(p.name)}</span><span class="medicine-sub">${esc(p.brand||"")} · Exp ${esc(p.expiry_date||"-")}</span></td><td><b>${esc(p.batch_number||"-")}</b></td><td>${esc(p.stock)}</td><td>${esc(p.unit||"PCS")}</td><td>${money(p.mrp)}</td><td>${esc(p.gst_percent||0)}%</td><td><button class="btn light" data-bill-product onclick="addToCart('${p.id}')">+ Add</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No matching medicine found in this pharmacy.</div>`;
 }
 function staffNameOptions(){
  const names=(window.pharmacyStaff||[]).map(x=>x.full_name).filter(Boolean);
@@ -878,30 +999,28 @@ function changeQty(id,qty){
 function removeCart(id){cart=cart.filter(x=>x.id!==id);renderCart();}
 function calculateBill(){
  // MRP is the billing rate. A minimum 20% profit over purchase cost is mandatory.
- const subtotal=cart.reduce((a,p)=>a+p.qty*Number(p.mrp||0),0);
- const gst=cart.reduce((a,p)=>a+(p.qty*Number(p.mrp||0)*Number(p.gst_percent||0)/(100+Number(p.gst_percent||0))),0);
- const maxDiscount=cart.reduce((a,p)=>a+Math.max(0,p.qty*(Number(p.mrp||0)-Number(p.purchase_price||0)*1.20)),0);
+ const subtotal=cart.reduce((a,p)=>a+p.qty*Number(p.mrp||0)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100),0);
+ const gst=cart.reduce((a,p)=>{const net=p.qty*Number(p.mrp||0)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100);return a+(net*Number(p.gst_percent||0)/(100+Number(p.gst_percent||0)));},0);
+ const maxDiscount=cart.reduce((a,p)=>a+Math.max(0,p.qty*(Number(p.mrp||0)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100)-Number(p.purchase_price||0)*1.20)),0);
  const requestedDiscount=Math.max(0,Number($("billDiscount")?.value||0));
  const discount=Math.min(requestedDiscount,maxDiscount);
  return {subtotal,gst,discount,maxDiscount,total:Math.max(0,subtotal-discount),discountRejected:requestedDiscount>maxDiscount+0.001};
 }
 function renderCart(){
  if(!$("cartItems"))return;
- $("cartItems").innerHTML=cart.map(p=>`
- <div class="cart-line">
- <div><b>${esc(p.name)}</b><br><small>${money(p.mrp)} each</small></div>
- <input type="number" min="1" max="${p.stock}" value="${p.qty}" onchange="changeQty('${p.id}',this.value)">
- <b>${money(p.qty*p.mrp)}</b>
- <button class="close" onclick="removeCart('${p.id}')">×</button>
- </div>`).join("")||`<div class="empty">Add medicines to this bill.</div>`;
- const t=calculateBill();
- const discountInput=$("billDiscount");
+ const rows=cart.map(p=>`<tr><td><b>${esc(p.name)}</b><small class="medicine-sub">${esc(p.brand||"")} · ${esc(p.unit||"PCS")}</small></td><td><input aria-label="Batch number" value="${esc(p.batch_number||"")}" readonly title="Batch from inventory" style="min-width:90px;width:100%;background:#f7f8fb;border:1px solid var(--border);padding:7px;border-radius:6px"></td><td><select aria-label="Unit" onchange="changeCartUnit('${p.id}',this.value)"><option value="${esc(p.unit||"PCS")}">${esc(p.unit||"PCS")}</option><option value="Strip">Strip</option><option value="Tablet">Tablet</option><option value="Bottle">Bottle</option></select></td><td><input aria-label="Quantity" type="number" min="1" max="${p.stock}" value="${p.qty}" onchange="changeQty('${p.id}',this.value)"></td><td><input aria-label="Rate" type="number" min="0" step=".01" value="${Number(p.mrp||0)}" onchange="changeCartRate('${p.id}',this.value)"></td><td><input aria-label="Discount percent" type="number" min="0" max="100" step=".1" value="${Number(p.discount_pct||0)}" onchange="setCartDiscount('${p.id}',this.value)"></td><td><b>${money(p.qty*p.mrp*(1-Number(p.discount_pct||0)/100))}</b> <button class="close" onclick="removeCart('${p.id}')" aria-label="Remove">×</button></td></tr>`).join("");
+ $("cartItems").innerHTML=`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Unit</th><th>Qty</th><th>Rate</th><th>Disc %</th><th>Amount</th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="empty">Add medicines to this bill.</td></tr>`}</tbody></table></div>`;
+ const t=calculateBill();const discountInput=$("billDiscount");
  if(discountInput && t.discountRejected){discountInput.value=t.maxDiscount.toFixed(2);notify("Discount reduced: minimum 20% profit on purchase cost must be maintained.");}
- if($("discountLimitNote"))$("discountLimitNote").textContent=`Maximum permitted discount: ${money(t.maxDiscount)}. Minimum 20% profit on purchase cost is protected.`;
- $("billSubtotal").textContent=money(t.subtotal);
- $("billGst").textContent=money(t.gst);
- $("billTotal").textContent=money(t.total);
+ if($("discountLimitNote"))$("discountLimitNote").textContent=`Maximum permitted discount: ${money(t.maxDiscount)}.`;
+ if($("billSubtotal"))$("billSubtotal").textContent=money(t.subtotal);if($("billGst"))$("billGst").textContent=money(t.gst);if($("billTotal"))$("billTotal").textContent=money(t.total);
+ if($("billItemCount"))$("billItemCount").textContent=`${cart.length} items · Edit quantity / rate / discount`;if($("billItemCountSide"))$("billItemCountSide").textContent=cart.length;
+ if($("splitPaymentToggle")?.checked)syncSplitPayment();
 }
+function changeCartUnit(id,unit){const item=cart.find(x=>x.id===id);if(item){item.unit=unit;renderCart();}}
+function changeCartRate(id,rate){const item=cart.find(x=>x.id===id);rate=Number(rate);if(!item||!Number.isFinite(rate)||rate<0)return notify("Enter a valid rate.");if(rate+0.001<Number(item.purchase_price||0)*1.2)return notify("Rate must preserve the minimum 20% purchase-cost margin.");item.mrp=rate;renderCart();}
+function setCartDiscount(id,pct){const item=cart.find(x=>x.id===id);pct=Math.max(0,Math.min(100,Number(pct)||0));if(!item)return;const proposed=Number(item.mrp||0)*(1-pct/100);const min=Number(item.purchase_price||0)*1.2;if(proposed<min)return notify("Discount exceeds the minimum profit protection.");item.discount_pct=pct;renderCart();}
+ 
 async function completeSale(){
  if(!cart.length)return notify("Add at least one medicine.");
  const t=calculateBill();
@@ -913,8 +1032,9 @@ async function completeSale(){
   if(!p||item.qty>Number(p.stock))return notify("Stock changed. Refresh and try again.");
  }
  const invoice="SM-"+Date.now();
- const payment=$("billPayment").value;
- try{
+ let paymentInfo;
+ try{paymentInfo=getBillPayment();
+  const payment=paymentInfo.method;
   let customerId=window.billCustomerId||null;
   const phone=$("billPhone")?.value.trim()||"",customerName=$("billCustomerName")?.value.trim()||"";
   if(phone||customerName){
@@ -936,7 +1056,7 @@ async function completeSale(){
    gst_amount:t.gst,
    total:t.total,
    payment_method:payment,
-   payment_status:payment==="credit"?"pending":"paid",
+   payment_status:paymentInfo.status,
    created_by:currentUser.id
   };
   const {data:created,error}=await sb.from("ms_sales").insert(sale).select().single();
@@ -946,7 +1066,7 @@ async function completeSale(){
    product_name:p.name,batch_number:p.batch_number,
    quantity:p.qty,unit_price:p.mrp,
    gst_percent:p.gst_percent,
-   line_total:p.qty*p.mrp
+   line_total:p.qty*p.mrp*(1-Number(p.discount_pct||0)/100)
   }));
   const {error:itemError}=await sb.from("ms_sale_items").insert(lines);
   if(itemError)throw itemError;
@@ -958,15 +1078,45 @@ async function completeSale(){
     .eq("id",p.id).eq("pharmacy_id",pharmacyId());
    if(stockError)throw stockError;
   }
+  window.lastCompletedBill={sale:created,items:cart.map(x=>({...x})),totals:t,customerPhone:phone,customerName:customerName||"Customer"};
   printInvoice(created,cart,t);
   cart=[];
   await refreshData();
   renderBilling();
+  showLastBillActions();
   notify("Invoice saved successfully.");
  }catch(err){
   notify("Billing error: "+err.message+" Please check the saved bill before retrying.");
  }
 }
+function buildBillPdf(bill){
+ const lib=window.jspdf;if(!lib?.jsPDF)throw new Error("PDF library did not load. Check internet connection and retry.");
+ const {sale,items,totals}=bill;const size=pharmacySettings.print_paper_size||"80mm";
+ const doc=new lib.jsPDF({orientation:"portrait",unit:"mm",format:size==="A4"?"a4":[80,240]});
+ const pageW=doc.internal.pageSize.getWidth(),margin=size==="A4"?14:5;let y=12;
+ const addLine=(label,value)=>{doc.setFontSize(8);doc.text(String(label),margin,y);doc.text(String(value||""),pageW-margin,y,{align:"right"});y+=4.5;};
+ const logo=pharmacySettings.logo_data_url;
+ if(logo){try{doc.addImage(logo,logo.startsWith("data:image/png")?"PNG":"JPEG",pageW/2-10,y,20,14);y+=17;}catch(e){}}
+ doc.setFont("helvetica","bold");doc.setFontSize(size==="A4"?16:11);doc.text(String(currentPharmacy?.pharmacy_name||pharmacySettings.print_header||"Pharmacy"),pageW/2,y,{align:"center"});y+=5;
+ doc.setFont("helvetica","normal");doc.setFontSize(8);
+ [pharmacySettings.bill_print_address||currentPharmacy?.address, currentPharmacy?.phone, pharmacySettings.gst_number&&("GSTIN: "+pharmacySettings.gst_number),pharmacySettings.drug_license&&("Drug Licence: "+pharmacySettings.drug_license),pharmacySettings.bill_email].filter(Boolean).forEach(v=>{doc.text(String(v),pageW/2,y,{align:"center",maxWidth:pageW-2*margin});y+=4;});
+ doc.line(margin,y,pageW-margin,y);y+=5;
+ addLine("Invoice",sale.invoice_number);addLine("Date",new Date(sale.created_at||Date.now()).toLocaleString());addLine("Customer",bill.customerName||sale.customer_name||"Walk-in");addLine("Mobile",bill.customerPhone||sale.customer_phone||"-");addLine("Pharmacist",sale.pharmacist_name||"-");addLine("Billing staff",sale.billing_staff_name||"-");
+ const body=items.map(p=>[String(p.name),String(p.batch_number||"-"),String(p.qty),Number(p.mrp||0).toFixed(2),(Number(p.qty||0)*Number(p.mrp||0)*(1-Number(p.discount_pct||0)/100)).toFixed(2)]);
+ if(doc.autoTable){doc.autoTable({startY:y,head:[["Medicine","Batch","Qty","Rate","Amount"]],body,theme:"grid",styles:{fontSize:size==="A4"?8:6,cellPadding:1.4},headStyles:{fontSize:size==="A4"?8:6},margin:{left:margin,right:margin}});y=doc.lastAutoTable.finalY+5;}else{body.forEach(r=>{doc.setFontSize(6);doc.text(r.join(" | "),margin,y,{maxWidth:pageW-2*margin});y+=5;});}
+ addLine("Subtotal",money(totals.subtotal));addLine("Discount",money(totals.discount));addLine("GST included",money(totals.gst));doc.setFont("helvetica","bold");addLine("NET PAYABLE",money(totals.total));doc.setFont("helvetica","normal");addLine("Payment",sale.payment_method||"-");addLine("Status",sale.payment_status||"-");
+ if(pharmacySettings.upi_id)addLine("UPI",pharmacySettings.upi_id);
+ y+=3;doc.setFontSize(8);doc.text(String(pharmacySettings.print_footer||"Thank you. Visit again!"),pageW/2,y,{align:"center",maxWidth:pageW-2*margin});
+ if(pharmacySettings.payment_qr_data_url){try{const q=pharmacySettings.payment_qr_data_url;doc.addImage(q,q.startsWith("data:image/png")?"PNG":"JPEG",pageW/2-10,y+4,20,20);}catch(e){}}
+ return doc;
+}
+function showLastBillActions(){const old=$("lastBillActions");if(old)old.remove();if(!window.lastCompletedBill)return;const host=document.createElement("div");host.id="lastBillActions";host.className="panel";host.innerHTML=`<b>Last invoice: ${esc(window.lastCompletedBill.sale.invoice_number)}</b><div class="feature-tools"><button class="btn light" onclick="downloadLastBillPdf()">Download bill PDF</button><button class="btn" onclick="shareLastBillWhatsApp()">WhatsApp bill to customer</button></div><small class="feature-note">WhatsApp sharing uses your phone's share sheet when PDF attachment sharing is supported. Otherwise download the PDF and attach it in WhatsApp.</small>`;$("pageContent").prepend(host);}
+function downloadLastBillPdf(){try{const b=window.lastCompletedBill;if(!b)return notify("No completed bill available.");buildBillPdf(b).save((b.sale.invoice_number||"invoice")+".pdf");}catch(e){notify(e.message||"PDF could not be created.");}}
+async function shareLastBillWhatsApp(){try{const b=window.lastCompletedBill;if(!b)return notify("No completed bill available.");const doc=buildBillPdf(b),blob=doc.output("blob"),file=new File([blob],(b.sale.invoice_number||"invoice")+".pdf",{type:"application/pdf"});const phone=String(b.customerPhone||"").replace(/\D/g,"");const textMsg=`Hello ${b.customerName||"Customer"}, your pharmacy bill ${b.sale.invoice_number} total ${money(b.totals.total)} is ready.`;
+ if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"Pharmacy bill",text:textMsg});return;}
+ doc.save(file.name);const digits=phone.length===10?"91"+phone:phone;const url="https://wa.me/"+(digits||"")+"?text="+encodeURIComponent(textMsg+(digits?"":" Please find the attached PDF bill."));window.open(url,"_blank");notify("PDF downloaded. Attach it to the WhatsApp message if it did not attach automatically.");
+ }catch(e){if(e.name!=="AbortError")notify("WhatsApp sharing failed: "+(e.message||e));}}
+ 
 function printInvoice(sale,items,t){
  const w=window.open("","_blank","width=700,height=800");
  if(!w)return notify("Allow pop-ups to print the invoice.");
@@ -976,20 +1126,21 @@ function printInvoice(sale,items,t){
  const logo=pharmacySettings.logo_data_url?`<img src="${pharmacySettings.logo_data_url}" style="max-width:100px;max-height:65px;display:block;margin:0 auto 6px">`:"";
  const footer=pharmacySettings.print_footer||"Thank you. Visit again!";
  const upi=pharmacySettings.upi_id?`<p style="text-align:center;font-size:11px">UPI: ${esc(pharmacySettings.upi_id)}</p>`:"";
+ const billQr=pharmacySettings.payment_qr_data_url?`<img src="${pharmacySettings.payment_qr_data_url}" style="width:105px;height:105px;object-fit:contain;display:block;margin:8px auto">`:"";
  w.document.write(`<!DOCTYPE html><html><head><title>${esc(sale.invoice_number)}</title>
  <style>@page{size:${width} auto;margin:5mm}body{font-family:Arial;padding:8px;color:#222;max-width:${width==="210mm"?"190mm":width};margin:auto;font-size:12px}h1{text-align:center;font-size:18px;margin:4px}p{text-align:center;margin:5px 0}table{width:100%;border-collapse:collapse;margin-top:12px}td,th{border-bottom:1px solid #ddd;padding:6px 3px;text-align:left;font-size:11px}.right{text-align:right}.total{font-size:17px;font-weight:bold}</style>
- </head><body>${logo}<h1>${esc(header)}</h1><p>${esc(currentPharmacy?.address||"")}</p><p>${esc(currentPharmacy?.phone||"")}</p>
- <hr><p>Invoice: ${esc(sale.invoice_number)}<br>${new Date(sale.created_at).toLocaleString()}</p><p style="text-align:left">Customer: ${esc($("billCustomerName")?.value||"Walk-in")} · Phone: ${esc($("billPhone")?.value||"-")}<br>Address: ${esc($("billCustomerAddress")?.value||"-")}<br>Doctor: ${esc($("billDoctor")?.value||"-")}<br>Pharmacist: ${esc($("billPharmacist")?.value||"-")}<br>Billing staff: ${esc(currentMember?.full_name||currentUser.email)}</p>
- <table><tr><th>Medicine</th><th>Qty</th><th>Rate</th><th class="right">Amount</th></tr>
- ${items.map(p=>`<tr><td>${esc(p.name)}</td><td>${p.qty}</td><td>${money(p.mrp)}</td><td class="right">${money(p.qty*p.mrp)}</td></tr>`).join("")}
+ </head><body>${logo}<h1>${esc(header)}</h1><p>${esc(pharmacySettings.bill_print_address||currentPharmacy?.address||"")}</p><p>${esc(currentPharmacy?.phone||"")}</p>
+ <p>${esc(pharmacySettings.gst_number?"GSTIN: "+pharmacySettings.gst_number:"")} ${esc(pharmacySettings.drug_license?" · DL: "+pharmacySettings.drug_license:"")}</p><hr><p>Invoice: ${esc(sale.invoice_number)}<br>${new Date(sale.created_at).toLocaleString()}</p><p style="text-align:left">Customer: ${esc($("billCustomerName")?.value||"Walk-in")} · Phone: ${esc($("billPhone")?.value||"-")}<br>Address: ${esc($("billCustomerAddress")?.value||"-")}<br>Doctor: ${esc($("billDoctor")?.value||"-")}<br>Pharmacist: ${esc($("billPharmacist")?.value||"-")}<br>Billing staff: ${esc(currentMember?.full_name||currentUser.email)}</p>
+ <table><tr><th>Medicine</th><th>Batch</th><th>Qty</th><th>Rate</th><th class="right">Amount</th></tr>
+ ${items.map(p=>`<tr><td>${esc(p.name)}${pharmacySettings.show_batch_expiry===false||pharmacySettings.show_batch_expiry==="no"?"":`<br><small>Exp: ${esc(p.expiry_date||"-")}</small>`}${Number(p.discount_pct||0)>0?`<br><small>Discount ${Number(p.discount_pct).toFixed(1)}%</small>`:""}</td><td>${esc(p.batch_number||"-")}</td><td>${p.qty}</td><td>${money(p.mrp)}</td><td class="right">${money(p.qty*p.mrp*(1-Number(p.discount_pct||0)/100))}</td></tr>`).join("")}
  </table><p class="right">Subtotal: ${money(t.subtotal)}<br>Discount: ${money(t.discount)}<br>GST included: ${money(t.gst)}</p>
- <p class="right total">Total: ${money(t.total)}</p>${upi}<hr><p>${esc(footer)}</p>
+ <p class="right total">Total: ${money(t.total)}</p><p style="text-align:left;font-size:11px">Payment: ${esc(sale.payment_method||"-")}<br>Status: ${esc(sale.payment_status||"-")}</p>${upi}${billQr}${pharmacySettings.bill_terms?`<hr><p style="text-align:left;font-size:10px">${esc(pharmacySettings.bill_terms)}</p>`:""}<hr><p>${esc(footer)}</p>
  <script>window.onload=()=>window.print();<\/script></body></html>`);
  w.document.close();
 }
  
 let activeQrScanner = null;
-function renderFeatureSetup(title,description){$("pageContent").innerHTML=`${pageHead(title,"Advanced pharmacy workflow")}<div class="panel"><div class="notice"><b>Database setup required</b><br>${esc(description)}</div><p class="feature-note">This option is included in the existing Subha Medical interface. It is not saving data to browser-only storage or to the old ERP schema.</p></div>`;}
+function renderFeatureSetup(title,description){$("pageContent").innerHTML=`${pageHead(title,"Advanced pharmacy workflow")}<div class="panel"><div class="notice"><b>Database setup required</b><br>${esc(description)}</div><p class="feature-note">This feature is not active yet. Complete the database setup shown by your administrator before saving records.</p></div>`;}
 function renderScanner(){$("pageContent").innerHTML=`${pageHead("Barcode Scanner","Scan a medicine barcode or enter it manually")}<div class="panel"><div class="field"><label>Barcode / product code</label><input id="scanBarcodeInput" class="feature-input" placeholder="Scan with a USB scanner or type barcode" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupScannedBarcode(this.value)}"></div><div class="feature-tools"><button class="btn" onclick="lookupScannedBarcode(document.getElementById('scanBarcodeInput').value)">Find medicine</button><button class="btn light" onclick="startCameraScanner()">Open camera scanner</button><button class="btn danger" onclick="stopCameraScanner()">Stop camera</button></div><div id="qr-reader" style="max-width:420px;width:100%;margin:12px auto"></div><div id="scanResult" class="feature-note">Camera scanning requires browser camera permission and HTTPS.</div></div><div class="panel"><h3>Barcode matches</h3><div id="scanMatches" class="feature-note">Enter or scan a barcode to search this pharmacy's inventory.</div></div>`;}
 function lookupScannedBarcode(code){code=String(code||"").trim();if(!code)return notify("Enter or scan a barcode.");const found=products.filter(p=>String(p.barcode||"").toLowerCase()===code.toLowerCase());$("scanMatches").innerHTML=found.length?found.map(p=>`<div class="total-row"><span><b>${esc(p.name)}</b><br><small>${esc(p.brand||"")} · Batch ${esc(p.batch_number||"-")} · Stock ${esc(p.stock)}</small></span><span><b>${money(p.mrp)}</b><br><button class="btn light" onclick="scannerAddToBill('${p.id}')">Add to bill</button></span></div>`).join(""):`<div class="empty">No medicine found for barcode ${esc(code)}.</div>`;}
 function scannerAddToBill(id){addToCart(id);notify("Medicine added to current bill.");}
@@ -1152,6 +1303,7 @@ function renderReports(){
    <button class="btn light" onclick="runReport('schedule')">Schedule register</button>
    <button class="btn light" onclick="runReport('purchases')">Purchase history</button>
    <button class="btn light" onclick="runReport('audit')">Stock audit history</button>
+   <button class="btn light" onclick="runReport('daily_audit')">Daily audit report</button>
   </div>
  </div>
  <div class="panel"><div class="panel-head"><h3 id="reportTitle">Sales register</h3><span id="reportCount" class="badge">0 rows</span></div><div id="reportOutput" class="table-wrap"><div class="empty">Choose a report above.</div></div></div>`;
@@ -1220,6 +1372,10 @@ async function runReport(type){
    const {data,error}=await sb.from("ms_audit_logs").select("action,details,created_at,user_id").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(500);if(error)throw error;
    return setReport("Stock audit / activity history",["Date","Action","User","Details"],(data||[]).filter(x=>reportDateOk(x.created_at)).map(x=>[new Date(x.created_at).toLocaleString(),x.action,x.user_id,JSON.stringify(x.details||{})]));
   }
+  if(type==="daily_audit"){
+   const {data,error}=await sb.from("ms_audit_logs").select("details,created_at,user_id").eq("pharmacy_id",pharmacyId()).eq("action","daily_audit").order("created_at",{ascending:false}).limit(500);if(error)throw error;
+   return setReport("Daily pharmacy audit",["Audit date","Time","Responsible staff","Completed","Checklist","Notes"],(data||[]).filter(x=>reportDateOk(x.details?.audit_date||x.created_at)).map(x=>{const d=x.details||{};return [d.audit_date||new Date(x.created_at).toLocaleDateString(),d.audit_time||"",d.responsible_name||x.user_id,(d.completed_count||0)+"/"+(d.total_count||7),(d.checklist||[]).filter(c=>c.completed).map(c=>c.label).join("; "),d.notes||""];}));
+  }
  }catch(e){$("reportOutput").innerHTML=`<div class="notice">Could not load report: ${esc(e.message)}</div>`;}
 }
 function exportActiveReport(){
@@ -1230,21 +1386,40 @@ function exportActiveReport(){
 function printActiveReport(){
  const host=$("reportOutput");if(!host)return;
  const w=window.open("","_blank","width=900,height=700");if(!w)return notify("Allow pop-ups to print reports.");
- w.document.write("<html><head><title>"+esc(activeReportTitle)+"</title><style>@page{size:"+((pharmacySettings.print_paper_size==="A4")?"A4":"A4")+";margin:12mm}body{font-family:Arial;padding:10px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:11px}h2{text-align:center}</style></head><body><h2>"+esc(pharmacySettings.print_header||"SUBHA MEDICAL")+" — "+esc(activeReportTitle)+"</h2>"+host.innerHTML+"<script>window.onload=()=>window.print();<\\/script></body></html>");w.document.close();
+ w.document.write("<html><head><title>"+esc(activeReportTitle)+"</title><style>@page{size:"+((pharmacySettings.print_paper_size==="A4")?"A4":"A4")+";margin:12mm}body{font-family:Arial;padding:10px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:11px}h2{text-align:center}\n</style></head><body><h2>"+esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")+" — "+esc(activeReportTitle)+"</h2>"+host.innerHTML+"<script>window.onload=()=>window.print();<\\/script></body></html>");w.document.close();
 }
 async function renderStaff(){
  window.pharmacyStaff=[];
- if(!canManage()){notify("Owner / Admin permission required.");return navigate("dashboard");}
+ const role=currentMember?.role;
+ const managerView=role==="manager";
+ if(!canManage()&&!managerView){notify("Staff page access is limited to Owner, Admin and Manager.");return navigate("dashboard");}
  const pid=pharmacyId();
- $("pageContent").innerHTML=`${pageHead("Staff Management","Owner controls staff accounts, roles and access")}
- <div class="grid"><div class="stat"><small>Your role</small><h2 style="font-size:19px">${esc(currentMember.role)}</h2></div><div class="stat"><small>Pharmacy code</small><h2 style="font-size:19px">${esc(currentPharmacy?.pharmacy_code||"-")}</h2></div></div>
- <div class="panel"><div class="panel-head"><h3>Pharmacy staff</h3><button class="btn" onclick="openStaffCreate()">+ Add Staff</button></div><div id="staffRows" class="empty">Loading staff...</div></div>
- <div class="notice" style="margin-top:15px">Staff accounts are created securely through the Supabase Edge Function. The browser never receives an admin/service-role key.</div>`;
+ $("pageContent").innerHTML=`${pageHead("Staff Management","Staff directory, access roles and daily pharmacy audit")}
+ <div class="grid"><div class="stat"><small>Your role</small><h2 style="font-size:19px">${esc(role)}</h2></div><div class="stat"><small>Pharmacy code</small><h2 style="font-size:19px">${esc(currentPharmacy?.pharmacy_code||"-")}</h2></div></div>
+ <div class="panel"><div class="panel-head"><h3>Daily Audit</h3><div class="actions"><button class="btn" onclick="openDailyAudit()">+ Start Daily Audit</button><button class="btn light" onclick="loadDailyAuditHistory()">Audit History</button></div></div><div id="dailyAuditHistory" class="feature-note">Complete the daily checks and save a dated audit record for this pharmacy.</div></div>
+ <div class="panel"><div class="panel-head"><h3>Pharmacy staff</h3>${canManage()?`<button class="btn" onclick="openStaffCreate()">+ Add Staff</button>`:`<span class="badge">View only</span>`}</div><div id="staffRows" class="empty">Loading staff...</div></div>
+ <div class="notice" style="margin-top:15px">Staff accounts are created securely through the Supabase Edge Function. The browser never receives an admin/service-role key. Manager access is limited to viewing staff and recording daily audits.</div>`;
  const {data,error}=await sb.from("ms_members").select("id,user_id,role,permissions,is_active,created_at,full_name,phone,staff_code").eq("pharmacy_id",pid).order("created_at",{ascending:true});
  if(error){$("staffRows").innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
- $("staffRows").innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Staff member</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead><tbody>${data.map(m=>`<tr><td><b>${esc(m.full_name|| (m.user_id===currentUser.id?"Current account":String(m.user_id).slice(0,8)+"…"))}</b><br><small>${esc(m.phone||"")}</small></td><td><select ${m.user_id===currentUser.id||currentMember.role!=="owner"?"disabled":""} onchange="changeStaffRole('${m.id}',this.value)"><option value="owner" ${m.role==="owner"?"selected":""}>Owner</option><option value="admin" ${m.role==="admin"?"selected":""}>Admin</option><option value="pharmacist" ${m.role==="pharmacist"?"selected":""}>Pharmacist</option><option value="cashier" ${m.role==="cashier"?"selected":""}>Cashier</option></select></td><td><span class="badge ${m.is_active?"green":"red"}">${m.is_active?"Active":"Inactive"}</span></td><td><button class="btn light" onclick="showStaffPermissions('${m.id}')">View</button></td><td><div class="actions"><button class="btn light" onclick="editStaff('${m.id}')">Edit</button>${m.user_id===currentUser.id?"You":`<button class="btn ${m.is_active?"danger":"light"}" onclick="toggleStaff('${m.id}',${!m.is_active})">${m.is_active?"Deactivate":"Activate"}</button>`}</div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No staff accounts found for this pharmacy.</div>`;
+ $("staffRows").innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Staff member</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead><tbody>${data.map(m=>`<tr><td><b>${esc(m.full_name|| (m.user_id===currentUser.id?"Current account":String(m.user_id).slice(0,8)+"…"))}</b><br><small>${esc(m.phone||"")}</small></td><td><select ${!canManage()||m.user_id===currentUser.id||currentMember.role!=="owner"?"disabled":""} onchange="changeStaffRole('${m.id}',this.value)"><option value="owner" ${m.role==="owner"?"selected":""}>Owner</option><option value="admin" ${m.role==="admin"?"selected":""}>Admin</option><option value="manager" ${m.role==="manager"?"selected":""}>Manager</option><option value="pharmacist" ${m.role==="pharmacist"?"selected":""}>Pharmacist</option><option value="cashier" ${m.role==="cashier"?"selected":""}>Cashier</option></select></td><td><span class="badge ${m.is_active?"green":"red"}">${m.is_active?"Active":"Inactive"}</span></td><td><button class="btn light" onclick="showStaffPermissions('${m.id}')">View</button></td><td><div class="actions">${canManage()?`<button class="btn light" onclick="editStaff('${m.id}')">Edit</button>`:""}${m.user_id===currentUser.id?"You":canManage()?`<button class="btn ${m.is_active?"danger":"light"}" onclick="toggleStaff('${m.id}',${!m.is_active})">${m.is_active?"Deactivate":"Activate"}</button>`:"View only"}</div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No staff accounts found for this pharmacy.</div>`;
  window._staffCache=data||[];
+ loadDailyAuditHistory();
 }
+function openDailyAudit(){
+ if(!["owner","admin","manager","super_admin"].includes(currentMember?.role))return notify("Daily Audit access required.");
+ const checks=["Cash / UPI / card reconciliation","Daily sales and invoice totals","Sales returns and refunds","Stock discrepancies","Expiry and near-expiry medicines","Pending GRNs and purchase returns","Staff activity and attendance notes"];
+ const staff=(window._staffCache||[]).filter(x=>x.is_active);
+ $("modalTitle").textContent="Daily Pharmacy Audit";
+ $("modalBody").innerHTML=`<form id="dailyAuditForm"><div class="form-grid"><div class="field"><label>Audit date</label><input name="audit_date" type="date" required value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Audit time</label><input name="audit_time" type="time" required value="${new Date().toTimeString().slice(0,5)}"></div><div class="field"><label>Responsible staff member</label><select name="responsible_staff" required><option value="">Select staff</option>${staff.map(m=>`<option value="${esc(m.id)}" ${m.user_id===currentUser.id?"selected":""}>${esc(m.full_name||m.phone||m.role)} · ${esc(m.role)}</option>`).join("")}</select></div></div><h4 style="margin:18px 0 8px">Daily checklist</h4><div class="audit-checklist">${checks.map((c,i)=>`<label class="audit-check"><input type="checkbox" name="check_${i}"><span>${esc(c)}</span></label>`).join("")}</div><div class="field"><label>Audit notes / exceptions</label><textarea name="notes" rows="4" class="feature-input" placeholder="Record cash difference, stock issue, pending item or staff note..."></textarea></div><p class="feature-note">The audit saves a record only. It does not change stock, sales, returns or cash balances.</p><button class="btn full" type="submit">Save Daily Audit</button></form>`;
+ $("dailyAuditForm").onsubmit=saveDailyAudit;openModal();
+}
+async function saveDailyAudit(e){
+ e.preventDefault();const form=e.target,fd=new FormData(form);const checklist=["Cash / UPI / card reconciliation","Daily sales and invoice totals","Sales returns and refunds","Stock discrepancies","Expiry and near-expiry medicines","Pending GRNs and purchase returns","Staff activity and attendance notes"].map((label,i)=>({label,completed:form.elements["check_"+i].checked}));
+ const payload={audit_date:fd.get("audit_date"),audit_time:fd.get("audit_time"),responsible_staff_id:fd.get("responsible_staff"),responsible_user_id:currentUser.id,responsible_name:currentMember?.full_name||currentUser.email,checklist,completed_count:checklist.filter(x=>x.completed).length,total_count:checklist.length,notes:String(fd.get("notes")||"").trim()};
+ try{const {error}=await sb.from("ms_audit_logs").insert({pharmacy_id:pharmacyId(),user_id:currentUser.id,action:"daily_audit",details:payload});if(error)throw error;closeModal();notify("Daily audit saved successfully.");loadDailyAuditHistory();}catch(err){notify("Daily audit could not be saved: "+err.message);}
+}
+async function loadDailyAuditHistory(){const host=$("dailyAuditHistory");if(!host)return;host.textContent="Loading audit history...";try{const {data,error}=await sb.from("ms_audit_logs").select("details,created_at,user_id").eq("pharmacy_id",pharmacyId()).eq("action","daily_audit").order("created_at",{ascending:false}).limit(20);if(error)throw error;host.innerHTML=data?.length?data.map(a=>{const d=a.details||{},done=Number(d.completed_count||0),total=Number(d.total_count||7);return `<div class="audit-history-item"><b>${esc(d.audit_date||new Date(a.created_at).toLocaleDateString())} · ${esc(d.responsible_name||"Staff")}</b><br><small>${esc(d.audit_time||new Date(a.created_at).toLocaleTimeString())} · ${done}/${total} checks completed</small>${d.notes?`<p style="margin:5px 0 0">${esc(d.notes)}</p>`:""}</div>`;}).join(""):`No daily audit records yet.`;}catch(err){host.textContent="Audit history unavailable: "+err.message;}}
+ 
 function editStaff(id){
  const m=(window._staffCache||[]).find(x=>x.id===id);if(!m)return;
  if(!canManage())return notify("Owner/Admin access required.");
@@ -1254,14 +1429,14 @@ function editStaff(id){
  openModal();
 }
 function openStaffCreate(){
- if(currentMember.role!=="owner"&&currentMember.role!=="admin")return notify("Owner/Admin access required.");
+ if(!canManage())return notify("Owner/Admin access required.");
  $("modalTitle").textContent="Create pharmacy staff account";
- $("modalBody").innerHTML=`<form id="staffCreateForm"><div class="notice" style="margin-bottom:14px">Creates a separate login for this pharmacy only. Requires the deployed medical-staff-admin- Edge Function.</div>${field("Staff full name","name","","required")}${field("Staff email","email","","required","email")}${field("Temporary password (minimum 8 characters)","password","","required","password")}<div class="field"><label>Role</label><select name="role"><option value="admin">Admin</option><option value="pharmacist">Pharmacist</option><option value="cashier">Cashier</option></select></div><button class="btn full">Create Staff Account</button></form>`;
+ $("modalBody").innerHTML=`<form id="staffCreateForm"><div class="notice" style="margin-bottom:14px">Creates a separate login for this pharmacy only. Requires the deployed medical-staff-admin- Edge Function.</div>${field("Staff full name","name","","required")}${field("Staff email","email","","required","email")}${field("Temporary password (minimum 8 characters)","password","","required","password")}<div class="field"><label>Role</label><select name="role"><option value="admin">Admin</option><option value="manager">Manager</option><option value="pharmacist">Pharmacist</option><option value="cashier">Cashier</option></select></div><button class="btn full">Create Staff Account</button></form>`;
  $("staffCreateForm").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));try{const {data,error}=await sb.functions.invoke("medical-staff-admin-",{body:{action:"create_staff",pharmacy_id:pharmacyId(),name:d.name,email:d.email,password:d.password,role:d.role}});if(error)throw error;if(data?.error)throw new Error(data.error);closeModal();notify("Staff account created.");renderStaff();}catch(err){notify("Staff creation unavailable: "+err.message);}};
  openModal();
 }
 async function toggleStaff(id,active){if(!confirm((active?"Activate":"Deactivate")+" this staff account?"))return;const {error}=await sb.from("ms_members").update({is_active:active}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Staff status updated.");renderStaff();}
-async function changeStaffRole(id,role){if(!["admin","pharmacist","cashier"].includes(role))return notify("Only owner can assign this role.");const {error}=await sb.from("ms_members").update({role}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Staff role updated.");}
+async function changeStaffRole(id,role){if(currentMember?.role!=="owner"||!["admin","manager","pharmacist","cashier"].includes(role))return notify("Only the pharmacy owner can assign staff roles.");const {error}=await sb.from("ms_members").update({role}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Staff role updated.");}
 function showStaffPermissions(id){const m=(window._staffCache||[]).find(x=>x.id===id);if(!m)return;const perms=m.permissions||{};$("modalTitle").textContent="Staff permissions";$("modalBody").innerHTML=`<p><b>Role:</b> ${esc(m.role)}</p><pre style="white-space:pre-wrap;background:#f6f5fa;padding:12px;border-radius:8px;font-size:12px">${esc(JSON.stringify(perms,null,2))}</pre><p style="font-size:12px;color:var(--muted)">Permissions are displayed from the database. Permission editing depends on the installed RLS policy and role-permission rules.</p>`;openModal();}
 async function renderPharmacies(){
  if(!isSuper()){notify("Super Admin access required.");return navigate("dashboard");}
@@ -1290,22 +1465,29 @@ async function setApproval(id,status){
  renderPharmacies();
 }
 async function renderSettings(){
- const p=currentPharmacy||{},owner=canManage()&&!isSuper();
- $("pageContent").innerHTML=`${pageHead("Pharmacy Settings","Owner/Admin controls — pharmacists cannot change UPI or print configuration")}
- <div class="panel"><h3>Pharmacy profile</h3><form id="pharmacySettingsForm"><div class="form-grid">${field("Pharmacy name","pharmacy_name",p.pharmacy_name||"",owner?"required":"disabled")}${field("Owner name","owner_name",p.owner_name||"",owner?"required":"disabled")}${field("Phone number","phone",p.phone||"",owner?"":"disabled")}${field("Address","address",p.address||"",owner?"":"disabled")}</div><div class="total-row"><span>Customer ID / Pharmacy Code</span><b>${esc(p.pharmacy_code||"Super Admin")}</b></div><div class="total-row"><span>Approval status</span><b>${esc(p.approval_status||"-")}</b></div>${owner?'<button class="btn" style="margin-top:14px">Save Pharmacy Profile</button>':''}</form></div>
- <div class="panel"><h3>UPI payment setup & QR generator</h3><p class="feature-note">Only Owner/Admin can set or change the UPI ID. Pharmacist and cashier accounts cannot edit these fields.</p>
- <form id="upiSettingsForm"><div class="form-grid">${field("UPI ID (VPA)","upi_id",pharmacySettings.upi_id||"",owner?"":"disabled")}${field("UPI display / account name","upi_name",pharmacySettings.upi_name||p.pharmacy_name||"",owner?"":"disabled")}</div><div class="feature-tools">${owner?'<button class="btn">Save UPI Setup</button>':''}<button type="button" class="btn light" onclick="generateUpiQr()">Generate UPI QR</button></div></form><div id="upiQrPreview" style="margin-top:15px;text-align:center"></div></div>
- <div class="panel"><h3>Pharmacy bill logo</h3><p class="feature-note">Upload your pharmacy logo. It is printed on invoices; the pharmacy name and address come from the profile above.</p><div class="field"><label>Logo image</label><input id="pharmacyLogoUpload" type="file" accept="image/*"></div><div id="pharmacyLogoPreview">${pharmacySettings.logo_data_url?`<img src="${pharmacySettings.logo_data_url}" style="max-width:150px;max-height:90px">`:"No logo uploaded"}</div>${owner?'<button class="btn" type="button" onclick="savePharmacyLogo()">Save bill logo</button>':''}</div>
- <div class="panel"><h3>Print page setup</h3><p class="feature-note">Choose the receipt layout used by bill printing and the page width used for report printing.</p>
- <form id="printSettingsForm"><div class="form-grid"><div class="field"><label>Bill paper size</label><select name="print_paper_size" ${owner?"":"disabled"}><option value="80mm" ${pharmacySettings.print_paper_size==="80mm"?"selected":""}>80 mm thermal</option><option value="58mm" ${pharmacySettings.print_paper_size==="58mm"?"selected":""}>58 mm thermal</option><option value="A4" ${pharmacySettings.print_paper_size==="A4"?"selected":""}>A4</option></select></div>${field("Print header","print_header",pharmacySettings.print_header||p.pharmacy_name||"Subha Medical",owner?"":"disabled")}${field("Print footer","print_footer",pharmacySettings.print_footer||"Thank you. Visit again!",owner?"":"disabled")}</div>${owner?'<button class="btn" style="margin-top:12px">Save Print Setup</button>':''}</form></div>
- <div class="panel"><h3>Staff management</h3><button class="btn" onclick="navigate('staff')">Open Staff Management / Edit Staff</button></div>
- <div class="panel"><h3>Signed-in account</h3><p>${esc(currentUser.email||"")}</p><p>Role: <b>${esc(currentMember.role)}</b></p><button class="btn danger" onclick="logout()">Sign out</button></div>`;
- const profile=$("pharmacySettingsForm");if(owner)profile.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(profile));const {error}=await sb.from("ms_pharmacies").update(d).eq("id",pharmacyId());if(error)return notify(error.message);currentPharmacy={...currentPharmacy,...d};notify("Pharmacy profile saved.");renderSettings();};
- const upi=$("upiSettingsForm");if(owner)upi.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(upi));try{const {error}=await sb.from("ms_pharmacy_settings").upsert({pharmacy_id:pharmacyId(),upi_id:d.upi_id,upi_name:d.upi_name},{onConflict:"pharmacy_id"});if(error)throw error;pharmacySettings={...pharmacySettings,...d};notify("UPI setup saved.");generateUpiQr();}catch(err){notify("UPI setup failed: "+err.message);}};
- const pr=$("printSettingsForm");if(owner)pr.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(pr));try{const {error}=await sb.from("ms_pharmacy_settings").upsert({pharmacy_id:pharmacyId(),...d},{onConflict:"pharmacy_id"});if(error)throw error;pharmacySettings={...pharmacySettings,...d};notify("Print setup saved.");}catch(err){notify("Print setup failed: "+err.message);}};
- if(pharmacySettings.upi_id)generateUpiQr();
+ const p=currentPharmacy||{},owner=canManage()||String(currentUser?.email||"").toLowerCase()==="subhamedical2325@gmail.com";
+ const st=pharmacySettings||{};
+ $("pageContent").innerHTML=`${pageHead("Pharmacy Settings","Pharmacy profile, payment QR and complete bill-sheet setup")}
+ <div class="panel"><h3>Pharmacy profile</h3><div class="form-grid">${field("Pharmacy name","bill_pharmacy_name",p.pharmacy_name||"",owner?"":"disabled")}${field("Owner name","bill_owner_name",p.owner_name||"",owner?"":"disabled")}${field("Phone number","bill_phone",p.phone||"",owner?"":"disabled")}${field("Email address","pharmacy_contact_email",p.owner_email||currentUser?.email||"",owner?"":"disabled")}</div><div class="field"><label>Full pharmacy address</label><textarea id="bill_address" class="feature-input" rows="2" ${owner?"":"disabled"}>${esc(p.address||"")}</textarea></div></div>
+ <div class="panel"><h3>Complete bill sheet setup</h3><p class="feature-note">These details appear on printed and PDF customer bills. Upload images from your device.</p>
+ <form id="billSheetForm"><div class="form-grid">${field("GSTIN","gst_number",st.gst_number||"",owner?"":"disabled")}${field("Drug licence number","drug_license",st.drug_license||"",owner?"":"disabled")}${field("DL validity / additional licence","drug_license_2",st.drug_license_2||"",owner?"":"disabled")}${field("Bill email","bill_email",st.bill_email||"",owner?"":"disabled")}${field("Website","website",st.website||"",owner?"":"disabled")}${field("Bill heading / tagline","print_header",st.print_header||p.pharmacy_name||"Pharmacy",owner?"":"disabled")}</div>
+ <div class="field"><label>Bill address (printed override)</label><textarea name="bill_print_address" class="feature-input" rows="2" ${owner?"":"disabled"}>${esc(st.bill_print_address||p.address||"")}</textarea></div>
+ <div class="field"><label>Bill footer / thank-you message</label><textarea name="print_footer" class="feature-input" rows="2" ${owner?"":"disabled"}>${esc(st.print_footer||"Thank you. Visit again!")}</textarea></div>
+ <div class="field"><label>Terms / return policy</label><textarea name="bill_terms" class="feature-input" rows="2" ${owner?"":"disabled"}>${esc(st.bill_terms||"")}</textarea></div>
+ <div class="form-grid"><div class="field"><label>Bill paper size</label><select name="print_paper_size" ${owner?"":"disabled"}><option value="80mm" ${st.print_paper_size==="80mm"?"selected":""}>80 mm thermal</option><option value="58mm" ${st.print_paper_size==="58mm"?"selected":""}>58 mm thermal</option><option value="A4" ${st.print_paper_size==="A4"?"selected":""}>A4 PDF / print</option></select></div><div class="field"><label>Show batch & expiry on bill</label><select name="show_batch_expiry" ${owner?"":"disabled"}><option value="yes" ${st.show_batch_expiry!==false?"selected":""}>Yes</option><option value="no" ${st.show_batch_expiry===false?"selected":""}>No</option></select></div></div>
+ ${owner?'<button class="btn" type="submit">Save Bill Sheet Setup</button>':''}</form>
+ <div class="form-grid" style="margin-top:16px"><div><label>Pharmacy logo image</label><input id="pharmacyLogoUpload" type="file" accept="image/*" ${owner?"":"disabled"}><div id="pharmacyLogoPreview">${st.logo_data_url?`<img src="${st.logo_data_url}" style="max-width:150px;max-height:90px">`:"No logo uploaded"}</div></div><div><label>Payment QR image (optional)</label><input id="billQrUpload" type="file" accept="image/*" ${owner?"":"disabled"}><div id="billQrPreview">${st.payment_qr_data_url?`<img src="${st.payment_qr_data_url}" style="max-width:130px;max-height:130px">`:"No uploaded QR"}</div></div></div>
+ ${owner?'<div class="feature-tools"><button type="button" class="btn light" onclick="saveBillImages()">Save uploaded images</button></div>':''}</div>
+ <div class="panel"><h3>UPI payment setup & QR generator</h3><div class="form-grid">${field("UPI ID (VPA)","upi_id",st.upi_id||"",owner?"":"disabled")}${field("UPI display / account name","upi_name",st.upi_name||p.pharmacy_name||"",owner?"":"disabled")}</div><div class="feature-tools">${owner?'<button class="btn" onclick="saveBillSettingsOnly()" type="button">Save UPI Setup</button>':''}<button type="button" class="btn light" onclick="generateUpiQr()">Generate UPI QR</button></div><div id="upiQrPreview" style="margin-top:15px;text-align:center"></div></div>
+ <div class="panel"><h3>Staff management</h3><button class="btn" onclick="navigate('staff')">Open Staff Management / Create Staff</button></div>
+ <div class="panel"><h3>Signed-in account</h3><p>${esc(currentUser.email||"")}</p><p>Role: <b>${esc(currentMember?.role||"")}</b></p><button class="btn danger" onclick="logout()">Sign out</button></div>`;
+ const form=$("billSheetForm");if(form&&owner)form.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form));const settings={...pharmacySettings,...d,show_batch_expiry:d.show_batch_expiry==="yes",gst_number:$("gst_number")?.value||"",drug_license:$("drug_license")?.value||"",drug_license_2:$("drug_license_2")?.value||"",bill_email:$("bill_email")?.value||"",website:$("website")?.value||"",print_header:$("print_header")?.value||""};await saveSettingsJson(settings,{pharmacy_name:$("bill_pharmacy_name")?.value,owner_name:$("bill_owner_name")?.value,phone:$("bill_phone")?.value,address:$("bill_address")?.value});};
+ if(st.upi_id&&$("upi_id"))generateUpiQr();
 }
-async function savePharmacyLogo(){if(!canManage())return notify("Owner/Admin only.");const file=$("pharmacyLogoUpload")?.files?.[0];if(!file)return notify("Choose a logo image first.");if(file.size>1_500_000)return notify("Please use a logo smaller than 1.5 MB.");try{const logo_data_url=await fileAsDataUrl(file);const {error}=await sb.from("ms_pharmacy_settings").upsert({pharmacy_id:pharmacyId(),logo_data_url},{onConflict:"pharmacy_id"});if(error)throw error;pharmacySettings.logo_data_url=logo_data_url;notify("Bill logo saved.");renderSettings();}catch(e){notify("Logo save failed: "+e.message);}}
+async function saveSettingsJson(settings,profile={}){try{if(!pharmacyId())throw new Error("Select a pharmacy workspace before saving its settings.");if(Object.values(profile).some(v=>v!==undefined)){const clean=Object.fromEntries(Object.entries(profile).filter(([k,v])=>v!==undefined));const {error:pe}=await sb.from("ms_pharmacies").update(clean).eq("id",pharmacyId());if(pe)throw pe;currentPharmacy={...currentPharmacy,...clean};}
+ const {error}=await sb.from("ms_pharmacy_settings").upsert({pharmacy_id:pharmacyId(),settings,logo_data_url:settings.logo_data_url||pharmacySettings.logo_data_url||null,updated_by:currentUser.id},{onConflict:"pharmacy_id"});if(error)throw error;pharmacySettings={...settings};notify("Bill sheet settings saved.");}catch(e){notify("Settings save failed: "+e.message);}}
+async function saveBillSettingsOnly(){const settings={...pharmacySettings,upi_id:$("upi_id")?.value.trim()||"",upi_name:$("upi_name")?.value.trim()||""};await saveSettingsJson(settings);if(settings.upi_id)generateUpiQr();}
+async function saveBillImages(){if(!canManage()&&String(currentUser?.email||"").toLowerCase()!=="subhamedical2325@gmail.com")return notify("Admin permission required.");try{const logo=$("pharmacyLogoUpload")?.files?.[0],qr=$("billQrUpload")?.files?.[0];if(!logo&&!qr)return notify("Choose a logo or QR image first.");for(const f of [logo,qr].filter(Boolean)){if(!f.type.startsWith("image/"))throw new Error("Please upload image files only.");if(f.size>1500000)throw new Error("Each image must be below 1.5 MB.");}const settings={...pharmacySettings};if(logo)settings.logo_data_url=await fileAsDataUrl(logo);if(qr)settings.payment_qr_data_url=await fileAsDataUrl(qr);await saveSettingsJson(settings);renderSettings();}catch(e){notify("Image upload failed: "+e.message);}}
 function generateUpiQr(){
  if(!canManage())return notify("Only Owner/Admin can generate or manage the pharmacy UPI QR.");
  const upi=($("upi_id")?.value||pharmacySettings.upi_id||"").trim(),name=($("upi_name")?.value||pharmacySettings.upi_name||currentPharmacy?.pharmacy_name||"Subha Medical").trim();
@@ -1327,10 +1509,14 @@ function closeModal(){$("modal").classList.add("hidden");}
 $("modal").addEventListener("click",e=>{if(e.target===$("modal"))closeModal();});
  
 async function start(){
+ document.body.classList.add("auth-mode");document.body.classList.remove("app-mode");
+ $("appScreen").classList.add("hidden");$("authScreen").classList.remove("hidden");
+ document.querySelectorAll("#sidebar .nav").forEach(b=>{const label=b.textContent.trim();if(label)b.title=label;});
  const {data:{session}}=await sb.auth.getSession();
  if(session){
   try{await loadApplication(session.user);}
   catch(e){
+   document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");
    $("authScreen").classList.remove("hidden");
    $("appScreen").classList.add("hidden");
    authMessage(e.message);
@@ -1338,6 +1524,7 @@ async function start(){
  }
  sb.auth.onAuthStateChange((event,session)=>{
   if(event==="SIGNED_OUT"){
+   document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");
    $("authScreen").classList.remove("hidden");
    $("appScreen").classList.add("hidden");
   }
