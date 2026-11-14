@@ -299,6 +299,46 @@ body.auth-mode #authMessage{font-size:12px!important;margin-top:10px!important}
  .content{padding:9px!important}
 }
  
+ 
+/* Navigation hierarchy: compact icon rail, expands on hover/focus for readable labels */
+#sidebar{width:62px!important;transition:width .18s ease!important;padding:12px 6px!important;overflow-x:hidden!important}
+#sidebar:hover,#sidebar:focus-within{width:218px!important;box-shadow:10px 0 26px #102b4230}
+#sidebar .side-brand{justify-content:flex-start!important;padding:5px 6px 14px!important;min-height:48px}
+#sidebar .side-brand>div:last-child{display:none!important}
+#sidebar:hover .side-brand>div:last-child,#sidebar:focus-within .side-brand>div:last-child{display:block!important;white-space:nowrap}
+#sidebar .nav-title{display:none!important;font-size:9px!important;letter-spacing:1px!important;padding:13px 9px 4px!important;color:#93adbd!important}
+#sidebar:hover .nav-title,#sidebar:focus-within .nav-title{display:block!important}
+#sidebar .nav{justify-content:flex-start!important;gap:10px!important;padding:8px 9px!important;height:36px!important;font-size:0!important;text-align:left!important}
+#sidebar .nav span{flex:0 0 22px!important;font-size:16px!important}
+#sidebar:hover .nav,#sidebar:focus-within .nav{font-size:11px!important}
+#sidebar>div:last-child .btn{font-size:0!important}
+#sidebar:hover>div:last-child .btn,#sidebar:focus-within>div:last-child .btn{font-size:11px!important;padding:9px 10px!important}
+#sidebar:hover>div:last-child .btn:after,#sidebar:focus-within>div:last-child .btn:after{content:none!important}
+.report-shortcuts{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.report-shortcuts .btn{font-size:11px;padding:8px 11px}
+@media(max-width:700px){#sidebar{width:54px!important}#sidebar:hover,#sidebar:focus-within{width:205px!important}#sidebar .nav{height:37px!important}}
+@media(max-width:480px){body.auth-mode #authScreen{padding:12px!important;background:#f4f8f9!important}body.auth-mode .auth-card{max-width:350px!important;width:100%!important;min-height:0!important;padding:17px 18px!important;margin:auto!important;border-radius:12px!important;box-shadow:0 8px 28px #26334b12!important}body.auth-mode .brand{margin-bottom:12px!important;padding-bottom:9px!important;gap:9px!important}body.auth-mode .brand-logo{width:36px!important;height:36px!important;flex-basis:36px!important;font-size:18px!important;border-radius:9px!important}body.auth-mode .brand h1{font-size:17px!important}body.auth-mode .brand p{font-size:9px!important}body.auth-mode .auth-tabs{margin-bottom:13px!important}body.auth-mode .auth-tabs button{padding:8px!important;font-size:11px!important}body.auth-mode .auth-card #loginForm:before{font-size:19px!important;margin-bottom:10px!important}body.auth-mode .auth-card #loginForm:after{font-size:10px!important;margin-bottom:13px!important}body.auth-mode .auth-card .field{margin-bottom:8px!important}body.auth-mode .auth-card .field label{font-size:10px!important}body.auth-mode .auth-card .field input{padding:8px 9px!important;font-size:12px!important}body.auth-mode .auth-card .btn.full{min-height:35px!important;font-size:12px!important}body.auth-mode .auth-card #loginForm>div:last-child{margin-top:9px!important;gap:6px!important}body.auth-mode .auth-card #loginForm>div:last-child .btn{font-size:10px!important;padding:7px 8px!important}}
+ 
+ 
+/* Subha Medical motion system + custom pharmacy artwork */
+.auth-art{width:min(100%,470px);margin:8px 0 26px;filter:drop-shadow(0 18px 26px #063d3d30);animation:artFloat 6s ease-in-out infinite}
+.auth-art svg{display:block;width:100%;height:auto;overflow:visible}
+.auth-visual-mark{animation:markPulse 4s ease-in-out infinite}
+.auth-visual-inner h2{animation:fadeSlide .7s ease both}
+.auth-visual-inner p{animation:fadeSlide .9s ease both}
+.po-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:17px 20px;margin:0 0 13px;border:1px solid #d8ebe8;border-radius:12px;background:linear-gradient(105deg,#effaf8,#f8fbff);overflow:hidden}
+.po-hero h3{font-size:17px;color:#1e4550;margin:6px 0}.po-hero p{font-size:11px;color:#6d8088;line-height:1.6;margin:0;max-width:590px}.po-hero-art{width:180px;flex:0 0 180px;animation:artFloat 5.5s ease-in-out infinite}.po-hero-art svg{width:100%;display:block}
+.po-hero .pos-kicker{color:#078b87}
+@keyframes artFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes markPulse{0%,100%{box-shadow:0 0 0 0 #ffffff00}50%{box-shadow:0 0 0 8px #ffffff16}}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes softEnter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.panel,.stat{animation:softEnter .35s ease both}
+.nav{transition:background .18s ease,color .18s ease,transform .18s ease}
+.nav:hover{transform:translateX(2px)}
+@media(max-width:700px){.auth-art{max-width:280px;margin:8px auto 12px}.po-hero{padding:12px}.po-hero-art{width:105px;flex-basis:105px}.po-hero h3{font-size:14px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+ 
 </style>
  </head>
  <body>
@@ -307,7 +347,17 @@ body.auth-mode #authMessage{font-size:12px!important;margin-top:10px!important}
    <div class="auth-visual" aria-hidden="true">
     <div class="auth-visual-inner">
      <div class="auth-visual-mark">
-      <span>S</span>
+      <span>✚</span>
+     </div>
+     <div class="auth-art" aria-hidden="true">
+      <svg viewBox="0 0 520 300" role="img" aria-label="Illustration of pharmacy medicine shelves, a prescription and a medical cross">
+       <defs>
+        <linearGradient id="artBg" x1="0" x2="1" y1="0" y2="1">
+         <stop stop-color="#ffffff" stop-opacity=".25" /><stop offset="1" stop-color="#ffffff" stop-opacity=".04" />
+        </linearGradient>
+       </defs>
+       <circle cx="390" cy="120" r="108" fill="url(#artBg)" /><circle cx="390" cy="120" r="75" fill="none" stroke="#ffffff35" stroke-width="2" /> <rect x="60" y="95" width="310" height="160" rx="18" fill="#ffffff" fill-opacity=".96" /> <rect x="82" y="116" width="266" height="12" rx="6" fill="#d9efec" /> <rect x="82" y="143" width="74" height="88" rx="9" fill="#eaf7f5" /><rect x="168" y="143" width="74" height="88" rx="9" fill="#f5f0ff" /><rect x="254" y="143" width="74" height="88" rx="9" fill="#fff4df" /> <rect x="100" y="163" width="38" height="48" rx="7" fill="#13a092" /><path d="M109 179h20M119 169v20" stroke="#fff" stroke-width="5" stroke-linecap="round" /> <rect x="186" y="160" width="38" height="52" rx="7" fill="#8c79c8" /><path d="M193 173h24M193 184h24M193 195h15" stroke="#fff" stroke-width="3" stroke-linecap="round" /> <rect x="272" y="160" width="38" height="52" rx="7" fill="#e7ad4d" /><path d="M280 176h22M280 187h22" stroke="#fff" stroke-width="3" stroke-linecap="round" /> <rect x="376" y="52" width="90" height="126" rx="14" fill="#fff" transform="rotate(8 376 52)" /><path d="M399 91l12 12 24-29" fill="none" stroke="#14998e" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" /><path d="M395 125h48M395 140h38" stroke="#c5d6dc" stroke-width="5" stroke-linecap="round" /> <circle cx="438" cy="221" r="28" fill="#f3bd59" /><path d="M438 205v32M422 221h32" stroke="#fff" stroke-width="7" stroke-linecap="round" /> <path d="M42 270h438" stroke="#ffffff55" stroke-width="2" stroke-linecap="round" />
+      </svg>
      </div>
      <h2>Smarter Pharmacy Management</h2>
      <p>One secure workspace for billing, inventory, purchasing and your pharmacy team.</p>
@@ -403,29 +453,32 @@ body.auth-mode #authMessage{font-size:12px!important;margin-top:10px!important}
       <strong>PHARMACY SOFTWARE</strong><small>Billing &amp; Management</small>
      </div>
     </div>
-    <div class="nav-title">MAIN MENU</div>
-    <button class="nav active" data-page="dashboard" onclick="navigate('dashboard')"><span>▦</span>Dashboard</button>
-    <button class="nav" data-page="billing" onclick="navigate('billing')"><span>▣</span>POS Billing</button>
-    <button class="nav" data-page="products" onclick="navigate('products')"><span>▤</span>Inventory</button>
-    <button class="nav" data-page="customers" onclick="navigate('customers')"><span>♙</span>Customers</button>
-    <button class="nav" data-page="suppliers" onclick="navigate('suppliers')"><span>♧</span>Suppliers</button>
-    <div class="nav-title">MANAGEMENT</div>
-    <button class="nav" data-page="purchases" onclick="navigate('purchases')"><span>⇩</span>Purchases</button>
-    <button class="nav" data-page="reports" onclick="navigate('reports')"><span>▥</span>Reports</button>
-    <div class="nav-title">ADVANCED FEATURES</div>
-    <button class="nav" data-page="scanner" onclick="navigate('scanner')"><span>▣</span>Barcode Scanner</button>
-    <button class="nav" data-page="audit" onclick="navigate('audit')"><span>✓</span>Stock Audit</button>
-    <button class="nav" data-page="itemmaster" onclick="navigate('itemmaster')"><span>▤</span>Item Master</button>
-    <button class="nav" data-page="manufacturers" onclick="navigate('manufacturers')"><span>⌂</span>Manufacturers</button>
-    <button class="nav" data-page="billocr" onclick="navigate('billocr')"><span>⇧</span>Bill OCR / Inward</button>
-    <button class="nav" data-page="purchaseorders" onclick="navigate('purchaseorders')"><span>▣</span>Purchase Orders / GRN</button>
-    <button class="nav" data-page="prescriptions" onclick="navigate('prescriptions')"><span>✚</span>Prescription Desk</button>
-    <button class="nav" data-page="reminders" onclick="navigate('reminders')"><span>◷</span>Refill Reminders</button>
-    <button class="nav" data-page="returns" onclick="navigate('returns')"><span>↩</span>Returns</button>
-    <button class="nav" data-page="cashbook" onclick="navigate('cashbook')"><span>₹</span>Cashbook &amp; Expenses</button>
-    <button class="nav" data-page="staff" onclick="navigate('staff')"><span>♙</span>Staff &amp; Roles</button>
-    <button class="nav hidden" id="pharmacyNav" data-page="pharmacies" onclick="navigate('pharmacies')"><span>⌂</span>Pharmacy Approval</button>
-    <button class="nav" data-page="settings" onclick="navigate('settings')"><span>⚙</span>Settings</button>
+    <div class="nav-title" title="Workstation">WORKSTATION</div>
+    <button class="nav active" title="Dashboard" data-page="dashboard" onclick="navigate('dashboard')"><span>▦</span>Dashboard</button>
+    <button class="nav" title="POS Billing" data-page="billing" onclick="navigate('billing')"><span>▣</span>POS Billing</button>
+    <button class="nav" title="Customers" data-page="customers" onclick="navigate('customers')"><span>♙</span>Customers</button>
+    <div class="nav-title" title="Inventory">INVENTORY</div>
+    <button class="nav" title="Medicine Inventory" data-page="products" onclick="navigate('products')"><span>▤</span>Medicine Stock</button>
+    <button class="nav" title="Rack, Shelf and Bin locations" data-page="rack" onclick="navigate('rack')"><span>▦</span>Rack / Shelf / Bin</button>
+    <button class="nav" title="Item Master" data-page="itemmaster" onclick="navigate('itemmaster')"><span>▧</span>Item Master</button>
+    <button class="nav" title="Barcode Scanner" data-page="scanner" onclick="navigate('scanner')"><span>⌗</span>Barcode Scanner</button>
+    <button class="nav" title="Stock Audit" data-page="audit" onclick="navigate('audit')"><span>✓</span>Stock Audit</button>
+    <div class="nav-title" title="Purchasing">PURCHASING</div>
+    <button class="nav" title="Suppliers" data-page="suppliers" onclick="navigate('suppliers')"><span>♧</span>Suppliers</button>
+    <button class="nav" title="Purchase Entry" data-page="purchases" onclick="navigate('purchases')"><span>⇩</span>Purchase Entry</button>
+    <button class="nav" title="Purchase Orders and GRN" data-page="purchaseorders" onclick="navigate('purchaseorders')"><span>▣</span>Purchase Orders / GRN</button>
+    <button class="nav" title="Supplier Invoice OCR" data-page="billocr" onclick="navigate('billocr')"><span>▤</span>Bill OCR / Inward</button>
+    <button class="nav" title="Manufacturers" data-page="manufacturers" onclick="navigate('manufacturers')"><span>⌂</span>Manufacturers</button>
+    <div class="nav-title" title="Reports">REPORTS</div>
+    <button class="nav" title="Sales and Inventory Reports" data-page="reports" onclick="navigate('reports')"><span>▥</span>Reports &amp; Registers</button>
+    <button class="nav" title="Sales and Vendor Returns" data-page="returns" onclick="navigate('returns')"><span>↩</span>Sales / Purchase Returns</button>
+    <button class="nav" title="Prescription Desk" data-page="prescriptions" onclick="navigate('prescriptions')"><span>✚</span>Prescription Desk</button>
+    <button class="nav" title="Schedule H and H1 records" data-page="reminders" onclick="navigate('reminders')"><span>◷</span>Refill Reminders</button>
+    <div class="nav-title" title="Administration">ADMINISTRATION</div>
+    <button class="nav" title="Cashbook and Expenses" data-page="cashbook" onclick="navigate('cashbook')"><span>₹</span>Cashbook &amp; Expenses</button>
+    <button class="nav" title="Staff and Roles" data-page="staff" onclick="navigate('staff')"><span>♙</span>Staff &amp; Roles</button>
+    <button class="nav hidden" id="pharmacyNav" title="Pharmacy Approval" data-page="pharmacies" onclick="navigate('pharmacies')"><span>⌂</span>Pharmacy Approval</button>
+    <button class="nav" title="Settings" data-page="settings" onclick="navigate('settings')"><span>⚙</span>Settings</button>
     <div style="padding:25px 8px 5px">
      <button class="btn full" style="background:#514477" onclick="logout()">Sign Out</button>
     </div>
@@ -696,7 +749,7 @@ function navigate(page){
  document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
  $("sidebar").classList.remove("open");
  const titles={
-  dashboard:"Dashboard",billing:"POS Billing",products:"Inventory",
+  dashboard:"Dashboard",billing:"POS Billing",products:"Inventory",rack:"Rack / Shelf / Bin",
   customers:"Customers",suppliers:"Suppliers",purchases:"Purchases",
   reports:"Reports",scanner:"Barcode Scanner",audit:"Stock Audit",itemmaster:"Item Master",
   manufacturers:"Manufacturers",billocr:"Bill OCR / Inward",purchaseorders:"Purchase Orders / GRN",prescriptions:"Prescription Desk",
@@ -707,6 +760,7 @@ function navigate(page){
  $("topSubtitle").textContent=isSuper()?"Super Admin":(currentPharmacy?.pharmacy_name||"Pharmacy management");
  if(page==="dashboard")renderDashboard();
  else if(page==="products")renderProducts();
+ else if(page==="rack")renderRackSetup();
  else if(page==="billing")renderBilling();
  else if(page==="customers")renderCustomers();
  else if(page==="suppliers")renderSuppliers();
@@ -717,7 +771,7 @@ function navigate(page){
  else if(page==="itemmaster")renderItemMaster();
  else if(page==="manufacturers")renderManufacturers();
  else if(page==="billocr")renderBillOCR();
- else if(page==="purchaseorders")renderFeatureSetup("Purchase Orders / GRN","Purchase order and goods-received-note posting needs an atomic pharmacy-scoped database function to create purchase rows and update batch stock together.");
+ else if(page==="purchaseorders")renderPurchaseOrders();
  else if(page==="prescriptions")renderFeatureSetup("Prescription Desk","Prescription uploads require a pharmacy-scoped prescription table and private Supabase Storage bucket.");
  else if(page==="reminders")renderFeatureSetup("Refill Reminders","Refill schedules require a pharmacy-scoped reminders table. WhatsApp/SMS delivery also needs a secure server-side provider integration.");
  else if(page==="returns")renderFeatureSetup("Sales & Vendor Returns","Return transactions need dedicated return tables and a secure stock-adjustment RPC.");
@@ -785,6 +839,38 @@ function renderProducts(){
  </div>`;
  fillProductRows(products);
 }
+async function renderRackSetup(){
+ const canEdit=canManage();
+ $("pageContent").innerHTML=`${pageHead("Rack / Shelf / Bin Setup","Assign medicines to physical storage locations",canEdit?'<button class="btn" onclick="rackModal()">+ Add rack</button> <button class="btn light" onclick="rackLocationModal()">+ Assign medicine</button>':'')}
+ <div class="panel"><div class="panel-head"><h3>Rack master</h3><span class="badge">Pharmacy locations</span></div><div id="rackMasterRows" class="feature-note">Loading racks…</div></div>
+ <div class="panel"><div class="panel-head"><h3>Medicine locations</h3><input class="search" placeholder="Search medicine / rack / shelf / bin" oninput="filterRackLocations(this.value)"></div><div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Brand</th><th>Rack</th><th>Shelf</th><th>Bin</th><th>Primary</th><th>Action</th></tr></thead><tbody id="rackLocationRows"><tr><td colspan="7" class="empty">Loading locations…</td></tr></tbody></table></div></div>`;
+ try{
+  const [r,l]=await Promise.all([sb.from("ms_racks").select("*").eq("pharmacy_id",pharmacyId()).order("rack_code"),sb.from("ms_product_locations").select("*").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false})]);
+  if(r.error)throw r.error;if(l.error)throw l.error;
+  window.msRackRows=r.data||[];window.msRackLocationRows=l.data||[];
+  $("rackMasterRows").innerHTML=window.msRackRows.length?`<div class="table-wrap"><table><thead><tr><th>Rack code</th><th>Rack name</th><th>Description</th><th>Status</th></tr></thead><tbody>${window.msRackRows.map(x=>`<tr><td><b>${esc(x.rack_code)}</b></td><td>${esc(x.rack_name)}</td><td>${esc(x.description||"-")}</td><td>${x.is_active?'<span class="badge green">Active</span>':'<span class="badge red">Inactive</span>'}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">No racks created yet. Add your first rack.</div>';
+  fillRackLocationRows(window.msRackLocationRows);
+ }catch(e){$("rackMasterRows").innerHTML=`<div class="notice">Could not load rack setup: ${esc(e.message)}</div>`;}
+}
+function fillRackLocationRows(rows){
+ const racks=window.msRackRows||[];
+ $("rackLocationRows").innerHTML=rows.length?rows.map(x=>{const p=products.find(z=>z.id===x.product_id),r=racks.find(z=>z.id===x.rack_id);return `<tr><td><b>${esc(p?.name||"Unknown medicine")}</b></td><td>${esc(p?.brand||"-")}</td><td>${esc(r?.rack_code||"-")}</td><td>${esc(x.shelf_code)}</td><td>${esc(x.bin_code)}</td><td>${x.is_primary?'<span class="badge green">Primary</span>':'-'}</td><td>${canManage()?`<button class="btn light" onclick="rackLocationModal('${x.id}')">Edit / Move</button>`:'-'}</td></tr>`;}).join(""):'<tr><td colspan="7" class="empty">No medicine locations assigned.</td></tr>';
+}
+function filterRackLocations(q){q=String(q||"").toLowerCase();fillRackLocationRows((window.msRackLocationRows||[]).filter(x=>{const p=products.find(z=>z.id===x.product_id),r=(window.msRackRows||[]).find(z=>z.id===x.rack_id);return [p?.name,p?.brand,r?.rack_code,x.shelf_code,x.bin_code].join(" ").toLowerCase().includes(q);}));}
+function rackModal(){
+ if(!canManage())return notify("You do not have permission.");
+ $("modalTitle").textContent="Add rack";$("modalBody").innerHTML=`<form id="rackForm"><div class="form-grid">${field("Rack code","rack_code","","required")}${field("Rack name","rack_name","","required")}</div>${field("Description","description")}<button class="btn full">Save rack</button></form>`;
+ $("rackForm").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));d.pharmacy_id=pharmacyId();try{const {error}=await sb.from("ms_racks").insert(d);if(error)throw error;closeModal();await renderRackSetup();notify("Rack created.");}catch(err){notify(err.message);}};openModal();
+}
+function rackLocationModal(id=null){
+ if(!canManage())return notify("You do not have permission.");
+ const old=(window.msRackLocationRows||[]).find(x=>x.id===id)||null;
+ if(!(window.msRackRows||[]).length)return notify("Create a rack before assigning medicines.");
+ $("modalTitle").textContent=old?"Move / edit medicine location":"Assign medicine to rack";
+ $("modalBody").innerHTML=`<form id="rackLocationForm"><div class="field"><label>Medicine</label><select name="product_id" required>${products.map(p=>`<option value="${p.id}" ${old?.product_id===p.id?'selected':''}>${esc(p.name)}${p.brand?' · '+esc(p.brand):''}</option>`).join("")}</select></div><div class="field"><label>Rack</label><select name="rack_id" required>${window.msRackRows.filter(r=>r.is_active).map(r=>`<option value="${r.id}" ${old?.rack_id===r.id?'selected':''}>${esc(r.rack_code)} · ${esc(r.rack_name)}</option>`).join("")}</select></div><div class="form-grid">${field("Shelf code","shelf_code",old?.shelf_code||"","required")}${field("Bin code","bin_code",old?.bin_code||"","required")}</div>${field("Location note","location_note",old?.location_note||"")}<label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:12px"><input type="checkbox" name="is_primary" ${old?.is_primary?'checked':''}> Primary location</label><button class="btn full">Save location</button></form>`;
+ $("rackLocationForm").onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),d={pharmacy_id:pharmacyId(),product_id:f.get("product_id"),rack_id:f.get("rack_id"),shelf_code:f.get("shelf_code"),bin_code:f.get("bin_code"),location_note:f.get("location_note"),is_primary:f.get("is_primary")==="on"};try{const q=old?sb.from("ms_product_locations").update(d).eq("id",old.id).eq("pharmacy_id",pharmacyId()):sb.from("ms_product_locations").insert(d);const {error}=await q;if(error)throw error;closeModal();await renderRackSetup();notify("Medicine location saved.");}catch(err){notify(err.message);}};openModal();
+}
+ 
 function fillProductRows(list){
  $("productRows").innerHTML=list.length?list.map(p=>`<tr>
  <td><b>${esc(p.name)}</b><br><small>${esc(p.barcode||"")}</small></td>
@@ -1140,6 +1226,87 @@ function printInvoice(sale,items,t){
 }
  
 let activeQrScanner = null;
+ 
+/* PURCHASE ORDER + PO-LINKED GRN WORKSPACE */
+let poSuggestions=[], poHeaders=[], activePOItems=[];
+function poRowsFromResult(result){
+ if(Array.isArray(result))return result;
+ if(Array.isArray(result?.suggestions))return result.suggestions;
+ if(Array.isArray(result?.items))return result.items;
+ if(Array.isArray(result?.data))return result.data;
+ return [];
+}
+async function renderPurchaseOrders(){
+ const host=$("pageContent");
+ if(!pharmacyId()){host.innerHTML=`${pageHead("Purchase Orders / GRN","Tenant pharmacy required")}<div class="notice">This Super Admin account does not currently have a pharmacy workspace attached. Open an approved pharmacy as an active member to create purchase orders.</div>`;return;}
+ host.innerHTML=`${pageHead("Purchase Orders / GRN","Reorder suggestions → draft PO → approval → partial or full GRN")}<div class="panel"><div class="feature-note">Loading pharmacy purchase orders and reorder analysis…</div></div>`;
+ try{
+  const [sg,ph,pi]=await Promise.all([
+   sb.rpc("ms_get_reorder_suggestions",{p_pharmacy_id:pharmacyId()}),
+   sb.from("ms_purchase_orders").select("*").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(100),
+   sb.from("ms_purchase_order_items").select("*").eq("pharmacy_id",pharmacyId()).order("created_at")
+  ]);
+  if(sg.error)throw sg.error;if(ph.error)throw ph.error;if(pi.error)throw pi.error;
+  poSuggestions=poRowsFromResult(sg.data);
+  poHeaders=ph.data||[];
+  const itemRows=pi.data||[];
+  host.innerHTML=`
+   ${pageHead("Purchase Orders / GRN","Review reorder advice, create a draft, approve it and receive stock against the PO")}
+   <div class="po-hero"><div><span class="pos-kicker">SMART REORDER WORKSPACE</span><h3>Purchase planning, made clearer</h3><p>Suggestions use the saved reorder level, target stock and supplier purchase history. Review every quantity and rate before creating a PO.</p></div><div class="po-hero-art" aria-hidden="true"><svg viewBox="0 0 220 150" role="img"><rect x="27" y="22" width="166" height="112" rx="16" fill="#e5f5f3"/><rect x="48" y="42" width="58" height="74" rx="8" fill="#fff" stroke="#b8ded9" stroke-width="2"/><path d="M63 57h28M63 67h28M63 77h19" stroke="#159b91" stroke-width="4" stroke-linecap="round"/><rect x="119" y="53" width="52" height="63" rx="8" fill="#fff" stroke="#b8ded9" stroke-width="2"/><path d="M132 69h26M132 80h26M132 91h18" stroke="#e5a43b" stroke-width="4" stroke-linecap="round"/><circle cx="165" cy="36" r="16" fill="#f7c66b"/><path d="M165 27v18M156 36h18" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg></div></div>
+   <div class="panel">
+    <div class="panel-head"><h3>Reorder suggestions <span class="badge">${poSuggestions.length} items</span></h3><button class="btn light" onclick="renderPurchaseOrders()">↻ Refresh analysis</button></div>
+    <p class="feature-note">Only products with a configured reorder level and stock at or below that level appear here. Select products, confirm the supplier, quantity and purchase rate.</p>
+    <div class="table-wrap"><table><thead><tr><th>Select</th><th>Medicine</th><th>Current</th><th>Reorder level</th><th>Target</th><th>Suggested qty</th><th>Supplier</th></tr></thead><tbody id="poSuggestionRows">${poSuggestions.length?poSuggestions.map((x,i)=>{const p=products.find(z=>z.id===x.product_id)||{};return `<tr><td><input type="checkbox" class="po-pick" data-index="${i}" checked></td><td><b>${esc(x.product_name||p.name||"Medicine")}</b><small class="medicine-sub">${esc(p.brand||"")}</small></td><td>${esc(x.current_stock??x.stock??p.stock??0)}</td><td>${esc(x.reorder_level??p.reorder_level??0)}</td><td>${esc(x.target_stock??p.target_stock??0)}</td><td><input class="po-qty" data-index="${i}" type="number" min="1" step="1" value="${Number(x.suggested_quantity??x.suggested_qty??x.quantity??1)}"></td><td>${esc(x.supplier_name||"Select below")}</td></tr>`;}).join(""):`<tr><td colspan="7" class="empty">No reorder suggestions. Configure reorder level and target stock in Item Master.</td></tr>`}</tbody></table></div>
+    <div class="form-grid" style="margin-top:12px"><div class="field"><label>Supplier for this PO</label><select id="poSupplier"><option value="">Choose supplier</option>${suppliers.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select></div><div class="field"><label>PO number</label><input id="poNumber" value="PO-${new Date().toISOString().slice(0,10).replaceAll("-","")}-${String(Date.now()).slice(-4)}"></div><div class="field"><label>Expected delivery</label><input id="poExpected" type="date"></div><div class="field"><label>Notes</label><input id="poNotes" placeholder="Optional delivery / rate notes"></div></div>
+    <div class="feature-tools"><button class="btn" onclick="createPOFromSuggestions()">＋ Create draft purchase order</button><button class="btn light" onclick="navigate('purchases')">Purchase history</button></div>
+   </div>
+   <div class="panel"><div class="panel-head"><h3>Purchase order register</h3><span class="feature-note">${poHeaders.length} recent orders</span></div><div class="table-wrap"><table><thead><tr><th>PO No.</th><th>Date</th><th>Supplier</th><th>Expected</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody id="poRegisterRows">${poHeaders.length?poHeaders.map(po=>{const sup=suppliers.find(x=>x.id===po.supplier_id);return `<tr><td><b>${esc(po.po_number)}</b></td><td>${po.order_date||"-"}</td><td>${esc(sup?.name||"Supplier")}</td><td>${po.expected_date||"-"}</td><td>${money(po.total)}</td><td><span class="badge ${po.status==="received"?"green":""}">${esc(po.status)}</span></td><td><div class="actions">${po.status==="draft"&&canManage()?`<button class="btn light" onclick="approvePO('${po.id}')">Approve</button>`:""}${["approved","sent","partially_received"].includes(po.status)?`<button class="btn" onclick="openPOReceive('${po.id}')">Receive / GRN</button>`:""}<button class="btn light" onclick="viewPO('${po.id}')">View</button></div></td></tr>`;}).join(""):`<tr><td colspan="7" class="empty">No purchase orders created yet.</td></tr>`}</tbody></table></div></div>
+   <div id="poDetailHost"></div>`;
+  window.poAllItems=itemRows;
+ }catch(e){host.innerHTML=`${pageHead("Purchase Orders / GRN","Database connection status")}<div class="notice"><b>Could not load purchase orders:</b> ${esc(e.message)}<br>Check that the PO tables, RLS policies and RPC functions are installed for this pharmacy.</div><button class="btn light" onclick="renderPurchaseOrders()">Try again</button>`;}
+}
+async function createPOFromSuggestions(){
+ const supplierId=$("poSupplier")?.value,poNo=$("poNumber")?.value.trim();
+ if(!supplierId)return notify("Select a supplier first.");
+ if(!poNo)return notify("Enter a PO number.");
+ const picked=[...document.querySelectorAll(".po-pick:checked")].map(el=>Number(el.dataset.index));
+ if(!picked.length)return notify("Select at least one medicine.");
+ const items=picked.map(i=>{const x=poSuggestions[i],p=products.find(z=>z.id===x.product_id)||{};const qty=Number(document.querySelector(`.po-qty[data-index="${i}"]`)?.value||0);return {product_id:x.product_id,quantity:qty,purchase_rate:Number(x.suggested_rate??x.purchase_rate??p.purchase_price??0),mrp:Number(p.mrp||0),gst_percent:Number(p.gst_percent||0),suggested_rate:Number(x.suggested_rate??p.purchase_price??0),notes:"Reorder suggestion"};});
+ if(items.some(x=>!x.product_id||!Number.isFinite(x.quantity)||x.quantity<=0))return notify("Check medicine and suggested quantities.");
+ try{const {data,error}=await sb.rpc("ms_create_purchase_order",{p_pharmacy_id:pharmacyId(),p_supplier_id:supplierId,p_po_number:poNo,p_expected_date:$("poExpected")?.value||null,p_notes:$("poNotes")?.value||"",p_items:items});if(error)throw error;if(data?.success===false)throw new Error(data.message||"PO creation failed.");notify("Draft purchase order created.");await renderPurchaseOrders();}
+ catch(e){notify("Could not create PO: "+e.message);}
+}
+async function approvePO(id){
+ if(!confirm("Approve this draft purchase order?"))return;
+ try{const {data,error}=await sb.rpc("ms_approve_purchase_order",{p_purchase_order_id:id});if(error)throw error;if(data?.success===false)throw new Error(data.message||"Approval failed.");notify("Purchase order approved.");await renderPurchaseOrders();}
+ catch(e){notify("Approval failed: "+e.message);}
+}
+function viewPO(id){
+ const po=poHeaders.find(x=>x.id===id);if(!po)return;
+ const items=(window.poAllItems||[]).filter(x=>x.purchase_order_id===id);
+ const host=$("poDetailHost");if(!host)return;
+ host.innerHTML=`<div class="panel"><div class="panel-head"><h3>PO details · ${esc(po.po_number)}</h3><button class="btn light" onclick="$('poDetailHost').innerHTML=''">Close</button></div><div class="feature-note">Status: ${esc(po.status)} · Total: ${money(po.total)} · Expected: ${esc(po.expected_date||"-")}</div><div class="table-wrap"><table><thead><tr><th>Medicine ID</th><th>Ordered</th><th>Received</th><th>Rate</th><th>Pending</th></tr></thead><tbody>${items.map(x=>`<tr><td>${esc(products.find(p=>p.id===x.product_id)?.name||x.product_id)}</td><td>${x.quantity}</td><td>${x.received_quantity||0}</td><td>${money(x.purchase_rate)}</td><td>${Math.max(0,Number(x.quantity)-Number(x.received_quantity||0))}</td></tr>`).join("")||`<tr><td colspan="5" class="empty">No PO items found.</td></tr>`}</tbody></table></div></div>`;
+}
+function openPOReceive(id){
+ const po=poHeaders.find(x=>x.id===id);if(!po)return;
+ const items=(window.poAllItems||[]).filter(x=>x.purchase_order_id===id).filter(x=>Number(x.quantity)>Number(x.received_quantity||0));
+ if(!items.length)return notify("No pending quantities remain on this PO.");
+ activePOItems=items;
+ $("modalTitle").textContent="Receive stock · "+po.po_number;
+ $("modalBody").innerHTML=`<div class="notice">Enter only the quantities physically received on this invoice. The system will post a GRN and update batch and stock records through the PO-linked database function.</div><div class="field" style="margin-top:12px"><label>Supplier invoice number</label><input id="poGrnInvoice" required></div><div class="form-grid"><div class="field"><label>Invoice date</label><input id="poGrnDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Invoice total (₹)</label><input id="poGrnTotal" type="number" min="0" step=".01"></div></div><div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Pending</th><th>Receive now</th><th>Batch no.</th><th>Expiry</th><th>Rate</th><th>MRP</th></tr></thead><tbody>${items.map((x,i)=>{const p=products.find(z=>z.id===x.product_id)||{};return `<tr><td>${esc(p.name||"Medicine")}</td><td>${Number(x.quantity)-Number(x.received_quantity||0)}</td><td><input type="number" id="grnQty${i}" min="0" max="${Number(x.quantity)-Number(x.received_quantity||0)}" step=".01" value="${Number(x.quantity)-Number(x.received_quantity||0)}"></td><td><input id="grnBatch${i}" value="${esc(p.batch_number||"")}" placeholder="Batch"></td><td><input id="grnExpiry${i}" type="date" value="${esc(p.expiry_date||"")}"></td><td><input id="grnRate${i}" type="number" min="0" step=".01" value="${Number(x.purchase_rate||p.purchase_price||0)}"></td><td><input id="grnMrp${i}" type="number" min="0" step=".01" value="${Number(p.mrp||0)}"></td></tr>`;}).join("")}</tbody></table></div><div class="feature-tools"><button class="btn" onclick="submitPOGrn('${id}')">Verify & Post GRN</button><button class="btn light" onclick="closeModal()">Cancel</button></div>`;
+ $("modal").classList.remove("hidden");
+}
+async function submitPOGrn(poId){
+ const invoice=$("poGrnInvoice")?.value.trim();if(!invoice)return notify("Enter supplier invoice number.");
+ const po=poHeaders.find(x=>x.id===poId),rows=[];
+ activePOItems.forEach((x,i)=>{const qty=Number($("grnQty"+i)?.value||0);if(qty<=0)return;const p=products.find(z=>z.id===x.product_id)||{};rows.push({purchase_order_item_id:x.id,product_id:x.product_id,quantity:qty,purchase_rate:Number($("grnRate"+i)?.value||0),batch_no:$("grnBatch"+i)?.value.trim()||null,expiry_date:$("grnExpiry"+i)?.value||null,mrp:Number($("grnMrp"+i)?.value||0),selling_price:Number(p.selling_price||0),gst_percent:Number(p.gst_percent||0),tablets_per_strip:p.tablets_per_strip||null,manufacturer:p.brand||null});});
+ if(!rows.length)return notify("Enter at least one received quantity.");
+ const total=Number($("poGrnTotal")?.value||0);if(!total||total<0)return notify("Enter the supplier invoice total.");
+ if(!confirm("Post this GRN and update stock for the entered quantities?"))return;
+ try{const {data,error}=await sb.rpc("ms_post_purchase_invoice_with_po",{p_invoice_no:invoice,p_supplier_id:po.supplier_id,p_invoice_date:$("poGrnDate")?.value||null,p_total:total,p_items:rows,p_purchase_order_id:poId});if(error)throw error;if(data?.success===false)throw new Error(data.message||"GRN was not posted.");notify("GRN posted and stock updated.");closeModal();await refreshData();await renderPurchaseOrders();}
+ catch(e){notify("GRN failed: "+e.message);}
+}
+ 
 function renderFeatureSetup(title,description){$("pageContent").innerHTML=`${pageHead(title,"Advanced pharmacy workflow")}<div class="panel"><div class="notice"><b>Database setup required</b><br>${esc(description)}</div><p class="feature-note">This feature is not active yet. Complete the database setup shown by your administrator before saving records.</p></div>`;}
 function renderScanner(){$("pageContent").innerHTML=`${pageHead("Barcode Scanner","Scan a medicine barcode or enter it manually")}<div class="panel"><div class="field"><label>Barcode / product code</label><input id="scanBarcodeInput" class="feature-input" placeholder="Scan with a USB scanner or type barcode" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupScannedBarcode(this.value)}"></div><div class="feature-tools"><button class="btn" onclick="lookupScannedBarcode(document.getElementById('scanBarcodeInput').value)">Find medicine</button><button class="btn light" onclick="startCameraScanner()">Open camera scanner</button><button class="btn danger" onclick="stopCameraScanner()">Stop camera</button></div><div id="qr-reader" style="max-width:420px;width:100%;margin:12px auto"></div><div id="scanResult" class="feature-note">Camera scanning requires browser camera permission and HTTPS.</div></div><div class="panel"><h3>Barcode matches</h3><div id="scanMatches" class="feature-note">Enter or scan a barcode to search this pharmacy's inventory.</div></div>`;}
 function lookupScannedBarcode(code){code=String(code||"").trim();if(!code)return notify("Enter or scan a barcode.");const found=products.filter(p=>String(p.barcode||"").toLowerCase()===code.toLowerCase());$("scanMatches").innerHTML=found.length?found.map(p=>`<div class="total-row"><span><b>${esc(p.name)}</b><br><small>${esc(p.brand||"")} · Batch ${esc(p.batch_number||"-")} · Stock ${esc(p.stock)}</small></span><span><b>${money(p.mrp)}</b><br><button class="btn light" onclick="scannerAddToBill('${p.id}')">Add to bill</button></span></div>`).join(""):`<div class="empty">No medicine found for barcode ${esc(code)}.</div>`;}
@@ -1282,7 +1449,8 @@ function renderReports(){
   <div class="stat"><small>Products</small><h2>${products.length}</h2></div>
   <div class="stat"><small>Customers</small><h2>${customers.length}</h2></div>
  </div>
- <div class="panel"><h3>Scheduled drug register</h3><p class="feature-note">View sales of medicines marked with Schedule H, H1 or X, including prescription attachment status, customer, doctor, pharmacist and billing staff.</p><button class="btn" onclick="loadScheduledDrugReport()">Open scheduled drug report</button><div id="scheduledDrugReport" style="margin-top:12px"></div></div>
+ <div class="panel"><div class="panel-head"><h3>Scheduled medicine reports</h3><span class="badge">Compliance</span></div><p class="feature-note">Separate dispensing registers by Schedule H, H1, X and G. Data is filtered from the existing pharmacy dispensing register.</p><div class="report-shortcuts"><button class="btn light" onclick="runReport('schedule_H')">H Schedule</button><button class="btn light" onclick="runReport('schedule_H1')">H1 Schedule</button><button class="btn light" onclick="runReport('schedule_X')">X Schedule</button><button class="btn light" onclick="runReport('schedule_G')">G Schedule</button><button class="btn light" onclick="runReport('schedule')">All Schedules</button></div></div>
+ <div class="panel"><div class="panel-head"><h3>Sales movement analysis</h3><span class="badge green">Stock insights</span></div><p class="feature-note">Compare medicine movement using recorded sale quantities. Non-moving means no sale found in the loaded sales history.</p><div class="report-shortcuts"><button class="btn light" onclick="runReport('fast_moving')">Fast Moving</button><button class="btn light" onclick="runReport('slow_moving')">Slow Moving</button><button class="btn light" onclick="runReport('non_moving')">Non Moving</button></div></div>
  <div class="panel">
   <div class="panel-head"><h3>Report filters</h3><div class="actions"><button class="btn light" onclick="exportActiveReport()">Export CSV</button><button class="btn light" onclick="printActiveReport()">Print</button></div></div>
   <div class="form-grid">
@@ -1359,10 +1527,23 @@ async function runReport(type){
   }
   if(type==="customers")return setReport("Customer register",["Customer","Phone","Address","Credit balance"],customers.map(c=>[c.name,c.phone,c.address,money(c.credit_balance)]));
   if(type==="suppliers")return setReport("Supplier register",["Supplier","Phone","GST number","Address"],suppliers.map(c=>[c.name,c.phone,c.gst_number,c.address]));
-  if(type==="schedule"){
-   const {data,error}=await sb.from("ms_dispensing_register").select("created_at,product_name,drug_schedule,patient_name,doctor_name,doctor_registration_no,quantity,dispensed_by").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(1000);
+  if(type==="schedule" || type.startsWith("schedule_")){
+   const {data,error}=await sb.from("ms_dispensing_register").select("created_at,product_name,drug_schedule,patient_name,doctor_name,doctor_registration_no,quantity,dispensed_by").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(2000);
    if(error)throw error;
-   return setReport("Schedule dispensing register",["Date","Medicine","Schedule","Patient","Doctor","Doctor reg. no.","Qty","Dispensed by"],(data||[]).filter(x=>reportDateOk(x.created_at)).map(x=>[new Date(x.created_at).toLocaleString(),x.product_name,x.drug_schedule,x.patient_name,x.doctor_name,x.doctor_registration_no,x.quantity,x.dispensed_by]));
+   const wanted=type==="schedule"?"":type.slice(9).toUpperCase();
+   const rows=(data||[]).filter(x=>reportDateOk(x.created_at)&&(!wanted||String(x.drug_schedule||"").toUpperCase().replace(/SCHEDULE\s*/g,"").trim()===wanted)).map(x=>[new Date(x.created_at).toLocaleString(),x.product_name,x.drug_schedule,x.patient_name,x.doctor_name,x.doctor_registration_no,x.quantity,x.dispensed_by]);
+   return setReport(wanted?`Schedule ${wanted} dispensing register`:"All schedule dispensing register",["Date","Medicine","Schedule","Patient","Doctor","Doctor reg. no.","Qty","Dispensed by"],rows);
+  }
+  if(["fast_moving","slow_moving","non_moving"].includes(type)){
+   const ids=sales.filter(x=>reportDateOk(x.created_at)).map(x=>x.id);
+   let lines=[];
+   if(ids.length){const {data,error}=await sb.from("ms_sale_items").select("product_id,product_name,quantity,sale_id").eq("pharmacy_id",pharmacyId()).in("sale_id",ids);if(error)throw error;lines=data||[];}
+   const totals=new Map();lines.forEach(x=>{const key=x.product_id||x.product_name;const old=totals.get(key)||{qty:0,bills:0,name:x.product_name};old.qty+=Number(x.quantity||0);old.bills++;totals.set(key,old);});
+   let rows=products.map(p=>({p,move:totals.get(p.id)||totals.get(p.name)||{qty:0,bills:0,name:p.name}}));
+   if(type==="non_moving")rows=rows.filter(x=>x.move.qty===0).sort((a,b)=>String(a.p.name).localeCompare(String(b.p.name)));
+   else if(type==="fast_moving")rows=rows.filter(x=>x.move.qty>0).sort((a,b)=>b.move.qty-a.move.qty);
+   else rows=rows.filter(x=>x.move.qty>0).sort((a,b)=>a.move.qty-b.move.qty);
+   return setReport(type==="fast_moving"?"Fast moving medicines":type==="slow_moving"?"Slow moving medicines":"Non-moving medicines",["Medicine","Brand","Batch","Current stock","Sold qty in date range","Sale lines","Unit"],rows.map(x=>[x.p.name,x.p.brand,x.p.batch_number,x.p.stock,x.move.qty,x.move.bills,x.p.unit]));
   }
   if(type==="purchases"){
    const {data,error}=await sb.from("ms_purchases").select("invoice_number,created_at,supplier_id,total").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(1000);if(error)throw error;
