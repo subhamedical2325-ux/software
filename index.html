@@ -339,6 +339,64 @@ body.auth-mode #authMessage{font-size:12px!important;margin-top:10px!important}
 @media(max-width:700px){.auth-art{max-width:280px;margin:8px auto 12px}.po-hero{padding:12px}.po-hero-art{width:105px;flex-basis:105px}.po-hero h3{font-size:14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
  
+ 
+/* Dashboard visual refresh: closely follows the supplied blue pharmacy workstation reference. */
+.dash-welcome{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 13px;padding:2px 3px}
+.dash-eyebrow{font-size:9px;font-weight:800;letter-spacing:1.5px;color:#1684d9}
+.dash-welcome h2{margin:3px 0 2px;font-size:21px;color:#123d6d}.dash-welcome p{margin:0;color:#73859b;font-size:11px}
+.dash-date{background:#fff;border:1px solid #d5e4f3;border-radius:9px;padding:10px 13px;color:#244d77;font-size:12px;box-shadow:0 3px 12px #17446d0b}
+.dash-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin-bottom:13px}
+.dash-stat{display:flex;align-items:center;gap:11px;min-width:0;padding:12px 13px;border:1px solid #d4e4f3;border-radius:12px;background:linear-gradient(145deg,#fff,#f5faff);box-shadow:0 4px 12px #1b4c790c;animation:dashPop .45s ease both;transition:transform .2s ease,box-shadow .2s ease}
+.dash-stat:hover{transform:translateY(-3px);box-shadow:0 9px 19px #164a771b}.dash-stat-icon{width:49px;height:49px;flex:0 0 49px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:24px;font-weight:800;box-shadow:0 5px 12px #143b6024}
+.dash-stat small{display:block;font-size:11px;color:#365574;white-space:nowrap}.dash-stat strong{display:block;font-size:20px;color:#122f50;margin-top:4px;line-height:1.1}.dash-stat.blue .dash-stat-icon{background:linear-gradient(145deg,#229cf7,#0870d5)}.dash-stat.green .dash-stat-icon{background:linear-gradient(145deg,#25c978,#07985c)}.dash-stat.purple .dash-stat-icon{background:linear-gradient(145deg,#a15bd7,#7040ad)}.dash-stat.orange .dash-stat-icon{background:linear-gradient(145deg,#ffad43,#ed7818)}.dash-stat.teal .dash-stat-icon{background:linear-gradient(145deg,#20c8ba,#07988f)}
+.dash-main-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:12px}.dash-module{overflow:hidden;border:1px solid #cbdff1;border-radius:13px;background:#fff;box-shadow:0 5px 16px #17446d0c;animation:dashRise .5s ease both}.dash-module-head{height:48px;padding:0 13px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(105deg,#164b82,#0b3768);color:#fff}.dash-module-head h3{margin:0;font-size:14px;color:#fff}.dash-primary{border:1px solid #ffffff65;background:linear-gradient(135deg,#1998f7,#0870d6);color:#fff;border-radius:8px;padding:8px 12px;font-size:11px;font-weight:800;transition:transform .2s,filter .2s}.dash-primary:hover,.dash-action:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.dash-module-body{min-height:190px;padding:16px;display:flex;align-items:center;gap:18px;background:linear-gradient(135deg,#fff,#f4f9ff)}.dash-module-copy{flex:1;min-width:0}.dash-module-copy>b{font-size:14px;color:#173f68}.dash-module-copy p{font-size:11px;line-height:1.65;color:#71839a;margin:7px 0 13px}.dash-action{border:0;border-radius:8px;background:linear-gradient(135deg,#168ef0,#0866c7);color:#fff;padding:9px 14px;font-size:11px;font-weight:800;box-shadow:0 4px 10px #0878df25;transition:transform .2s}.dash-action span{padding-left:12px;font-size:15px}
+.dash-module-art{width:42%;max-width:220px;height:145px;flex:0 0 42%;position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(145deg,#e5f3ff,#f7fbff);display:grid;place-items:center}.bill-art:before{content:"";position:absolute;width:145px;height:145px;border-radius:50%;background:#cce7ff;right:-27px;top:-45px}.art-cross{position:absolute;left:22%;top:18%;font-size:46px;color:#159bdb;text-shadow:3px 4px 0 #d2f5df;animation:artHover 4s ease-in-out infinite}.art-pill{position:absolute;width:58px;height:23px;border-radius:20px;border:3px solid #fff;box-shadow:0 4px 9px #173f6825;transform:rotate(-28deg)}.pill-one{background:linear-gradient(90deg,#1b91e8 50%,#fff 50%);right:17%;top:28%}.pill-two{background:linear-gradient(90deg,#22bb78 50%,#fff 50%);right:28%;bottom:22%;transform:rotate(28deg)}.art-box{position:absolute;right:12%;bottom:13%;width:43px;height:43px;background:linear-gradient(145deg,#fff,#dcecff);border:2px solid #a9ccef;border-radius:8px;display:grid;place-items:center;color:#1268b7;font-weight:900;box-shadow:0 6px 12px #164a7719}
+.grn-art{background:linear-gradient(145deg,#e9f8f4,#f7fcff)}.grn-box{width:78px;height:91px;border-radius:10px;background:linear-gradient(145deg,#fff,#d9ecff);border:2px solid #9bc5ed;box-shadow:0 9px 17px #164a7719;display:grid;place-items:center;font-size:39px;color:#1476c9;transform:rotate(-5deg);animation:artHover 4.5s ease-in-out infinite}.grn-check{position:absolute;right:17%;bottom:19%;width:37px;height:37px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#26ca83,#079b60);color:#fff;font-size:23px;box-shadow:0 5px 12px #079b6040}.grn-line{position:absolute;width:58px;height:5px;border-radius:6px;background:#b5d5f1;left:15%;top:22%;transform:rotate(-24deg)}
+.dash-bottom-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-top:13px}.dash-lower-card{border:1px solid #cbdff1;border-radius:13px;background:#fff;padding:12px;box-shadow:0 5px 16px #17446d0b;animation:dashRise .55s ease both}.dash-lower-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding:0 2px 9px;border-bottom:1px solid #e3edf7}.dash-lower-head h3{margin:0;color:#164675;font-size:14px}.dash-lower-head button{border:0;background:none;color:#0876d7;font-size:11px;font-weight:800}.dash-report-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.dash-report-grid button,.dash-tool{border:1px solid #d5e4f3;border-radius:9px;background:linear-gradient(145deg,#fff,#f4f9ff);min-width:0;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#142f50;transition:transform .2s,box-shadow .2s,border-color .2s}.dash-report-grid button:hover,.dash-tool:hover{transform:translateY(-3px);border-color:#8dbfea;box-shadow:0 7px 14px #17446d17}.dash-report-grid span{font-size:21px}.dash-report-grid b{font-size:10px;text-align:center}.dash-alert-list{display:flex;flex-direction:column;gap:7px}.dash-alert{display:flex;align-items:center;gap:9px;border:1px solid;border-radius:8px;padding:9px 10px;animation:dashRise .5s ease both}.dash-alert>span{width:25px;height:25px;flex:0 0 25px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:900}.dash-alert b{display:block;font-size:10px;color:#172f4a}.dash-alert small{display:block;font-size:10px;margin-top:3px;color:#5d7189}.dash-alert.low{background:#fff0f0;border-color:#f6bfc2}.dash-alert.low>span{background:#e44e54}.dash-alert.near{background:#fff7e9;border-color:#f5d29b}.dash-alert.near>span{background:#f2a12b}.dash-alert.expired{background:#fcebed;border-color:#efb4ba}.dash-alert.expired>span{background:#d64b56}.dash-clear{padding:20px;text-align:center;color:#168257;background:#effaf4;border-radius:8px;font-size:12px}.dash-tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.dash-tool{min-height:70px;padding:6px 3px}.dash-tool>span{font-size:22px;color:#0876d7}.dash-tool b{font-size:10px;text-align:center}.dash-tool small{font-size:9px;color:#71839a;text-align:center;line-height:1.3}
+@keyframes dashRise{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}@keyframes dashPop{0%{opacity:0;transform:scale(.96) translateY(8px)}100%{opacity:1;transform:scale(1) translateY(0)}}@keyframes artHover{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-6px) rotate(-2deg)}}
+@media(max-width:1150px){.dash-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.dash-bottom-grid{grid-template-columns:1fr 1fr}.dash-bottom-grid .dash-lower-card:last-child{grid-column:1/-1}}
+@media(max-width:760px){.dash-main-grid,.dash-bottom-grid{grid-template-columns:1fr}.dash-bottom-grid .dash-lower-card:last-child{grid-column:auto}.dash-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-module-body{min-height:160px;padding:12px;gap:10px}.dash-module-art{height:125px}.dash-report-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.dash-date{font-size:10px;padding:8px}}
+@media(max-width:420px){.dash-stats{gap:6px}.dash-stat{padding:9px;gap:7px}.dash-stat-icon{width:38px;height:38px;flex-basis:38px;font-size:19px}.dash-stat strong{font-size:16px}.dash-stat small{font-size:9px}.dash-module-body{align-items:flex-start}.dash-module-art{flex-basis:36%;width:36%;height:112px}.dash-module-copy p{font-size:10px}.dash-report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-tool-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.dash-welcome h2{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.dash-stat,.dash-module,.dash-lower-card,.dash-alert,.art-cross,.grn-box{animation:none!important}.dash-stat,.dash-tool,.dash-report-grid button,.dash-primary,.dash-action{transition:none!important}}
+ 
+ 
+/* Advanced responsive polish: prevent clipped text and horizontal page overflow */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+*,*::before,*::after{box-sizing:border-box}
+#appScreen,.app,.layout,.main,.content,.panel,.card,.auth-wrap,.auth-card{min-width:0;max-width:100%}
+.panel-head h1,.panel-head h2,.panel-head h3,.panel-head h4,.panel-head strong{color:#fff!important;opacity:1!important}
+.panel-head{gap:10px;flex-wrap:wrap}
+.panel-head>*{min-width:0}
+.page-head,.topbar,.top-actions,.actions{min-width:0;flex-wrap:wrap}
+.page-head h1,.page-head p,.panel-head h3,.card h3,.stat small{overflow-wrap:anywhere;word-break:normal}
+.grid,.dash-stats,.dash-main-grid,.dash-bottom-grid,.form-grid,.page-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));min-width:0}
+.table-wrap{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{max-width:100%}
+input,select,textarea,button{max-width:100%}
+.stat,.dash-stat,.card,.panel{min-width:0}
+.empty,.notice,.feature-note{overflow-wrap:anywhere}
+.panel,.card,.dash-module,.dash-lower-card{animation:softEnter .48s cubic-bezier(.2,.75,.25,1) both}
+.btn,.nav,.dash-tool,.dash-primary,.dash-action{transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.btn:hover,.dash-tool:hover,.dash-primary:hover,.dash-action:hover{transform:translateY(-2px)}
+@keyframes softEnter{from{opacity:0;transform:translateY(12px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:760px){
+ .main{width:100%;padding:8px!important;margin-left:0!important}
+ .content{width:100%;padding:8px!important}
+ .topbar{gap:8px;min-height:64px;height:auto;padding:8px 10px!important}
+ .topbar>*{min-width:0}
+ .topbar h1,.topbar strong{font-size:clamp(15px,4vw,20px)!important}
+ .grid,.dash-stats,.dash-main-grid,.dash-bottom-grid,.page-grid,.form-grid{grid-template-columns:minmax(0,1fr)!important}
+ .stat{min-width:0}
+ .panel-head{align-items:flex-start}
+ .panel-head h3{font-size:14px;line-height:1.35}
+ .panel-body{padding:10px}
+ .page-head{align-items:flex-start}
+ .page-head h1{font-size:19px}
+ .auth-card{width:100%;padding:20px 16px}
+ .auth-wrap{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){.panel,.card,.dash-module,.dash-lower-card{animation:none!important}}
 </style>
  </head>
  <body>
@@ -390,7 +448,7 @@ body.auth-mode #authMessage{font-size:12px!important;margin-top:10px!important}
      </div>
      <button class="btn full" type="submit" id="loginButton">Log In</button>
      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap">
-      <button type="button" class="btn light" onclick="forgotPassword()">Forgot Password?</button>
+      <button type="button" class="btn light" onclick="openForgotPassword()">Forgot Password?</button>
       <button type="button" class="btn light" onclick="showAuth('register')">New Pharmacy? Create Account</button>
      </div>
     </form>
@@ -426,6 +484,14 @@ body.auth-mode #authMessage{font-size:12px!important;margin-top:10px!important}
       <button type="button" class="btn" id="verifyRegisterOtpBtn" onclick="verifyPharmacyRegistrationOtp()">Verify OTP &amp; Register</button>
       <button type="button" class="btn light" onclick="resendRegistrationOtp()">Resend OTP</button>
      </div>
+    </div>
+    <div id="forgotEmailPanel" class="hidden" style="margin-top:18px;padding:16px;border:1px solid #dce8e8;border-radius:12px;background:#f8fdfc">
+     <h3 style="margin:0 0 7px;font-size:16px">Forgot password?</h3>
+     <p style="font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 12px">Enter the email address used for your pharmacy account. You do not need to open Create Account.</p>
+     <div class="field">
+      <label>Registered email address</label><input id="forgotEmail" type="email" autocomplete="email" placeholder="Enter your registered email">
+     </div>
+     <button type="button" class="btn full" id="sendRecoveryOtpBtn" onclick="forgotPassword()">Send recovery OTP</button>
     </div>
     <div id="forgotOtpPanel" class="hidden" style="margin-top:18px;padding:16px;border:1px solid #dce8e8;border-radius:12px;background:#f8fdfc">
      <h3 style="margin:0 0 7px;font-size:16px">Reset password</h3>
@@ -634,14 +700,34 @@ async function resendRegistrationOtp(){
  catch(e){authMessage(e.message||"Could not resend OTP.");}
 }
  
+function openForgotPassword(){
+ $("forgotEmailPanel").classList.remove("hidden");
+ $("forgotOtpPanel").classList.add("hidden");
+ $("forgotEmail").value="";
+ $("forgotEmail").focus();
+ clearAuthMessage();
+}
 async function forgotPassword(){
- const email=$("loginEmail").value.trim().toLowerCase();
- if(!email){authMessage("Enter your registered email address in the login email field first.");return;}
+ const email=$("forgotEmail").value.trim().toLowerCase();
+ if(!email){authMessage("Enter the email address for your pharmacy account.");$("forgotEmail").focus();return;}
+ const btn=$("sendRecoveryOtpBtn");if(btn){btn.disabled=true;btn.textContent="Sending…";}
  try{
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;
-  pendingRecoveryEmail=email;$("forgotOtpPanel").classList.remove("hidden");$("forgotOtp").focus();
-  authMessage("Recovery code requested. Check "+email+" and enter the OTP below.","success");
- }catch(e){authMessage("Could not send recovery OTP: "+(e.message||"Check Supabase SMTP and the Reset Password email template."));}
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  if(error)throw error;
+  pendingRecoveryEmail=email;
+  $("forgotOtpPanel").classList.remove("hidden");
+  $("forgotOtp").focus();
+  authMessage("If this email is registered, a recovery code has been requested. Check the inbox and spam folder.","success");
+ }catch(e){authMessage("Could not request password recovery: "+(e.message||"Please check the email and Supabase email settings."));}
+ finally{if(btn){btn.disabled=false;btn.textContent="Send recovery OTP";}}
+}
+async function resendForgotPasswordOtp(){
+ if(!pendingRecoveryEmail)return authMessage("Enter your registered email and request a recovery code first.");
+ try{
+  const {error}=await sb.auth.resetPasswordForEmail(pendingRecoveryEmail,{redirectTo:location.origin+location.pathname});
+  if(error)throw error;
+  authMessage("If the account exists, a new recovery code has been requested.","success");
+ }catch(e){authMessage("Could not resend recovery code: "+(e.message||"Please try again."));}
 }
  
 async function verifyForgotPasswordOtp(){
@@ -785,34 +871,41 @@ function pageHead(title,subtitle,button=""){
  return `<div class="page-head"><div><h2>${title}</h2><p>${subtitle}</p></div>${button}</div>`;
 }
 function renderDashboard(){
- if(isSuper()){
-  renderSuperDashboard();return;
- }
+ if(isSuper()){renderSuperDashboard();return;}
  const today=new Date().toISOString().slice(0,10);
- const todays=sales.filter(s=>String(s.created_at).slice(0,10)===today);
- const revenue=todays.reduce((a,s)=>a+Number(s.total||0),0);
- const low=products.filter(p=>Number(p.stock)<=10);
- const expired=products.filter(p=>p.expiry_date&&p.expiry_date<today);
+ const todays=sales.filter(x=>String(x.created_at||'').slice(0,10)===today);
+ const revenue=todays.reduce((a,x)=>a+Number(x.total||0),0);
+ const low=products.filter(x=>Number(x.stock||0)<=Number(x.reorder_level||10));
+ const near=products.filter(x=>x.expiry_date&&x.expiry_date>=today&&((new Date(x.expiry_date)-new Date(today))/86400000)<=90);
+ const expired=products.filter(x=>x.expiry_date&&x.expiry_date<today);
+ const stats=[
+  ['🛒',"Today's Sales",money(revenue),'blue'],
+  ['▤','Total Bills',todays.length,'green'],
+  ['▣','Stock Items',products.length,'purple'],
+  ['⚠','Low Stock',low.length,'orange'],
+  ['⌛','Near Expiry',near.length,'teal']
+ ];
+ const alertItems=[
+  ...low.slice(0,3).map(x=>({type:'low',name:x.name,detail:`Low stock (${x.stock} ${x.unit||'PCS'})` })),
+  ...near.slice(0,3).map(x=>({type:'near',name:x.name,detail:`Near expiry (${x.expiry_date})` })),
+  ...expired.slice(0,2).map(x=>({type:'expired',name:x.name,detail:`Expired (${x.expiry_date})` }))
+ ].slice(0,5);
+ const quick=(icon,label,desc,page)=>`<button class="dash-tool" onclick="navigate('${page}')"><span>${icon}</span><b>${label}</b><small>${desc}</small></button>`;
  $("pageContent").innerHTML=`
- ${pageHead("Business overview","Welcome to "+esc(currentPharmacy?.pharmacy_name||"your pharmacy"))}
- <div class="grid">
-  <div class="stat"><span class="symbol">₹</span><small>Today's sales</small><h2>${money(revenue)}</h2></div>
-  <div class="stat"><span class="symbol">▣</span><small>Today's bills</small><h2>${todays.length}</h2></div>
-  <div class="stat"><span class="symbol">▤</span><small>Total products</small><h2>${products.length}</h2></div>
-  <div class="stat"><span class="symbol">!</span><small>Low stock items</small><h2>${low.length}</h2></div>
+ <div class="dash-welcome"><div><span class="dash-eyebrow">PHARMACY WORKSPACE</span><h2>Dashboard</h2><p>Your pharmacy operations at a glance</p></div><div class="dash-date">▦ &nbsp;${new Date().toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric',weekday:'short'})}</div></div>
+ <div class="dash-stats">${stats.map(x=>`<div class="dash-stat ${x[3]}"><span class="dash-stat-icon">${x[0]}</span><div><small>${x[1]}</small><strong>${x[2]}</strong></div></div>`).join('')}</div>
+ <div class="dash-main-grid">
+  <section class="dash-module"><div class="dash-module-head"><h3>🛒 &nbsp;Billing (POS)</h3><button class="dash-primary" onclick="navigate('billing')">Open Billing</button></div><div class="dash-module-body"><div class="dash-module-art bill-art"><div class="art-cross">✚</div><div class="art-pill pill-one"></div><div class="art-pill pill-two"></div><div class="art-box">Rx</div></div><div class="dash-module-copy"><b>Fast counter billing</b><p>Search medicines, scan barcodes, manage cart quantities and complete customer payments.</p><button class="dash-action" onclick="navigate('billing')">New Bill <span>→</span></button></div></div></section>
+  <section class="dash-module"><div class="dash-module-head"><h3>🚚 &nbsp;GRN – Goods Receipt Note</h3><button class="dash-primary" onclick="navigate('purchaseorders')">View GRN / PO</button></div><div class="dash-module-body"><div class="dash-module-art grn-art"><div class="grn-box">▤</div><div class="grn-check">✓</div><div class="grn-line"></div></div><div class="dash-module-copy"><b>Purchase receiving & stock inward</b><p>Record supplier invoices, batches, expiry dates and received quantities.</p><button class="dash-action" onclick="navigate('purchaseorders')">Open GRN <span>→</span></button></div></div></section>
  </div>
- <div class="grid" style="margin-top:15px">
-  <div class="stat"><small>Customers</small><h2>${customers.length}</h2></div>
-  <div class="stat"><small>Suppliers</small><h2>${suppliers.length}</h2></div>
-  <div class="stat"><small>Near/expired stock</small><h2>${expired.length}</h2></div>
-  <div class="stat"><small>Pharmacy code</small><h2 style="font-size:20px">${esc(currentPharmacy?.pharmacy_code||"-")}</h2></div>
- </div>
- <div class="panel"><div class="panel-head"><h3>Recent bills</h3><button class="btn light" onclick="navigate('reports')">View reports</button></div>
- ${sales.length?`<div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Date</th><th>Total</th><th>Payment</th></tr></thead><tbody>${sales.slice(0,8).map(s=>`<tr><td>${esc(s.invoice_number)}</td><td>${new Date(s.created_at).toLocaleString()}</td><td>${money(s.total)}</td><td>${esc(s.payment_method)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No bills recorded yet.</div>`}</div>
- <div class="panel"><div class="panel-head"><h3>Stock alerts</h3><button class="btn light" onclick="navigate('products')">Inventory</button></div>
- ${low.length?low.slice(0,8).map(p=>`<div class="total-row"><span>${esc(p.name)}</span><b>${p.stock} ${esc(p.unit||"PCS")}</b></div>`).join(""):`<div class="empty">No low stock items.</div>`}</div>`;
+ <div class="dash-bottom-grid">
+  <section class="dash-lower-card"><div class="dash-lower-head"><h3>▥ &nbsp;Reports</h3><button onclick="navigate('reports')">View All →</button></div><div class="dash-report-grid">
+   <button onclick="navigate('reports')"><span>📈</span><b>Sales Report</b></button><button onclick="navigate('reports')"><span>📦</span><b>Non Moving</b></button><button onclick="navigate('reports')"><span>⚡</span><b>Fast Moving</b></button><button onclick="navigate('reports')"><span>🐢</span><b>Slow Moving</b></button><button onclick="navigate('reports')"><span>🧊</span><b>Stock Report</b></button><button onclick="navigate('reports')"><span>▦</span><b>Expiry Report</b></button><button onclick="navigate('reports')"><span>🧾</span><b>GSTR Report</b></button><button onclick="navigate('cashbook')"><span>📘</span><b>Day Book</b></button>
+  </div></section>
+  <section class="dash-lower-card"><div class="dash-lower-head"><h3>🔔 &nbsp;Inventory Alerts</h3><button onclick="navigate('products')">View All →</button></div><div class="dash-alert-list">${alertItems.length?alertItems.map(x=>`<div class="dash-alert ${x.type}"><span>${x.type==='low'?'!':x.type==='near'?'◷':'×'}</span><div><b>${esc(x.name)}</b><small>${esc(x.detail)}</small></div></div>`).join(''):'<div class="dash-clear">✓ &nbsp;No current stock alerts</div>'}</div></section>
+  <section class="dash-lower-card"><div class="dash-lower-head"><h3>🔧 &nbsp;Quick Tools</h3><button onclick="navigate('settings')">Settings →</button></div><div class="dash-tool-grid">${quick('▥','Barcode Scan','Scan product barcode','scanner')}${quick('▦','Medicine Rack','Rack / shelf / bin','rack')}${quick('▤','Item Master','Medicine details','itemmaster')}${quick('⇩','Purchase Order','Create purchase order','purchaseorders')}${quick('↻','Stock Adjustment','Stock audit','audit')}${quick('⚙','Settings','Pharmacy setup','settings')}</div></section>
+ </div>`;
 }
- 
 async function renderSuperDashboard(){
  const {data,error}=await sb.from("ms_pharmacies").select("*").order("created_at",{ascending:false});
  if(error){$("pageContent").innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
@@ -991,12 +1084,12 @@ async function renderBilling(){
  <div class="pos-toolbar"><div><span class="pos-kicker">SUBHA MEDICAL · POINT OF SALE</span><strong>New Bill</strong><small>Search medicines, edit quantities and complete checkout.</small></div><div class="pos-invoice-meta"><span>INVOICE<strong id="billInvoicePreview">SM-${Date.now().toString().slice(-8)}</strong></span><span>DATE<strong id="billDatePreview">${new Date().toLocaleString()}</strong></span></div></div>
  <div class="billing-layout">
   <section class="panel billing-search-panel"><div class="panel-head"><div><span class="pos-section-label">MEDICINE SEARCH</span><h3>Scan barcode or type medicine name</h3></div><span class="badge green">Live stock</span></div>
-   <div class="pos-search-wrap"><span>⌕</span><input class="search" style="width:100%;max-width:none;padding:12px 12px 12px 38px" id="billSearch" placeholder="Scan barcode or search medicine / generic name (F2)" oninput="searchBill(this.value)" onkeydown="if(event.key==='Enter'){const first=document.querySelector('[data-bill-product]');if(first)first.click();}"></div>
+   <div class="pos-search-wrap"><span>⌕</span><input class="search" style="width:100%;max-width:none;padding:12px 12px 12px 38px" id="billSearch" placeholder="Scan barcode or search medicine / generic name" oninput="searchBill(this.value)" onkeydown="if(event.key==='Enter'){const first=document.querySelector('[data-bill-product]');if(first)first.click();}"></div>
    <div class="bill-scan-row"><input id="billBarcode" placeholder="Barcode input" onkeydown="if(event.key==='Enter'){event.preventDefault();addBarcodeToBill(this.value)}"><button class="btn light" onclick="addBarcodeToBill($('billBarcode').value)">Add</button></div>
    <div id="billResults"><div class="empty">Search or scan a medicine to add it to this invoice.</div></div>
    <div class="bill-items-heading"><b>Invoice items</b><small id="billItemCount">${cart.length} items · Edit quantity / rate / discount</small></div>
    <div id="cartItems"></div>
-   <div class="feature-tools"><button class="btn light" onclick="clearCart()">Clear bill</button><button class="btn light" onclick="if($('billSearch'))$('billSearch').focus()">Add medicine (F2)</button></div>
+   <div class="feature-tools"><button class="btn light" onclick="clearCart()">Clear bill</button><button class="btn light" onclick="if($('billSearch'))$('billSearch').focus()">Add medicine</button></div>
   </section>
   <section class="panel billing-cart-panel"><div class="bill-cart-head"><div><span class="pos-section-label">CUSTOMER & CHECKOUT</span><h3>Payment summary</h3></div><span class="badge">${esc(currentMember?.full_name||"Counter")}</span></div>
    <div class="bill-meta bill-customer-grid">
@@ -1014,7 +1107,7 @@ async function renderBilling(){
    <div class="payment-head"><b>Payment mode</b><label class="split-toggle"><input id="splitPaymentToggle" type="checkbox" onchange="toggleSplitPayment()"> Split payment</label></div>
    <div id="singlePaymentBox" class="bill-meta"><div class="field"><label>Payment method</label><select id="billPayment"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option><option value="credit">Credit</option></select></div></div>
    <div id="splitPaymentBox" class="split-payment-box hidden"><div class="split-payment-grid"><div class="field"><label>Cash (₹)</label><input id="splitCash" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>UPI (₹)</label><input id="splitUpi" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Card (₹)</label><input id="splitCard" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Credit (₹)</label><input id="splitCredit" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div></div><div class="split-total-line"><span>Allocated</span><b id="splitAllocated">₹0.00</b><span>Balance</span><b id="splitBalance">₹0.00</b></div><small id="splitPaymentHint" class="feature-note">Enter amounts to match the net payable.</small></div>
-   <button class="btn full" style="margin-top:13px;min-height:45px" onclick="completeSale()">Complete Sale · Save & Print (F12)</button>
+   <button class="btn full" style="margin-top:13px;min-height:45px" onclick="completeSale()">Complete Sale · Save & Print</button>
    <p class="feature-note" style="margin:8px 0 0">Verify UPI/card payment before completing the bill.</p>
   </section>
  </div>`;
