@@ -3,7 +3,7 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Pharmacy Software</title>
+  <title>Medical Software | Pharmacy Workstation</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -398,6 +398,62 @@ input,select,textarea,button{max-width:100%}
  .auth-wrap{padding:12px}
 }
 @media(prefers-reduced-motion:reduce){.panel,.card,.dash-module,.dash-lower-card{animation:none!important}}
+ 
+/* Premium workstation refresh: compact controls, accessible navigation and restrained motion. */
+:root{--primary:#176fc1;--primary-dark:#105596;--bg:#f3f7fc;--text:#18324d;--border:#dce7f2;--green:#11966a}
+body{background:radial-gradient(ellipse at 88% 0%,#e8f4ff 0,transparent 34%),#f3f7fc;color:#18324d}
+.sidebar{background:linear-gradient(180deg,#102e4d 0%,#123b61 58%,#102d4a 100%);box-shadow:8px 0 30px #173c5c12}
+.side-icon{background:linear-gradient(145deg,#4bb8ed,#1978c9);color:#fff;box-shadow:0 7px 18px #0878c933}
+.nav{border:1px solid transparent;transition:background .2s,border-color .2s,transform .2s,box-shadow .2s}
+.nav:hover{background:#ffffff16;border-color:#ffffff18;transform:translateX(3px)}
+.nav.active{background:linear-gradient(100deg,#258bdc,#1767b1);box-shadow:0 7px 16px #071e3440;color:#fff}
+.nav-title{color:#9ec4e4}
+.topbar{background:#ffffffed;backdrop-filter:blur(14px);box-shadow:0 4px 18px #183b5a08}
+.content{max-width:1600px}
+.panel,.stat,.dash-module,.dash-lower-card{border-radius:16px;box-shadow:0 8px 24px #1b4b7410;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.panel:hover,.stat:hover{box-shadow:0 13px 30px #1b4b7417;border-color:#c7dced}
+.btn{background:linear-gradient(135deg,#2389d8,#1265ad);box-shadow:0 5px 13px #176fc11c;transition:transform .18s,box-shadow .18s,filter .18s}
+.btn:hover{background:linear-gradient(135deg,#1678c6,#0f5598);transform:translateY(-1px);box-shadow:0 8px 18px #176fc12b}
+.btn.light{background:#eaf4fd;color:#1766a9;box-shadow:none}.btn.light:hover{background:#dceeff}
+.field input:focus,.field select:focus,.feature-input:focus,.search:focus{border-color:#2488d2;box-shadow:0 0 0 3px #2488d21c}
+#superPharmacySelect{max-width:min(38vw,290px);min-width:160px;border:1px solid #cfe0ef;border-radius:10px;padding:9px 32px 9px 11px;background:#f7fbff;color:#17466d;font-size:12px;font-weight:700;outline:none}
+#superPharmacySelect:focus{border-color:#2589d5;box-shadow:0 0 0 3px #2589d51b}
+.super-admin-hero{position:relative;overflow:hidden;padding:22px;border-radius:18px;color:#fff;background:linear-gradient(115deg,#123c65,#176fb1 60%,#28a0d0);box-shadow:0 13px 30px #145b9228;margin-bottom:16px}
+.super-admin-hero:before,.super-admin-hero:after{content:"";position:absolute;border:1px solid #ffffff27;border-radius:50%;width:230px;height:230px;right:-55px;top:-115px;animation:adminOrbit 15s linear infinite}
+.super-admin-hero:after{width:150px;height:150px;right:95px;top:auto;bottom:-95px;animation-direction:reverse}
+.super-admin-hero h2{font-size:23px;margin:0 0 6px;position:relative;z-index:1}.super-admin-hero p{font-size:12px;margin:0;color:#d9efff;position:relative;z-index:1}
+.super-admin-hero .actions{position:relative;z-index:1;margin-top:14px}.super-admin-hero .btn{background:#fff;color:#155b94;box-shadow:none}
+.admin-quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
+.admin-quick{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid #d7e6f3;background:linear-gradient(145deg,#fff,#f5faff);border-radius:14px;padding:14px;min-height:82px;color:#173d60;transition:transform .2s,box-shadow .2s,border-color .2s}
+.admin-quick:hover{transform:translateY(-4px);border-color:#9bc8eb;box-shadow:0 12px 22px #1b4b7418}
+.admin-quick .aq-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#e4f3ff,#d2eaff);color:#176db4;font-size:22px;flex:0 0 42px}
+.admin-quick b{display:block;font-size:12px}.admin-quick small{display:block;font-size:10px;color:#71869a;margin-top:4px;line-height:1.35}
+.admin-kpi{background:linear-gradient(145deg,#fff,#f5faff);border:1px solid #d9e8f5;border-radius:14px;padding:16px;animation:dashPop .45s ease both}
+.admin-kpi small{color:#688198;font-size:11px}.admin-kpi strong{display:block;font-size:25px;color:#153f65;margin-top:7px}
+.page-head h2{color:#173f63}.page-head p{color:#74899c}.badge{border-radius:7px}
+@keyframes adminOrbit{to{transform:rotate(360deg)}}
+@media(max-width:900px){.admin-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){#superPharmacySelect{min-width:120px;max-width:43vw;font-size:10px;padding:8px}.admin-quick-grid{grid-template-columns:1fr 1fr}.admin-quick{padding:10px;gap:8px;min-height:72px}.admin-quick .aq-icon{width:34px;height:34px;flex-basis:34px;font-size:18px}.super-admin-hero{padding:17px}.super-admin-hero h2{font-size:19px}}
+ 
+ 
+/* Mobile screenshot/readability fix: staff rows become labelled cards instead of a tiny wide table. */
+@media(max-width:700px){
+ #staffRows .table-wrap{overflow:visible!important;border:0!important;background:transparent!important}
+ #staffRows table{min-width:0!important;width:100%!important;display:block!important;border:0!important}
+ #staffRows thead{display:none!important}
+ #staffRows tbody{display:grid!important;gap:9px!important}
+ #staffRows tbody tr{display:grid!important;grid-template-columns:1fr 1fr!important;gap:0 10px!important;padding:8px 10px!important;margin:0!important;border:1px solid #dce7ee!important;border-radius:10px!important;background:#fff!important;box-shadow:0 3px 12px #173b5509!important}
+ #staffRows tbody td{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;min-width:0!important;white-space:normal!important;padding:8px 2px!important;border-bottom:1px solid #edf1f3!important;font-size:11px!important;text-align:right!important}
+ #staffRows tbody td:before{content:attr(data-label);font-size:9px!important;font-weight:800!important;letter-spacing:.35px!important;text-transform:uppercase!important;color:#708493!important;text-align:left!important;flex:0 0 auto!important}
+ #staffRows tbody td:first-child{grid-column:1/-1!important;display:block!important;text-align:left!important;font-size:12px!important;padding:7px 2px 10px!important}
+ #staffRows tbody td:first-child:before{display:block!important;margin-bottom:5px!important}
+ #staffRows tbody td:last-child{grid-column:1/-1!important;display:flex!important;flex-wrap:wrap!important;justify-content:space-between!important;border-bottom:0!important;padding-top:10px!important}
+ #staffRows tbody td .actions{justify-content:flex-end!important}
+ #staffRows select{max-width:125px!important;min-width:90px!important}
+ #staffRows .btn{font-size:10px!important;padding:7px 9px!important}
+}
+@media(max-width:380px){#staffRows tbody tr{grid-template-columns:1fr!important}#staffRows tbody td:first-child,#staffRows tbody td:last-child{grid-column:1!important}}
+ 
 </style>
  </head>
  <body>
@@ -515,9 +571,9 @@ input,select,textarea,button{max-width:100%}
   <section id="appScreen" class="app hidden">
    <aside id="sidebar" class="sidebar">
     <div class="side-brand">
-     <div class="side-icon">S</div>
+     <div class="side-icon">✚</div>
      <div>
-      <strong>PHARMACY SOFTWARE</strong><small>Billing &amp; Management</small>
+      <strong>MEDICAL SOFTWARE</strong><small>Pharmacy Workstation</small>
      </div>
     </div>
     <div class="nav-title" title="Workstation">WORKSTATION</div>
@@ -526,7 +582,7 @@ input,select,textarea,button{max-width:100%}
     <button class="nav" title="Customers" data-page="customers" onclick="navigate('customers')"><span>♙</span>Customers</button>
     <div class="nav-title" title="Inventory">INVENTORY</div>
     <button class="nav" title="Medicine Inventory" data-page="products" onclick="navigate('products')"><span>▤</span>Medicine Stock</button>
-    <button class="nav" title="Website &amp; Excel Product Import" data-page="productimport" onclick="navigate('productimport')"><span>⇧</span>Website / Excel Import</button>
+    <button class="nav" title="CSV and Excel Product Import" data-page="productimport" onclick="navigate('productimport')"><span>⇧</span>CSV / Excel Import</button>
     <button class="nav" title="Rack, Shelf and Bin locations" data-page="rack" onclick="navigate('rack')"><span>▦</span>Rack / Shelf / Bin</button>
     <button class="nav" title="Item Master" data-page="itemmaster" onclick="navigate('itemmaster')"><span>▧</span>Item Master</button>
     <button class="nav" title="Barcode Scanner" data-page="scanner" onclick="navigate('scanner')"><span>⌗</span>Barcode Scanner</button>
@@ -562,7 +618,7 @@ input,select,textarea,button{max-width:100%}
       </div>
      </div>
      <div class="top-actions">
-      <small id="userLabel"></small>
+      <select id="superPharmacySelect" class="hidden" aria-label="Select pharmacy workspace" onchange="switchAdminPharmacy(this.value)"><option value="">Select pharmacy workspace</option></select><small id="userLabel"></small>
       <div class="side-icon" style="height:34px;width:34px;font-size:14px">S</div>
      </div>
     </header>
@@ -597,6 +653,8 @@ let cart = [];
 let sales = [];
 let suppliers = [];
 let pharmacySettings = {};
+let selectedAdminPharmacyId = null;
+let adminPharmacyOptions = [];
  
 const $ = id => document.getElementById(id);
 const money = n => "₹" + Number(n || 0).toFixed(2);
@@ -606,9 +664,9 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({
 }[c]));
 const PRIMARY_ADMIN_EMAIL="subhamedical2325@gmail.com";
 const isPrimaryAdmin = () => String(currentUser?.email||"").toLowerCase()===PRIMARY_ADMIN_EMAIL;
-const isSuper = () => currentMember?.role === "super_admin";
+const isSuper = () => currentMember?.role === "super_admin" || (isPrimaryAdmin() && !!currentUser);
 const canManage = () => isPrimaryAdmin() || ["owner","admin","super_admin"].includes(currentMember?.role);
-const pharmacyId = () => currentMember?.pharmacy_id;
+const pharmacyId = () => isSuper() ? selectedAdminPharmacyId : currentMember?.pharmacy_id;
  
 function notify(message){
  const t=$("toast");t.textContent=message;t.style.display="block";
@@ -758,37 +816,46 @@ async function logout(){
 async function loadApplication(user,requestedPharmacyId=null){
  currentUser=user;
  document.body.classList.remove("auth-mode");document.body.classList.add("app-mode");
- $("authScreen").classList.add("hidden");
- $("appScreen").classList.remove("hidden");
+ $("authScreen").classList.add("hidden");$("appScreen").classList.remove("hidden");
  $("userLabel").textContent=user.email||"Account";
- 
- const {data:members,error}=await sb.from("ms_members")
-  .select("*").eq("user_id",user.id).eq("is_active",true).limit(5);
+ const {data:members,error}=await sb.from("ms_members").select("*").eq("user_id",user.id).eq("is_active",true).limit(20);
  if(error)throw error;
- if(!members?.length){
-  throw new Error("No active pharmacy account was found. Register a pharmacy or ask your Super Admin to create your staff account.");
- }
- currentMember=requestedPharmacyId
-  ? members.find(m=>m.pharmacy_id===requestedPharmacyId)
-  : (members.find(m=>m.role==="super_admin")||members[0]);
- if(!currentMember)throw new Error("This username does not belong to the entered Customer ID / Pharmacy Code.");
- 
- if(!isSuper()){
-  const {data:ph,error:phError}=await sb.from("ms_pharmacies")
-   .select("*").eq("id",currentMember.pharmacy_id).maybeSingle();
+ if(!members?.length)throw new Error("No active pharmacy account was found. Register a pharmacy or ask your Super Admin to create your staff account.");
+ const globalSuper=members.find(m=>m.role==="super_admin"&&!m.pharmacy_id);
+ if(globalSuper){
+  currentMember=globalSuper;
+  const {data:pharmacies,error:phError}=await sb.from("ms_pharmacies").select("*").order("created_at",{ascending:false});
   if(phError)throw phError;
-  if(!ph)throw new Error("Your pharmacy record could not be found.");
-  currentPharmacy=ph;
-  if(ph.approval_status!=="approved"){
-   showPending(ph);
-   return;
-  }
- }else{
-  currentPharmacy=null;
+  adminPharmacyOptions=pharmacies||[];
+  selectedAdminPharmacyId=requestedPharmacyId&&adminPharmacyOptions.some(p=>p.id===requestedPharmacyId)?requestedPharmacyId:null;
+  currentPharmacy=adminPharmacyOptions.find(p=>p.id===selectedAdminPharmacyId)||null;
   $("pharmacyNav").classList.remove("hidden");
+  updateSuperPharmacySelector();
+  await refreshData();navigate("dashboard");return;
  }
- await refreshData();
- navigate("dashboard");
+ currentMember=requestedPharmacyId?members.find(m=>m.pharmacy_id===requestedPharmacyId):members[0];
+ if(!currentMember)throw new Error("This username does not belong to the entered Customer ID / Pharmacy Code.");
+ selectedAdminPharmacyId=null;adminPharmacyOptions=[];
+ const selector=$("superPharmacySelect");if(selector)selector.classList.add("hidden");
+ const {data:ph,error:phError}=await sb.from("ms_pharmacies").select("*").eq("id",currentMember.pharmacy_id).maybeSingle();
+ if(phError)throw phError;if(!ph)throw new Error("Your pharmacy record could not be found.");
+ currentPharmacy=ph;if(ph.approval_status!=="approved"){showPending(ph);return;}
+ await refreshData();navigate("dashboard");
+}
+function updateSuperPharmacySelector(){
+ const el=$("superPharmacySelect");if(!el)return;
+ if(!isSuper()){el.classList.add("hidden");return;}
+ el.classList.remove("hidden");
+ el.innerHTML='<option value="">Select pharmacy workspace</option>'+adminPharmacyOptions.map(p=>`<option value="${esc(p.id)}" ${p.id===selectedAdminPharmacyId?'selected':''}>${esc(p.pharmacy_name||'Pharmacy')} · ${esc(p.pharmacy_code||'')}</option>`).join('');
+ if(selectedAdminPharmacyId)el.value=selectedAdminPharmacyId;
+}
+async function switchAdminPharmacy(id){
+ if(!isSuper())return;
+ if(!id){selectedAdminPharmacyId=null;currentPharmacy=null;products=[];customers=[];sales=[];suppliers=[];pharmacySettings={};updateSuperPharmacySelector();if(currentPage!=='dashboard')navigate('dashboard');else renderSuperDashboard();return;}
+ const target=adminPharmacyOptions.find(p=>p.id===id);if(!target)return notify('Selected pharmacy is not available.');
+ selectedAdminPharmacyId=id;currentPharmacy=target;updateSuperPharmacySelector();
+ try{await refreshData();notify('Workspace switched to '+(target.pharmacy_name||'selected pharmacy')+'.');if(currentPage==='dashboard')renderSuperDashboard();else navigate(currentPage);}
+ catch(e){notify('Could not load pharmacy workspace: '+e.message);}
 }
  
 function showPending(ph){
@@ -818,8 +885,8 @@ async function checkApproval(){
 }
  
 async function refreshData(){
- if(isSuper())return;
  const pid=pharmacyId();
+ if(!pid){products=[];customers=[];sales=[];suppliers=[];pharmacySettings={};return;}
  const [p,c,s,sup]=await Promise.all([
   sb.from("ms_products").select("*").eq("pharmacy_id",pid).order("name"),
   sb.from("ms_customers").select("*").eq("pharmacy_id",pid).order("name"),
@@ -834,11 +901,13 @@ async function refreshData(){
  
 function navigate(page){
  if(currentPage==="scanner" && page!=="scanner")stopCameraScanner();
+ const tenantPages=["billing","products","productimport","rack","customers","suppliers","purchases","reports","scanner","audit","itemmaster","manufacturers","billocr","purchaseorders","prescriptions","reminders","returns","cashbook","staff","settings"];
+ if(isSuper()&&tenantPages.includes(page)&&!pharmacyId()){notify("Select a pharmacy workspace from the top bar first.");page="dashboard";}
  currentPage=page;
  document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
  $("sidebar").classList.remove("open");
  const titles={
-  dashboard:"Dashboard",billing:"POS Billing",products:"Inventory",productimport:"Website / Excel Import",rack:"Rack / Shelf / Bin",
+  dashboard:"Dashboard",billing:"POS Billing",products:"Inventory",productimport:"CSV / Excel Import",rack:"Rack / Shelf / Bin",
   customers:"Customers",suppliers:"Suppliers",purchases:"Purchases",
   reports:"Reports",scanner:"Barcode Scanner",audit:"Stock Audit",itemmaster:"Item Master",
   manufacturers:"Manufacturers",billocr:"Bill OCR / Inward",purchaseorders:"Purchase Orders / GRN",prescriptions:"Prescription Desk",
@@ -913,40 +982,37 @@ function renderDashboard(){
 async function renderSuperDashboard(){
  const {data,error}=await sb.from("ms_pharmacies").select("*").order("created_at",{ascending:false});
  if(error){$("pageContent").innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
- const pending=(data||[]).filter(p=>p.approval_status==="pending").length;
+ adminPharmacyOptions=data||[];updateSuperPharmacySelector();
+ const pending=adminPharmacyOptions.filter(p=>p.approval_status==="pending").length;
+ const approved=adminPharmacyOptions.filter(p=>p.approval_status==="approved").length;
+ const suspended=adminPharmacyOptions.filter(p=>["suspended","rejected"].includes(p.approval_status)).length;
+ const selected=adminPharmacyOptions.find(p=>p.id===selectedAdminPharmacyId);
  $("pageContent").innerHTML=`
- ${pageHead("Super Admin","Manage pharmacy registrations")}
- <div class="grid">
-  <div class="stat"><small>Total pharmacies</small><h2>${data.length}</h2></div>
-  <div class="stat"><small>Pending approval</small><h2>${pending}</h2></div>
-  <div class="stat"><small>Approved</small><h2>${data.filter(p=>p.approval_status==="approved").length}</h2></div>
-  <div class="stat"><small>Suspended / rejected</small><h2>${data.filter(p=>["suspended","rejected"].includes(p.approval_status)).length}</h2></div>
- </div>
- <div class="panel"><div class="panel-head"><h3>Pharmacy registrations</h3><button class="btn" onclick="navigate('pharmacies')">Manage pharmacies</button></div>
- <div class="empty">Select Pharmacy Approval to review registrations.</div></div>`;
+ <div class="super-admin-hero"><div style="font-size:10px;letter-spacing:1.6px;font-weight:800;color:#bfe7ff">MEDICAL SOFTWARE · CONTROL CENTRE</div><h2>Super Admin Command Dashboard</h2><p>Manage every pharmacy workspace, approvals, staff access and system operations from one secure control centre.</p><div class="actions"><button class="btn" onclick="navigate('pharmacies')">Review pharmacy applications →</button>${selected?`<button class="btn" onclick="navigate('products')">Open ${esc(selected.pharmacy_name)} workspace</button>`:''}</div></div>
+ <div class="grid"><div class="admin-kpi"><small>Total pharmacy accounts</small><strong>${adminPharmacyOptions.length}</strong></div><div class="admin-kpi"><small>Awaiting approval</small><strong>${pending}</strong></div><div class="admin-kpi"><small>Approved workspaces</small><strong>${approved}</strong></div><div class="admin-kpi"><small>Suspended / rejected</small><strong>${suspended}</strong></div></div>
+ <div class="panel"><div class="panel-head"><div><h3>Quick access</h3><p class="feature-note">Select a pharmacy from the top bar to open its billing, inventory, purchasing, reports and settings.</p></div><span class="badge green">Global Admin</span></div>
+ <div class="admin-quick-grid">
+  <button class="admin-quick" onclick="navigate('pharmacies')"><span class="aq-icon">⌂</span><span><b>Pharmacy approvals</b><small>Approve, reject or suspend accounts</small></span></button>
+  <button class="admin-quick" onclick="navigate('staff')"><span class="aq-icon">♙</span><span><b>Staff & roles</b><small>Manage staff in selected workspace</small></span></button>
+  <button class="admin-quick" onclick="navigate('purchases')"><span class="aq-icon">⇩</span><span><b>Stock inward</b><small>Post purchase invoices and batches</small></span></button>
+  <button class="admin-quick" onclick="navigate('products')"><span class="aq-icon">▤</span><span><b>Medicine inventory</b><small>View products and current stock</small></span></button>
+  <button class="admin-quick" onclick="navigate('billing')"><span class="aq-icon">▣</span><span><b>POS billing</b><small>Open the selected pharmacy counter</small></span></button>
+  <button class="admin-quick" onclick="navigate('reports')"><span class="aq-icon">▥</span><span><b>Reports & registers</b><small>Sales, tax, expiry and audit reports</small></span></button>
+  <button class="admin-quick" onclick="navigate('purchaseorders')"><span class="aq-icon">▧</span><span><b>Purchase orders / GRN</b><small>Manage purchase workflow</small></span></button>
+  <button class="admin-quick" onclick="navigate('settings')"><span class="aq-icon">⚙</span><span><b>Workspace settings</b><small>Profile, bill sheet and payment setup</small></span></button>
+ </div></div>
+ <div class="panel"><div class="panel-head"><h3>Pharmacy workspaces</h3><button class="btn light" onclick="navigate('pharmacies')">Manage all</button></div><div class="table-wrap"><table><thead><tr><th>Pharmacy</th><th>Code</th><th>Status</th><th>Workspace</th></tr></thead><tbody>${adminPharmacyOptions.length?adminPharmacyOptions.slice(0,12).map(p=>`<tr><td><b>${esc(p.pharmacy_name||'Pharmacy')}</b></td><td>${esc(p.pharmacy_code||'-')}</td><td><span class="badge ${p.approval_status==='approved'?'green':p.approval_status==='rejected'?'red':''}">${esc(p.approval_status||'pending')}</span></td><td><button class="btn light" onclick="switchAdminPharmacy('${p.id}')">Open workspace</button></td></tr>`).join(''):`<tr><td colspan="4" class="empty">No pharmacy records found.</td></tr>`}</tbody></table></div></div>`;
 }
  
-/* WEBSITE / CSV / EXCEL PRODUCT IMPORT
+/* CSV / EXCEL PRODUCT IMPORT
    Browser URL imports work only with public JSON endpoints that permit CORS.
    Never paste a Supabase service-role key or a private vendor secret here. */
 let productImportRows=[];
 function renderProductImport(){
  if(!canManage())return notify("Only Owner/Admin can import products.");
- $("pageContent").innerHTML=`${pageHead("Website / Excel Product Import","Connect a public product API or upload CSV / Excel. Review every row before saving.")}
- <div class="panel"><h3>1. Connect a website / API</h3><p class="feature-note">Enter a public product JSON endpoint (not just a normal homepage). The endpoint must allow browser CORS. Private API keys should be handled by a secure server/Edge Function, not stored in this browser.</p>
- <div class="form-grid"><div class="field"><label>Website name</label><input id="impSiteName" placeholder="Supplier / website name"></div><div class="field"><label>Public product API URL</label><input id="impApiUrl" type="url" placeholder="https://example.com/api/products"></div></div>
- <div class="actions"><button class="btn" onclick="connectProductWebsite()">Connect & Fetch Products</button><button class="btn light" onclick="disconnectProductWebsite()">Disconnect</button></div><div id="impApiStatus" class="feature-note" style="margin-top:10px">No website connected in this session.</div></div>
- <div class="panel"><h3>2. Upload CSV / Excel file</h3><p class="feature-note">Supported: .csv, .xlsx, .xls. Suggested columns: name, brand, barcode, category, hsn_code, batch_number, expiry_date, mrp, purchase_price, gst_percent, stock, unit, image_url.</p><div class="field"><label>Select product file</label><input id="productImportFile" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"></div><button class="btn" onclick="readProductImportFile()">Read & Preview File</button></div>
- <div class="panel"><div class="panel-head"><h3>3. Review import <span id="impCount" class="badge">0 rows</span></h3><div class="actions"><button class="btn light" onclick="downloadProductImportTemplate()">Download CSV Template</button><button class="btn" onclick="saveProductImport()">Import Selected Rows</button></div></div><div class="feature-note">Matching priority: barcode, then medicine name + batch. Existing products are updated only when you select Update existing; otherwise matching rows are skipped. Stock is set to the imported quantity, not added to current stock.</div><label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:12px"><input id="impUpdateExisting" type="checkbox"> Update matching existing products</label><div class="table-wrap"><table><thead><tr><th>Import</th><th>Medicine</th><th>Brand</th><th>Batch</th><th>MRP</th><th>Purchase</th><th>Qty</th><th>HSN</th><th>Image</th><th>Match</th></tr></thead><tbody id="productImportRows"><tr><td colspan="10" class="empty">Connect a website or upload a file to preview products.</td></tr></tbody></table></div><div id="impSaveStatus" class="feature-note"></div></div>`;
- const saved=JSON.parse(sessionStorage.getItem("subha_product_import_endpoint")||"{}");if(saved.url){$("impSiteName").value=saved.name||"";$("impApiUrl").value=saved.url;}
-}
-function disconnectProductWebsite(){sessionStorage.removeItem("subha_product_import_endpoint");sessionStorage.removeItem("subha_product_import_token");if($("impApiStatus"))$("impApiStatus").textContent="Website disconnected.";notify("Website disconnected.");}
-async function connectProductWebsite(){
- if(!canManage())return notify("Permission denied.");const url=$("impApiUrl")?.value.trim(),name=$("impSiteName")?.value.trim()||"External website";if(!url)return notify("Enter a public product API URL.");
- try{const u=new URL(url);if(!["https:","http:"].includes(u.protocol))throw new Error("Only HTTP/HTTPS URLs are allowed.");if(u.protocol!=="https:"&&location.protocol==="https:")throw new Error("Use HTTPS API URL from this secure website.");
- const response=await fetch(u.href,{headers:{Accept:"application/json"}});if(!response.ok)throw new Error("API responded with HTTP "+response.status);const json=await response.json();const arr=Array.isArray(json)?json:(json.products||json.data||json.items||json.results);if(!Array.isArray(arr))throw new Error("API JSON must be an array or contain products/data/items/results array.");
- sessionStorage.setItem("subha_product_import_endpoint",JSON.stringify({url:u.href,name}));productImportRows=arr.map(normalizeImportedProduct).filter(x=>x.name);renderProductImportPreview();$("impApiStatus").textContent=`Connected for this browser session: ${name}. Fetched ${productImportRows.length} products.`;notify("Website products fetched. Review before importing.");
- }catch(e){if($("impApiStatus"))$("impApiStatus").textContent="Connection failed: "+e.message;notify("Website connection failed: "+e.message);}
+ $("pageContent").innerHTML=`${pageHead("CSV / Excel Product Import","Import a prepared medicine list. Website/API connection has been removed.")}
+ <div class="panel"><div class="panel-head"><h3>Upload medicine file</h3><span class="badge green">CSV · XLSX · XLS</span></div><p class="feature-note">Supported columns: name, brand, barcode, category, hsn_code, batch_number, expiry_date, mrp, purchase_price, gst_percent, stock, unit, image_url. Review all rows before importing.</p><div class="field"><label>Select CSV / Excel file</label><input id="productImportFile" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"></div><div class="actions"><button class="btn" onclick="readProductImportFile()">Read & Preview File</button><button class="btn light" onclick="downloadProductImportTemplate()">Download CSV Template</button></div></div>
+ <div class="panel"><div class="panel-head"><h3>Review import <span id="impCount" class="badge">0 rows</span></h3><button class="btn" onclick="saveProductImport()">Import Selected Rows</button></div><div class="feature-note">Matching priority: barcode, then medicine name + batch. Existing products are skipped unless Update matching existing is selected. Imported stock replaces the current product-level quantity; use Stock Inward for purchase quantities and batch movements.</div><label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:12px"><input id="impUpdateExisting" type="checkbox"> Update matching existing products</label><div class="table-wrap"><table><thead><tr><th>Import</th><th>Medicine</th><th>Brand</th><th>Batch</th><th>MRP</th><th>Purchase</th><th>Qty</th><th>HSN</th><th>Image</th><th>Match</th></tr></thead><tbody id="productImportRows"><tr><td colspan="10" class="empty">Choose a CSV or Excel file to preview products.</td></tr></tbody></table></div><div id="impSaveStatus" class="feature-note"></div></div>`;
 }
 function normalizeImportedProduct(x){const get=(...keys)=>{for(const k of keys){const v=x?.[k]??x?.[k.toLowerCase()];if(v!==undefined&&v!==null&&v!=="")return v;}return "";};return {name:String(get("name","product_name","medicine","title")).trim(),brand:get("brand","manufacturer"),barcode:get("barcode","ean","sku","product_code"),category:get("category","type"),hsn_code:get("hsn_code","hsn","hsn_code_no"),batch_number:get("batch_number","batch","lot"),expiry_date:normalizeImportDate(get("expiry_date","expiry","exp_date")),mrp:numImport(get("mrp","maximum_retail_price")),purchase_price:numImport(get("purchase_price","ptr","purchase_rate","rate")),gst_percent:numImport(get("gst_percent","gst","tax")),stock:numImport(get("stock","quantity","qty","available_quantity")),unit:get("unit","uom")||"PCS",image_url:get("image_url","image","image_link","photo","thumbnail")};}
 function numImport(v){if(v===""||v==null)return 0;const n=Number(String(v).replace(/[₹,]/g,""));return Number.isFinite(n)?n:0;}
@@ -955,9 +1021,9 @@ async function readProductImportFile(){if(!canManage())return notify("Permission
 function parseSimpleCSV(text){const lines=text.replace(/^\uFEFF/,"").split(/\r?\n/).filter(x=>x.trim());if(!lines.length)return [];const parse=line=>{let a=[],v="",q=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'&&line[i+1]==='"'&&q){v+='"';i++;}else if(c==='"')q=!q;else if(c===','&&!q){a.push(v);v="";}else v+=c;}a.push(v);return a;};const h=parse(lines.shift()).map(x=>x.trim().toLowerCase().replace(/[\s-]+/g,"_"));return lines.map(line=>{const a=parse(line),o={};h.forEach((k,i)=>o[k]=a[i]??"");return o;});}
 function renderProductImportPreview(){const host=$("productImportRows");if(!host)return;$("impCount").textContent=productImportRows.length+" rows";host.innerHTML=productImportRows.length?productImportRows.map((p,i)=>{const match=products.find(x=>(p.barcode&&String(x.barcode||"").toLowerCase()===String(p.barcode).toLowerCase())||(String(x.name||"").trim().toLowerCase()===p.name.toLowerCase()&&String(x.batch_number||"").toLowerCase()===String(p.batch_number||"").toLowerCase()));return `<tr><td><input type="checkbox" class="imp-pick" data-i="${i}" checked></td><td><b>${esc(p.name)}</b></td><td>${esc(p.brand||"-")}</td><td>${esc(p.batch_number||"-")}</td><td>${money(p.mrp)}</td><td>${money(p.purchase_price)}</td><td>${p.stock}</td><td>${esc(p.hsn_code||"-")}</td><td>${safeWebUrl(p.image_url)?`<a href="${esc(safeWebUrl(p.image_url))}" target="_blank" rel="noopener">View</a>`:"-"}</td><td>${match?`<span class="badge">Match found</span>`:`<span class="badge green">New</span>`}</td></tr>`;}).join(""):`<tr><td colspan="10" class="empty">No valid product rows found.</td></tr>`;}
 function downloadProductImportTemplate(){const csv="name,brand,barcode,category,hsn_code,batch_number,expiry_date,mrp,purchase_price,gst_percent,stock,unit,image_url\nParacetamol 500mg,ABC,890000000001,Tablet,30049099,B001,2027-12-31,20,12,12,100,PCS,https://example.com/image.jpg\n";const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="Subha_Medical_Product_Import_Template.csv";a.click();URL.revokeObjectURL(a.href);}
-async function saveProductImport(){if(!canManage())return notify("Permission denied.");const picks=[...document.querySelectorAll(".imp-pick:checked")].map(x=>Number(x.dataset.i));if(!picks.length)return notify("Select at least one row.");const updateExisting=$("impUpdateExisting")?.checked;let added=0,updated=0,skipped=0,failed=[];const source=JSON.parse(sessionStorage.getItem("subha_product_import_endpoint")||"{}").name||"CSV/Excel";
+async function saveProductImport(){if(!canManage())return notify("Permission denied.");const picks=[...document.querySelectorAll(".imp-pick:checked")].map(x=>Number(x.dataset.i));if(!picks.length)return notify("Select at least one row.");const updateExisting=$("impUpdateExisting")?.checked;let added=0,updated=0,skipped=0,failed=[];const source="CSV/Excel";
  for(const i of picks){const p=productImportRows[i];const match=products.find(x=>(p.barcode&&String(x.barcode||"").toLowerCase()===String(p.barcode).toLowerCase())||(String(x.name||"").trim().toLowerCase()===p.name.toLowerCase()&&String(x.batch_number||"").toLowerCase()===String(p.batch_number||"").toLowerCase()));if(match&&!updateExisting){skipped++;continue;}const d={name:p.name,brand:p.brand||null,barcode:p.barcode||null,category:p.category||null,hsn_code:p.hsn_code||null,batch_number:p.batch_number||null,expiry_date:p.expiry_date,mrp:p.mrp,purchase_price:p.purchase_price,gst_percent:p.gst_percent,stock:p.stock,unit:p.unit||"PCS",image_url:p.image_url||null};try{let q;if(match){q=await sb.from("ms_products").update(d).eq("id",match.id).eq("pharmacy_id",pharmacyId());if(q.error)throw q.error;updated++;}else{q=await sb.from("ms_products").insert({...d,pharmacy_id:pharmacyId()});if(q.error)throw q.error;added++;}}catch(e){failed.push(`${p.name}: ${e.message}`);}}
- try{await sb.from("ms_product_import_logs").insert({pharmacy_id:pharmacyId(),source_name:source,source_type:source==="CSV/Excel"?"file":"website_api",rows_seen:picks.length,rows_added:added,rows_updated:updated,rows_skipped:skipped,rows_failed:failed.length,details:failed.slice(0,30),created_by:currentUser.id});}catch(e){console.warn("Import log not saved",e);}
+ try{await sb.from("ms_product_import_logs").insert({pharmacy_id:pharmacyId(),source_name:source,source_type:"file",rows_seen:picks.length,rows_added:added,rows_updated:updated,rows_skipped:skipped,rows_failed:failed.length,details:failed.slice(0,30),created_by:currentUser.id});}catch(e){console.warn("Import log not saved",e);}
  await refreshData();renderProductImport();$("impSaveStatus")&&($("impSaveStatus").textContent=`Import completed: ${added} added, ${updated} updated, ${skipped} skipped, ${failed.length} failed.`);notify(`Import complete: ${added} added, ${updated} updated, ${skipped} skipped, ${failed.length} failed.`);if(failed.length)console.warn("Import errors",failed);
 }
  
@@ -1566,17 +1632,19 @@ function updateOcrRow(i,key,value){if(!ocrPurchaseRows[i])return;ocrPurchaseRows
 function removeOcrRow(i){ocrPurchaseRows.splice(i,1);renderOcrPurchaseRows();}
 async function postVerifiedPurchase(){
  if(!canManage())return notify("Only Owner/Admin can post purchase stock.");
+ if(!pharmacyId())return notify("Select a pharmacy workspace first.");
  const invoice=$("ocrInvoiceNo").value.trim(),supplier=$("ocrSupplier").value,date=$("ocrInvoiceDate").value,total=Number($("ocrInvoiceTotal").value||0);
  if(!invoice||!supplier||!date)return notify("Select supplier and enter invoice number and date.");
  if(!ocrPurchaseRows.length)return notify("There are no invoice items to post.");
  for(const [i,r] of ocrPurchaseRows.entries()){
   if(!r.product_id||!products.some(p=>p.id===r.product_id))return notify(`Select a valid existing medicine in row ${i+1}.`);
   if(!(Number(r.quantity)>0))return notify(`Enter a valid quantity in row ${i+1}.`);
+  if(!String(r.batch_number||"").trim())return notify(`Enter a batch number in row ${i+1}.`);
   if(Number(r.purchase_rate)<0||Number(r.mrp)<0)return notify(`Check prices in row ${i+1}.`);
  }
  if(!confirm(`Post invoice ${invoice} and add ${ocrPurchaseRows.reduce((a,r)=>a+Number(r.quantity),0)} units to stock?`))return;
  try{
-  const {data,error}=await sb.rpc("ms_post_purchase_invoice",{p_invoice_number:invoice,p_supplier_id:supplier,p_invoice_date:date,p_total:total,p_items:ocrPurchaseRows});
+  const {data,error}=await sb.rpc("ms_post_purchase_invoice",{p_invoice_number:invoice,p_supplier_id:supplier,p_invoice_date:date,p_total:total,p_items:ocrPurchaseRows,p_pharmacy_id:pharmacyId()});
   if(error)throw error;
   await refreshData();notify(`Purchase posted. ${data?.items_posted??ocrPurchaseRows.length} item row(s) added to stock.`);
   ocrPurchaseRows=[];renderBillOCR();
@@ -1606,11 +1674,12 @@ function removePurchaseEntryRow(i){purchaseEntryRows.splice(i,1);renderPurchaseE
 function clearPurchaseEntry(){purchaseEntryRows=[];renderPurchaseEntryRows();["purchaseInvoiceNo","purchaseInvoiceTotal"].forEach(id=>{if($(id))$(id).value=id==="purchaseInvoiceTotal"?"0":"";});}
 async function postPurchaseEntry(){
  if(!canManage())return notify("Only Owner/Admin can post purchase stock.");
+ if(!pharmacyId())return notify("Select a pharmacy workspace first.");
  const supplier=$("purchaseSupplier")?.value,invoice=$("purchaseInvoiceNo")?.value.trim(),date=$("purchaseInvoiceDate")?.value,total=Number($("purchaseInvoiceTotal")?.value||0);
  if(!supplier)return notify("Please register/select a supplier first.");if(!invoice||!date)return notify("Enter supplier invoice number and date.");if(!purchaseEntryRows.length)return notify("Add at least one medicine row.");
- for(const [i,r] of purchaseEntryRows.entries()){if(!r.product_id||!products.some(p=>p.id===r.product_id))return notify(`Select an existing medicine in row ${i+1}.`);if(!(Number(r.quantity)>0))return notify(`Enter a valid quantity in row ${i+1}.`);if(Number(r.purchase_rate)<0||Number(r.mrp)<0)return notify(`Check prices in row ${i+1}.`);}
+ for(const [i,r] of purchaseEntryRows.entries()){if(!r.product_id||!products.some(p=>p.id===r.product_id))return notify(`Select an existing medicine in row ${i+1}.`);if(!(Number(r.quantity)>0))return notify(`Enter a valid quantity in row ${i+1}.`);if(!String(r.batch_number||"").trim())return notify(`Enter a batch number in row ${i+1}.`);if(Number(r.purchase_rate)<0||Number(r.mrp)<0)return notify(`Check prices in row ${i+1}.`);}
  if(!confirm(`Receive ${purchaseEntryRows.reduce((n,r)=>n+Number(r.quantity),0)} units for invoice ${invoice}?`))return;
- try{const {data,error}=await sb.rpc("ms_post_purchase_invoice",{p_invoice_number:invoice,p_supplier_id:supplier,p_invoice_date:date,p_total:total,p_items:purchaseEntryRows});if(error)throw error;await refreshData();notify("Purchase posted and stock received successfully.");purchaseEntryRows=[];renderPurchases();}catch(e){notify("Purchase posting failed: "+(e.message||e));}
+ try{const {data,error}=await sb.rpc("ms_post_purchase_invoice",{p_invoice_number:invoice,p_supplier_id:supplier,p_invoice_date:date,p_total:total,p_items:purchaseEntryRows,p_pharmacy_id:pharmacyId()});if(error)throw error;await refreshData();notify("Purchase posted and stock received successfully.");purchaseEntryRows=[];renderPurchases();}catch(e){notify("Purchase posting failed: "+(e.message||e));}
 }
 async function loadPurchasesHistory(){const host=$("purchasesHistory");if(!host||!pharmacyId())return;try{const {data,error}=await sb.from("ms_purchases").select("id,invoice_number,invoice_date,total,created_at,supplier_id,ms_suppliers(name)").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(100);if(error)throw error;host.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Supplier</th><th>Invoice date</th><th>Total</th><th>Created</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.invoice_number||"-")}</td><td>${esc(x.ms_suppliers?.name||suppliers.find(s=>s.id===x.supplier_id)?.name||"-")}</td><td>${esc(x.invoice_date||"-")}</td><td>${money(x.total||0)}</td><td>${new Date(x.created_at).toLocaleString()}</td></tr>`).join("")}</tbody></table></div>`:"No purchase entries found.";}catch(e){host.textContent="Purchase history unavailable: "+e.message;}}
  
@@ -1766,7 +1835,7 @@ async function renderStaff(){
  <div class="notice" style="margin-top:15px">Staff accounts are created securely through the Supabase Edge Function. The browser never receives an admin/service-role key. Manager access is limited to viewing staff and recording daily audits.</div>`;
  const {data,error}=await sb.from("ms_members").select("*").eq("pharmacy_id",pid).order("created_at",{ascending:true});
  if(error){$("staffRows").innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
- $("staffRows").innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Staff member</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead><tbody>${data.map(m=>`<tr><td><b>${esc(m.full_name|| (m.user_id===currentUser.id?"Current account":String(m.user_id).slice(0,8)+"…"))}</b><br><small>${esc(m.phone||"")}</small></td><td><select ${!canManage()||m.user_id===currentUser.id||currentMember.role!=="owner"?"disabled":""} onchange="changeStaffRole('${m.id}',this.value)"><option value="owner" ${m.role==="owner"?"selected":""}>Owner</option><option value="admin" ${m.role==="admin"?"selected":""}>Admin</option><option value="manager" ${m.role==="manager"?"selected":""}>Manager</option><option value="pharmacist" ${m.role==="pharmacist"?"selected":""}>Pharmacist</option><option value="cashier" ${m.role==="cashier"?"selected":""}>Cashier</option></select></td><td><span class="badge ${m.is_active?"green":"red"}">${m.is_active?"Active":"Inactive"}</span></td><td><button class="btn light" onclick="showStaffPermissions('${m.id}')">View</button></td><td><div class="actions">${canManage()?`<button class="btn light" onclick="editStaff('${m.id}')">Edit</button>`:""}${m.user_id===currentUser.id?"You":canManage()?`<button class="btn ${m.is_active?"danger":"light"}" onclick="toggleStaff('${m.id}',${!m.is_active})">${m.is_active?"Deactivate":"Activate"}</button>`:"View only"}</div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No staff accounts found for this pharmacy.</div>`;
+ $("staffRows").innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Staff member</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead><tbody>${data.map(m=>`<tr><td data-label="Staff member"><b>${esc(m.full_name|| (m.user_id===currentUser.id?"Current account":String(m.user_id).slice(0,8)+"…"))}</b><br><small>${esc(m.phone||"")}</small></td><td data-label="Role"><select ${!canManage()||m.user_id===currentUser.id||currentMember.role!=="owner"?"disabled":""} onchange="changeStaffRole('${m.id}',this.value)"><option value="owner" ${m.role==="owner"?"selected":""}>Owner</option><option value="admin" ${m.role==="admin"?"selected":""}>Admin</option><option value="manager" ${m.role==="manager"?"selected":""}>Manager</option><option value="pharmacist" ${m.role==="pharmacist"?"selected":""}>Pharmacist</option><option value="cashier" ${m.role==="cashier"?"selected":""}>Cashier</option></select></td><td data-label="Status"><span class="badge ${m.is_active?"green":"red"}">${m.is_active?"Active":"Inactive"}</span></td><td data-label="Permissions"><button class="btn light" onclick="showStaffPermissions('${m.id}')">View</button></td><td data-label="Action"><div class="actions">${canManage()?`<button class="btn light" onclick="editStaff('${m.id}')">Edit</button>`:""}${m.user_id===currentUser.id?"You":canManage()?`<button class="btn ${m.is_active?"danger":"light"}" onclick="toggleStaff('${m.id}',${!m.is_active})">${m.is_active?"Deactivate":"Activate"}</button>`:"View only"}</div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No staff accounts found for this pharmacy.</div>`;
  window._staffCache=data||[];
  loadDailyAuditHistory();
 }
@@ -1819,15 +1888,29 @@ async function renderPharmacies(){
  <button class="btn" onclick="setApproval('${p.id}','approved')">Approve</button>
  <button class="btn danger" onclick="setApproval('${p.id}','rejected')">Reject</button>
  <button class="btn light" onclick="setApproval('${p.id}','suspended')">Suspend</button>
+ <button class="btn danger" onclick="deletePharmacyApplication('${p.id}')">Delete</button>
  </div></td></tr>`).join(""):`<tr><td colspan="6" class="empty">No pharmacy registrations yet.</td></tr>`}
  </tbody></table></div></div>`;
 }
 async function setApproval(id,status){
+ if(!isSuper())return notify("Super Admin access required.");
  if(!confirm("Change pharmacy status to "+status+"?"))return;
  const {error}=await sb.from("ms_pharmacies").update({approval_status:status}).eq("id",id);
  if(error)return notify(error.message);
  notify("Pharmacy status updated.");
  renderPharmacies();
+}
+async function deletePharmacyApplication(id){
+ if(!isSuper())return notify("Super Admin access required.");
+ const ok=confirm(`Delete the selected pharmacy record?\n\nThis action removes only the ms_pharmacies record. It does NOT delete the Supabase Auth user or automatically erase linked pharmacy data. If other database records reference this pharmacy, Supabase may block the deletion. Continue only if you understand this scope.`);
+ if(!ok)return;
+ try{
+  const {error}=await sb.from("ms_pharmacies").delete().eq("id",id);
+  if(error)throw error;
+  if(selectedAdminPharmacyId===id){selectedAdminPharmacyId=null;currentPharmacy=null;products=[];customers=[];sales=[];suppliers=[];pharmacySettings={};updateSuperPharmacySelector();}
+  notify("Pharmacy record deleted. Auth account and related data were not automatically deleted.");
+  await renderPharmacies();
+ }catch(e){notify("Could not delete pharmacy record: "+e.message+". Related records or database policies may prevent deletion; no linked data was force-deleted.");}
 }
 async function renderSettings(){
  const p=currentPharmacy||{},owner=canManage()||String(currentUser?.email||"").toLowerCase()==="subhamedical2325@gmail.com";
