@@ -518,6 +518,28 @@ body{background:radial-gradient(ellipse at 88% 0%,#e8f4ff 0,transparent 34%),#f3
 @media(max-width:700px){.super-live-grid{grid-template-columns:1fr}.super-visual-card{min-height:unset;padding:14px}.super-donut{width:102px;height:102px;flex-basis:102px}.super-activity{gap:7px}.super-activity-item{padding:9px}.super-activity-item b{font-size:16px}}
 @media(prefers-reduced-motion:reduce){.super-donut,.super-activity-item i:after,.super-visual-card:before{animation:none!important}}
  
+ 
+/* GRN upload experience: large device picker, preview and clear attachment state */
+.grn-upload-field{min-width:0}.grn-file-input{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;overflow:hidden!important;pointer-events:none!important}
+.grn-upload-button{display:flex!important;align-items:center;gap:12px;width:100%;min-height:66px;padding:12px 14px;border:1.5px dashed #70b9c2;border-radius:12px;background:linear-gradient(115deg,#f0fbfa,#f4f8ff);color:#15536a;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
+.grn-upload-button:hover{transform:translateY(-2px);border-color:#078b87;box-shadow:0 8px 20px #087f8318}.grn-upload-icon{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(145deg,#0da9a0,#0874a6);color:#fff;font-size:25px;font-weight:800}.grn-upload-button b,.grn-file-preview b{display:block;font-size:12px}.grn-upload-button small,.grn-file-preview small{display:block;margin-top:4px;color:#738794;font-size:10px}
+.grn-file-preview{display:flex;align-items:center;gap:10px;min-height:35px;margin-top:8px;padding:7px 9px;border:1px solid #e3edf0;border-radius:9px;background:#fbfdfd;color:#778995;font-size:10px;overflow-wrap:anywhere}.grn-preview-image{width:48px;height:48px;object-fit:cover;border-radius:7px;border:1px solid #dbe5e8}.grn-pdf-icon{display:grid;place-items:center;width:40px;height:44px;border-radius:7px;background:#fff0f0;color:#c43e4b;font-weight:900;font-size:11px;border:1px solid #f0c8cc}
+/* Richer workstation motion and depth */
+:root{--motion-ease:cubic-bezier(.2,.75,.25,1)}
+.stat,.dash-stat,.dash-module,.dash-lower-card,.admin-quick,.panel{animation:premiumEnter .48s var(--motion-ease) both}
+.stat:nth-child(2),.dash-stat:nth-child(2){animation-delay:.04s}.stat:nth-child(3),.dash-stat:nth-child(3){animation-delay:.08s}.stat:nth-child(4),.dash-stat:nth-child(4){animation-delay:.12s}.stat:nth-child(5),.dash-stat:nth-child(5){animation-delay:.16s}
+.panel{box-shadow:0 5px 18px #123d5a08;transition:transform .24s var(--motion-ease),box-shadow .24s var(--motion-ease),border-color .24s}
+.panel:hover{transform:translateY(-3px);box-shadow:0 13px 30px #123d5a12;border-color:#c8dfe5}
+.btn,.dash-action,.dash-primary{transition:transform .18s var(--motion-ease),box-shadow .18s,filter .18s}
+.btn:hover,.dash-action:hover,.dash-primary:hover{transform:translateY(-2px);filter:saturate(1.08);box-shadow:0 7px 16px #123d5a1b}
+#toast{animation:toastIn .28s var(--motion-ease)}
+#sidebar .nav{position:relative;overflow:hidden}#sidebar .nav:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:#35c5bb;transform:scaleY(0);transition:transform .2s}#sidebar .nav.active:before{transform:scaleY(1)}
+.dash-module-art{isolation:isolate}.dash-module-art:after{content:"";position:absolute;width:90px;height:90px;border:1px solid #1684d922;border-radius:50%;animation:orbitPulse 5s ease-in-out infinite;z-index:0}.dash-module-art>*{z-index:1}
+@keyframes premiumEnter{from{opacity:0;transform:translateY(12px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes orbitPulse{0%,100%{transform:scale(.82);opacity:.35}50%{transform:scale(1.12);opacity:.9}}
+@media(prefers-reduced-motion:reduce){.stat,.dash-stat,.dash-module,.dash-lower-card,.admin-quick,.panel{animation:none!important}.panel:hover,.btn:hover,.dash-action:hover,.dash-primary:hover{transform:none!important}}
+ 
 </style>
  </head>
  <body>
@@ -1567,7 +1589,7 @@ function openPOReceive(id){
  if(!items.length)return notify("No pending quantities remain on this PO.");
  activePOItems=items;
  $("modalTitle").textContent="Receive stock · "+po.po_number;
- $("modalBody").innerHTML=`<div class="notice">Enter only the quantities physically received on this invoice. The system will post a GRN and update batch and stock records through the PO-linked database function.</div><div class="field" style="margin-top:12px"><label>Supplier invoice number</label><input id="poGrnInvoice" required></div><div class="form-grid"><div class="field"><label>Invoice date</label><input id="poGrnDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Invoice total (₹)</label><input id="poGrnTotal" type="number" min="0" step=".01"></div></div><div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Pending</th><th>Receive now</th><th>Batch no.</th><th>Expiry</th><th>Rate</th><th>MRP</th></tr></thead><tbody>${items.map((x,i)=>{const p=products.find(z=>z.id===x.product_id)||{};return `<tr><td>${esc(p.name||"Medicine")}</td><td>${Number(x.quantity)-Number(x.received_quantity||0)}</td><td><input type="number" id="grnQty${i}" min="0" max="${Number(x.quantity)-Number(x.received_quantity||0)}" step=".01" value="${Number(x.quantity)-Number(x.received_quantity||0)}"></td><td><input id="grnBatch${i}" value="${esc(p.batch_number||"")}" placeholder="Batch"></td><td><input id="grnExpiry${i}" type="date" value="${esc(p.expiry_date||"")}"></td><td><input id="grnRate${i}" type="number" min="0" step=".01" value="${Number(x.purchase_rate||p.purchase_price||0)}"></td><td><input id="grnMrp${i}" type="number" min="0" step=".01" value="${Number(p.mrp||0)}"></td></tr>`;}).join("")}</tbody></table></div><div class="feature-tools"><button class="btn" onclick="submitPOGrn('${id}')">Verify & Post GRN</button><button class="btn light" onclick="closeModal()">Cancel</button></div>`;
+ $("modalBody").innerHTML=`<div class="notice">Enter only the quantities physically received on this invoice. The system will post a GRN and update batch and stock records through the PO-linked database function.</div><div class="field" style="margin-top:12px"><label>Supplier invoice number</label><input id="poGrnInvoice" required></div><div class="form-grid"><div class="field"><label>Invoice date</label><input id="poGrnDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Invoice total (₹)</label><input id="poGrnTotal" type="number" min="0" step=".01"></div><div class="field grn-upload-field"><label>Attach supplier invoice (optional)</label><label class="grn-upload-button" for="poGrnFile"><span class="grn-upload-icon">⇧</span><span><b>Choose invoice photo / PDF</b><small>Gallery · Camera · PDF · Up to 10 MB</small></span></label><input id="poGrnFile" class="grn-file-input" type="file" accept="image/*,application/pdf,.pdf" capture="environment" onchange="previewGrnAttachment(this,'poGrnPreview')"><div id="poGrnPreview" class="grn-file-preview">No invoice attached yet</div></div></div><div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Pending</th><th>Receive now</th><th>Batch no.</th><th>Expiry</th><th>Rate</th><th>MRP</th></tr></thead><tbody>${items.map((x,i)=>{const p=products.find(z=>z.id===x.product_id)||{};return `<tr><td>${esc(p.name||"Medicine")}</td><td>${Number(x.quantity)-Number(x.received_quantity||0)}</td><td><input type="number" id="grnQty${i}" min="0" max="${Number(x.quantity)-Number(x.received_quantity||0)}" step=".01" value="${Number(x.quantity)-Number(x.received_quantity||0)}"></td><td><input id="grnBatch${i}" value="${esc(p.batch_number||"")}" placeholder="Batch"></td><td><input id="grnExpiry${i}" type="date" value="${esc(p.expiry_date||"")}"></td><td><input id="grnRate${i}" type="number" min="0" step=".01" value="${Number(x.purchase_rate||p.purchase_price||0)}"></td><td><input id="grnMrp${i}" type="number" min="0" step=".01" value="${Number(p.mrp||0)}"></td></tr>`;}).join("")}</tbody></table></div><div class="feature-tools"><button class="btn" onclick="submitPOGrn('${id}')">Verify & Post GRN</button><button class="btn light" onclick="closeModal()">Cancel</button></div>`;
  $("modal").classList.remove("hidden");
 }
 async function submitPOGrn(poId){
@@ -1577,8 +1599,8 @@ async function submitPOGrn(poId){
  if(!rows.length)return notify("Enter at least one received quantity.");
  const total=Number($("poGrnTotal")?.value||0);if(!total||total<0)return notify("Enter the supplier invoice total.");
  if(!confirm("Post this GRN and update stock for the entered quantities?"))return;
- try{const {data,error}=await sb.rpc("ms_post_purchase_invoice_with_po",{p_invoice_no:invoice,p_supplier_id:po.supplier_id,p_invoice_date:$("poGrnDate")?.value||null,p_total:total,p_items:rows,p_purchase_order_id:poId});if(error)throw error;if(data?.success===false)throw new Error(data.message||"GRN was not posted.");notify("GRN posted and stock updated.");closeModal();await refreshData();await renderPurchaseOrders();}
- catch(e){notify("GRN failed: "+e.message);}
+ try{const attachment=$("poGrnFile")?.files?.[0]||null;const {data,error}=await sb.rpc("ms_post_purchase_invoice_with_po",{p_invoice_no:invoice,p_supplier_id:po.supplier_id,p_invoice_date:$("poGrnDate")?.value||null,p_total:total,p_items:rows,p_purchase_order_id:poId});if(error)throw error;if(data?.success===false)throw new Error(data.message||"GRN was not posted.");let attachmentWarning="";if(attachment){try{await uploadGrnInvoiceAttachment(attachment,invoice);}catch(fileError){attachmentWarning=" Stock was received, but invoice upload failed: "+fileError.message;}}notify("GRN posted and stock updated."+(attachment&&!attachmentWarning?" Invoice image saved.":attachmentWarning));closeModal();await refreshData();await renderPurchaseOrders();}
+ catch(e){notify("GRN posting failed: "+e.message);}
 }
  
  
@@ -1731,7 +1753,7 @@ async function renderPurchases(){
  $("pageContent").innerHTML=`${pageHead("Purchases","Supplier invoices, manual purchase entry, batch tracking and stock receiving")}
  <div class="grid"><div class="stat"><small>Registered suppliers</small><h2>${suppliers.length}</h2></div><div class="stat"><small>Medicine master</small><h2>${products.length}</h2></div><div class="stat"><small>Purchase workflow</small><h2>Ready</h2></div></div>
  <div class="panel"><div class="panel-head"><h3>New purchase entry</h3><span class="badge green">Manual GRN</span></div>
- <div class="form-grid"><div class="field"><label>Supplier</label><select id="purchaseSupplier"><option value="">Select supplier</option>${supplierOptions}</select></div><div class="field"><label>Supplier invoice number</label><input id="purchaseInvoiceNo" placeholder="Invoice number"></div><div class="field"><label>Invoice date</label><input id="purchaseInvoiceDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Invoice total (₹)</label><input id="purchaseInvoiceTotal" type="number" min="0" step=".01" value="0"></div></div>
+ <div class="form-grid"><div class="field"><label>Supplier</label><select id="purchaseSupplier"><option value="">Select supplier</option>${supplierOptions}</select></div><div class="field"><label>Supplier invoice number</label><input id="purchaseInvoiceNo" placeholder="Invoice number"></div><div class="field"><label>Invoice date</label><input id="purchaseInvoiceDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Invoice total (₹)</label><input id="purchaseInvoiceTotal" type="number" min="0" step=".01" value="0"></div><div class="field grn-upload-field"><label>Attach supplier invoice (optional)</label><label class="grn-upload-button" for="purchaseGrnFile"><span class="grn-upload-icon">⇧</span><span><b>Choose invoice photo / PDF</b><small>Gallery · Camera · PDF · Up to 10 MB</small></span></label><input id="purchaseGrnFile" class="grn-file-input" type="file" accept="image/*,application/pdf,.pdf" capture="environment" onchange="previewGrnAttachment(this,'purchaseGrnPreview')"><div id="purchaseGrnPreview" class="grn-file-preview">No invoice attached yet</div></div></div>
  <div class="feature-tools"><button class="btn" onclick="addPurchaseEntryRow()">+ Add medicine row</button><button class="btn light" onclick="navigate('suppliers')">Manage suppliers</button><button class="btn light" onclick="navigate('billocr')">Supplier Bill OCR</button></div>
  <div class="table-wrap"><table style="min-width:1050px"><thead><tr><th>Medicine</th><th>Batch</th><th>Expiry</th><th>Qty</th><th>Purchase rate</th><th>MRP</th><th>GST %</th><th>Action</th></tr></thead><tbody id="purchaseEntryRows"><tr><td colspan="8" class="empty">Add a medicine row to begin.</td></tr></tbody></table></div>
  <div class="feature-tools"><button class="btn" onclick="postPurchaseEntry()">Verify & Receive Stock</button><button class="btn danger" onclick="clearPurchaseEntry()">Clear entry</button></div>
@@ -1744,6 +1766,35 @@ function renderPurchaseEntryRows(){const host=$("purchaseEntryRows");if(!host)re
 function updatePurchaseEntryRow(i,k,v){if(purchaseEntryRows[i])purchaseEntryRows[i][k]=["quantity","purchase_rate","mrp","gst_percent"].includes(k)?Number(v):v;}
 function removePurchaseEntryRow(i){purchaseEntryRows.splice(i,1);renderPurchaseEntryRows();}
 function clearPurchaseEntry(){purchaseEntryRows=[];renderPurchaseEntryRows();["purchaseInvoiceNo","purchaseInvoiceTotal"].forEach(id=>{if($(id))$(id).value=id==="purchaseInvoiceTotal"?"0":"";});}
+function previewGrnAttachment(input,previewId){
+ const host=$(previewId),file=input?.files?.[0];if(!host)return;
+ if(!file){host.textContent="No invoice attached yet";return;}
+ const allowed=file.type.startsWith("image/")||file.type==="application/pdf"||/\.pdf$/i.test(file.name);
+ if(!allowed){input.value="";host.textContent="Unsupported file. Choose an image or PDF.";return notify("Choose an invoice image or PDF.");}
+ if(file.size>10*1024*1024){input.value="";host.textContent="File is larger than 10 MB.";return notify("GRN attachment must be below 10 MB.");}
+ const size=(file.size/1024/1024).toFixed(2)+" MB";
+ if(file.type.startsWith("image/")){const url=URL.createObjectURL(file);host.innerHTML=`<img class="grn-preview-image" src="${url}" alt="Invoice preview"><span><b>${esc(file.name)}</b><small>${size}</small></span>`;}
+ else host.innerHTML=`<span class="grn-pdf-icon">PDF</span><span><b>${esc(file.name)}</b><small>${size} · PDF document selected</small></span>`;
+}
+async function uploadGrnInvoiceAttachment(file,invoiceNo){
+ if(!file)return null;
+ if(!(file.type.startsWith("image/")||file.type==="application/pdf"||/\.pdf$/i.test(file.name)))throw new Error("GRN attachment must be an image or PDF.");
+ if(file.size>10*1024*1024)throw new Error("GRN attachment must be below 10 MB.");
+ if(!pharmacyId())throw new Error("Select a pharmacy workspace before uploading the invoice.");
+ const ext=(file.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"");
+ const safeInvoice=String(invoiceNo||"invoice").replace(/[^a-zA-Z0-9_-]/g,"_").slice(0,60);
+ const path=`${pharmacyId()}/${safeInvoice}/${crypto.randomUUID()}.${ext}`;
+ const {error}=await sb.storage.from("ms-grn-documents").upload(path,file,{upsert:false,contentType:file.type||"application/octet-stream"});
+ if(error)throw error;
+ const {data:matches,error:findError}=await sb.from("ms_purchases").select("id").eq("pharmacy_id",pharmacyId()).eq("invoice_number",invoiceNo).order("created_at",{ascending:false}).limit(1);
+ if(findError||!matches?.length){await sb.storage.from("ms-grn-documents").remove([path]);throw new Error(findError?.message||"Purchase row was not found to link the uploaded invoice.");}
+ const {error:saveError}=await sb.from("ms_purchases").update({invoice_image_path:path}).eq("id",matches[0].id).eq("pharmacy_id",pharmacyId());
+ if(saveError){await sb.storage.from("ms-grn-documents").remove([path]);throw new Error("Attachment uploaded but could not be linked to the GRN: "+saveError.message);}
+ return path;
+}
+async function viewGrnAttachment(path){if(!path)return notify("No invoice attachment is saved for this GRN.");try{const {data,error}=await sb.storage.from("ms-grn-documents").createSignedUrl(path,180);if(error)throw error;window.open(data.signedUrl,"_blank","noopener");}catch(e){notify("Could not open invoice: "+e.message);}}
+ 
+ 
 async function postPurchaseEntry(){
  if(!canManage())return notify("Only Owner/Admin can post purchase stock.");
  if(!pharmacyId())return notify("Select a pharmacy workspace first.");
@@ -1751,9 +1802,9 @@ async function postPurchaseEntry(){
  if(!supplier)return notify("Please register/select a supplier first.");if(!invoice||!date)return notify("Enter supplier invoice number and date.");if(!purchaseEntryRows.length)return notify("Add at least one medicine row.");
  for(const [i,r] of purchaseEntryRows.entries()){if(!r.product_id||!products.some(p=>p.id===r.product_id))return notify(`Select an existing medicine in row ${i+1}.`);if(!(Number(r.quantity)>0))return notify(`Enter a valid quantity in row ${i+1}.`);if(!String(r.batch_number||"").trim())return notify(`Enter a batch number in row ${i+1}.`);if(Number(r.purchase_rate)<0||Number(r.mrp)<0)return notify(`Check prices in row ${i+1}.`);}
  if(!confirm(`Receive ${purchaseEntryRows.reduce((n,r)=>n+Number(r.quantity),0)} units for invoice ${invoice}?`))return;
- try{const {data,error}=await sb.rpc("ms_post_purchase_invoice",{p_invoice_number:invoice,p_supplier_id:supplier,p_invoice_date:date,p_total:total,p_items:purchaseEntryRows,p_pharmacy_id:pharmacyId()});if(error)throw error;await refreshData();notify("Purchase posted and stock received successfully.");purchaseEntryRows=[];renderPurchases();}catch(e){notify("Purchase posting failed: "+(e.message||e));}
+ try{const attachment=$("purchaseGrnFile")?.files?.[0]||null;const {data,error}=await sb.rpc("ms_post_purchase_invoice",{p_invoice_number:invoice,p_supplier_id:supplier,p_invoice_date:date,p_total:total,p_items:purchaseEntryRows,p_pharmacy_id:pharmacyId()});if(error)throw error;let attachmentWarning="";if(attachment){try{await uploadGrnInvoiceAttachment(attachment,invoice);}catch(fileError){attachmentWarning=" Stock was received, but invoice upload failed: "+fileError.message;}}await refreshData();notify("Purchase posted and stock received successfully."+(attachment&&!attachmentWarning?" Invoice image saved.":attachmentWarning));purchaseEntryRows=[];renderPurchases();}catch(e){notify("Purchase posting failed: "+(e.message||e));}
 }
-async function loadPurchasesHistory(){const host=$("purchasesHistory");if(!host||!pharmacyId())return;try{const {data,error}=await sb.from("ms_purchases").select("id,invoice_number,invoice_date,total,created_at,supplier_id,ms_suppliers(name)").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(100);if(error)throw error;host.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Supplier</th><th>Invoice date</th><th>Total</th><th>Created</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.invoice_number||"-")}</td><td>${esc(x.ms_suppliers?.name||suppliers.find(s=>s.id===x.supplier_id)?.name||"-")}</td><td>${esc(x.invoice_date||"-")}</td><td>${money(x.total||0)}</td><td>${new Date(x.created_at).toLocaleString()}</td></tr>`).join("")}</tbody></table></div>`:"No purchase entries found.";}catch(e){host.textContent="Purchase history unavailable: "+e.message;}}
+async function loadPurchasesHistory(){const host=$("purchasesHistory");if(!host||!pharmacyId())return;try{const {data,error}=await sb.from("ms_purchases").select("id,invoice_number,invoice_date,total,created_at,supplier_id,invoice_image_path,ms_suppliers(name)").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(100);if(error)throw error;host.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Supplier</th><th>Invoice date</th><th>Total</th><th>Created</th><th>Invoice file</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.invoice_number||"-")}</td><td>${esc(x.ms_suppliers?.name||suppliers.find(s=>s.id===x.supplier_id)?.name||"-")}</td><td>${esc(x.invoice_date||"-")}</td><td>${money(x.total||0)}</td><td>${new Date(x.created_at).toLocaleString()}</td><td>${x.invoice_image_path?`<button class="btn light" onclick="viewGrnAttachment('${esc(x.invoice_image_path)}')">View invoice</button>`:"Not attached"}</td></tr>`).join("")}</tbody></table></div>`:"No purchase entries found.";}catch(e){host.textContent="Purchase history unavailable: "+e.message;}}
  
 let activeReportRows=[];
 let activeReportTitle="Sales register";
