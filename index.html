@@ -540,6 +540,301 @@ body{background:radial-gradient(ellipse at 88% 0%,#e8f4ff 0,transparent 34%),#f3
 @keyframes orbitPulse{0%,100%{transform:scale(.82);opacity:.35}50%{transform:scale(1.12);opacity:.9}}
 @media(prefers-reduced-motion:reduce){.stat,.dash-stat,.dash-module,.dash-lower-card,.admin-quick,.panel{animation:none!important}.panel:hover,.btn:hover,.dash-action:hover,.dash-primary:hover{transform:none!important}}
  
+ 
+/* Advanced upload and staff action polish */
+.image-upload-card{padding:14px;border:1px dashed #8bb9c9;border-radius:16px;background:linear-gradient(135deg,#f1fbff,#f8f7ff);box-shadow:0 8px 24px #1b607010;animation:cardRise .45s ease both}
+.image-upload-card .grn-upload-button{display:flex;align-items:center;gap:12px;padding:14px;border-radius:13px;background:#fff;border:1px solid #d6e8ef;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.image-upload-card .grn-upload-button:hover{transform:translateY(-2px);box-shadow:0 10px 24px #17627a18}
+#productPhotoPreview{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;color:#587082;font-size:12px}
+#staffRows .actions{gap:6px;flex-wrap:wrap}
+#staffRows .btn{transition:transform .18s,box-shadow .18s}
+#staffRows .btn:hover{transform:translateY(-2px);box-shadow:0 7px 18px #173b551c}
+@keyframes cardRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.image-upload-card,.image-upload-card *{animation:none!important;transition:none!important}}
+ 
+ 
+/* =========================================================
+   SUBHA MEDICAL — VISUAL ENHANCEMENT LAYER
+   Graphics and motion only. No application logic or controls changed.
+   ========================================================= */
+:root{
+  --visual-teal:#078f89;
+  --visual-blue:#1768a5;
+  --visual-glow:rgba(7,143,137,.18);
+}
+html{scroll-behavior:smooth}
+body{ -webkit-font-smoothing:antialiased; }
+button,.btn,.nav,.dash-action,.dash-primary{ -webkit-tap-highlight-color:transparent; }
+ 
+/* Animated login background */
+body.auth-mode{
+  position:relative;
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 12% 15%,rgba(36,190,174,.15),transparent 34%),
+    radial-gradient(ellipse at 88% 82%,rgba(63,135,218,.13),transparent 35%),
+    linear-gradient(135deg,#f3fbfb 0%,#f6f8ff 48%,#eef8f8 100%)!important;
+}
+body.auth-mode:before,
+body.auth-mode:after{
+  content:"";position:fixed;z-index:-1;pointer-events:none;border-radius:50%;
+  filter:blur(1px);opacity:.65;
+}
+body.auth-mode:before{
+  width:340px;height:340px;left:-115px;top:-105px;
+  border:1px solid rgba(7,143,137,.20);
+  box-shadow:0 0 0 28px rgba(7,143,137,.025),0 0 0 62px rgba(7,143,137,.02);
+  animation:smOrbDrift 16s ease-in-out infinite alternate;
+}
+body.auth-mode:after{
+  width:420px;height:420px;right:-175px;bottom:-190px;
+  border:1px solid rgba(48,117,190,.18);
+  box-shadow:0 0 0 34px rgba(48,117,190,.025),0 0 0 76px rgba(48,117,190,.018);
+  animation:smOrbDrift 20s ease-in-out infinite alternate-reverse;
+}
+body.auth-mode .auth-card{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,.91)!important;
+  border:1px solid rgba(255,255,255,.95)!important;
+  box-shadow:0 24px 70px rgba(23,58,82,.13),0 5px 18px rgba(7,143,137,.07)!important;
+  backdrop-filter:blur(18px);
+  animation:smLoginReveal .8s cubic-bezier(.2,.75,.25,1) both;
+  overflow:hidden;
+}
+body.auth-mode .auth-card:before{
+  content:"";position:absolute;left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,#087f83,#27c5ae,#4d91d8,#087f83);
+  background-size:220% 100%;animation:smShimmer 5s linear infinite;
+}
+body.auth-mode .brand-logo{
+  position:relative;overflow:hidden;
+  background:linear-gradient(145deg,#0bafa2,#087b83 58%,#225c91)!important;
+  box-shadow:0 9px 22px rgba(7,143,137,.25)!important;
+  animation:smLogoBreathe 4s ease-in-out infinite;
+}
+body.auth-mode .brand-logo:after{
+  content:"";position:absolute;top:-80%;left:-55%;width:45%;height:260%;
+  transform:rotate(28deg);background:linear-gradient(90deg,transparent,#ffffff75,transparent);
+  animation:smLogoShine 5s ease-in-out infinite;
+}
+body.auth-mode .brand h1{letter-spacing:-.5px}
+body.auth-mode .auth-tabs{box-shadow:inset 0 1px 3px rgba(25,55,75,.04)}
+body.auth-mode .auth-tabs button{transition:all .25s ease}
+body.auth-mode .auth-tabs button.active{
+  background:linear-gradient(135deg,#fff,#f0fbfa)!important;
+  box-shadow:0 4px 12px rgba(7,143,137,.12)!important;
+}
+body.auth-mode .auth-card .field input,
+body.auth-mode .auth-card .field select{
+  transition:border-color .25s,box-shadow .25s,transform .25s;
+}
+body.auth-mode .auth-card .field input:focus,
+body.auth-mode .auth-card .field select:focus{
+  border-color:#078f89!important;
+  box-shadow:0 0 0 4px rgba(7,143,137,.10)!important;
+  transform:translateY(-1px);
+}
+body.auth-mode .auth-card .btn.full{
+  position:relative;overflow:hidden;
+  background:linear-gradient(105deg,#087f83,#0ca99c 55%,#087f83)!important;
+  background-size:200% 100%;
+  box-shadow:0 8px 18px rgba(7,143,137,.20);
+  transition:background-position .45s,transform .25s,box-shadow .25s;
+}
+body.auth-mode .auth-card .btn.full:hover{
+  background-position:100% 0;transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(7,143,137,.27);
+}
+body.auth-mode .auth-card .btn.light{
+  transition:all .25s ease;
+}
+body.auth-mode .auth-card .btn.light:hover{
+  border-color:#078f89!important;background:#effaf9!important;transform:translateY(-1px);
+}
+ 
+/* Workstation surfaces: premium depth and subtle animated highlights */
+body.app-mode{
+  background:
+    radial-gradient(ellipse at 95% 0%,rgba(19,139,160,.055),transparent 28%),
+    linear-gradient(145deg,#f5f8fb,#f1f6f8);
+}
+body.app-mode .topbar{
+  background:rgba(255,255,255,.92)!important;
+  backdrop-filter:blur(14px);
+  box-shadow:0 4px 18px rgba(24,54,76,.045);
+}
+body.app-mode #sidebar{
+  box-shadow:5px 0 24px rgba(11,39,60,.10);
+}
+body.app-mode #sidebar .side-icon{
+  box-shadow:0 5px 14px rgba(7,143,137,.28);
+  animation:smLogoBreathe 5s ease-in-out infinite;
+}
+body.app-mode .panel,
+body.app-mode .stat,
+body.app-mode .dash-module,
+body.app-mode .dash-lower-card{
+  transition:transform .28s cubic-bezier(.2,.7,.25,1),box-shadow .28s,border-color .28s;
+}
+body.app-mode .panel:hover,
+body.app-mode .stat:hover,
+body.app-mode .dash-module:hover,
+body.app-mode .dash-lower-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 14px 32px rgba(21,61,83,.09);
+  border-color:rgba(7,143,137,.22);
+}
+body.app-mode .btn,
+body.app-mode button.dash-action,
+body.app-mode button.dash-primary{
+  transition:transform .22s,box-shadow .22s,filter .22s;
+}
+body.app-mode .btn:hover,
+body.app-mode button.dash-action:hover,
+body.app-mode button.dash-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 7px 16px rgba(14,75,103,.15);
+}
+body.app-mode .btn:active,
+body.app-mode button:active{transform:scale(.975)}
+body.app-mode .nav{transition:background .25s,color .25s,transform .25s,box-shadow .25s}
+body.app-mode .nav.active{box-shadow:inset 3px 0 #39d4c0}
+body.app-mode input,
+body.app-mode select,
+body.app-mode textarea{transition:border-color .2s,box-shadow .2s}
+body.app-mode input:focus,
+body.app-mode select:focus,
+body.app-mode textarea:focus{
+  outline:none;border-color:#078f89!important;
+  box-shadow:0 0 0 3px rgba(7,143,137,.09);
+}
+body.app-mode tbody tr{transition:background .18s}
+body.app-mode tbody tr:hover{background:#effaf9!important}
+body.app-mode .badge{box-shadow:inset 0 0 0 1px rgba(20,70,90,.035)}
+body.app-mode .modal-card{
+  box-shadow:0 25px 80px rgba(10,31,49,.25);
+  animation:smModalIn .28s cubic-bezier(.2,.75,.25,1) both;
+}
+body.app-mode #toast{
+  box-shadow:0 12px 30px rgba(10,31,49,.22);
+  animation:smToastIn .3s ease both;
+}
+ 
+/* Dashboard artwork and metric cards */
+.dash-welcome{animation:smFadeUp .55s ease both}
+.dash-stat:nth-child(2){animation-delay:.05s}
+.dash-stat:nth-child(3){animation-delay:.10s}
+.dash-stat:nth-child(4){animation-delay:.15s}
+.dash-stat:nth-child(5){animation-delay:.20s}
+.dash-module:nth-child(2){animation-delay:.08s}
+.dash-tool span,.dash-report-grid span{transition:transform .25s}
+.dash-tool:hover span,.dash-report-grid button:hover span{transform:scale(1.16) rotate(-5deg)}
+.po-hero{position:relative}
+.po-hero:after{
+  content:"";position:absolute;top:-80%;left:-35%;width:22%;height:260%;
+  transform:rotate(24deg);background:linear-gradient(90deg,transparent,#fff8,transparent);
+  animation:smHeroSweep 8s ease-in-out infinite;pointer-events:none;
+}
+.bill-product{transition:background .2s,transform .2s}
+.bill-product:hover{transform:translateX(2px)}
+#billResults,.table-wrap,.bill-product-list{scrollbar-width:thin;scrollbar-color:#a9c9ce transparent}
+#billResults::-webkit-scrollbar,.table-wrap::-webkit-scrollbar,.bill-product-list::-webkit-scrollbar{width:7px;height:7px}
+#billResults::-webkit-scrollbar-thumb,.table-wrap::-webkit-scrollbar-thumb,.bill-product-list::-webkit-scrollbar-thumb{background:#b8d2d5;border-radius:10px}
+ 
+/* Gentle entrance for dynamically rendered page content */
+#pageContent{animation:smPageEnter .32s ease both}
+@keyframes smOrbDrift{0%{transform:translate3d(0,0,0) rotate(0)}100%{transform:translate3d(28px,22px,0) rotate(18deg)}}
+@keyframes smLoginReveal{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes smLogoBreathe{0%,100%{filter:saturate(1);transform:translateY(0)}50%{filter:saturate(1.18);transform:translateY(-2px)}}
+@keyframes smLogoShine{0%,65%,100%{left:-65%}82%{left:135%}}
+@keyframes smShimmer{0%{background-position:0 0}100%{background-position:220% 0}}
+@keyframes smModalIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes smToastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes smFadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes smPageEnter{from{opacity:.65;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes smHeroSweep{0%,65%,100%{left:-35%}85%{left:125%}}
+@media(max-width:700px){
+  body.auth-mode:before{width:220px;height:220px;left:-100px;top:-65px}
+  body.auth-mode:after{width:270px;height:270px;right:-145px;bottom:-145px}
+  body.auth-mode .auth-card{backdrop-filter:blur(12px)}
+  body.app-mode .panel:hover,body.app-mode .stat:hover,
+  body.app-mode .dash-module:hover,body.app-mode .dash-lower-card:hover{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  body.auth-mode:before,body.auth-mode:after,body.auth-mode .brand-logo,
+  body.auth-mode .brand-logo:after,body.auth-mode .auth-card,
+  .po-hero:after,#pageContent{animation:none!important}
+}
+ 
+ 
+ 
+/* ADD-ON ONLY: premium motion and graphics layer. Existing workflows, IDs and data logic remain unchanged. */
+:root{--motion-ease:cubic-bezier(.2,.75,.25,1);--motion-glow:0 14px 38px rgba(8,139,135,.13)}
+body{background-image:radial-gradient(ellipse at 8% 0%,rgba(35,160,190,.055),transparent 34%),radial-gradient(ellipse at 92% 100%,rgba(83,111,220,.045),transparent 32%)}
+#authScreen{position:relative;isolation:isolate;overflow:hidden}
+#authScreen:before,#authScreen:after{content:"";position:absolute;z-index:-1;pointer-events:none;border-radius:50%;filter:blur(1px)}
+#authScreen:before{width:340px;height:340px;left:-150px;top:-155px;border:1px solid #0b999022;box-shadow:0 0 0 28px #0b999008,0 0 0 58px #0b999006;animation:msOrbit 18s linear infinite}
+#authScreen:after{width:230px;height:230px;right:-100px;bottom:-110px;border:1px solid #477bd51c;box-shadow:0 0 0 24px #477bd508,0 0 0 48px #477bd505;animation:msOrbit 22s linear infinite reverse}
+body.auth-mode .auth-card{position:relative;overflow:hidden;animation:msCardEnter .8s var(--motion-ease) both;box-shadow:0 18px 55px rgba(25,63,79,.10),0 2px 8px rgba(25,63,79,.04)!important}
+body.auth-mode .auth-card:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#078b87,#32c6b1,#5e8de8,#078b87);background-size:220% 100%;animation:msGradient 5s linear infinite}
+body.auth-mode .brand-logo{position:relative;isolation:isolate;animation:msLogoFloat 4.5s ease-in-out infinite;box-shadow:0 7px 18px #078b8730!important}
+body.auth-mode .brand-logo:after{content:"";position:absolute;inset:-5px;border:1px solid #078b8740;border-radius:inherit;animation:msHalo 2.8s ease-out infinite}
+body.auth-mode .auth-tabs{box-shadow:inset 0 1px 2px #102b4208}
+body.auth-mode .auth-tabs button{transition:transform .25s var(--motion-ease),background .25s,box-shadow .25s,color .25s}
+body.auth-mode .auth-tabs button:hover{transform:translateY(-2px)}
+body.auth-mode .auth-tabs button.active{box-shadow:0 5px 15px #078b8718!important}
+body.auth-mode .auth-card .field input,body.auth-mode .auth-card .field select{transition:border-color .22s,box-shadow .22s,transform .22s}
+body.auth-mode .auth-card .field input:focus,body.auth-mode .auth-card .field select:focus{transform:translateY(-1px);box-shadow:0 0 0 4px #078b8714!important}
+.btn{position:relative;overflow:hidden;transition:transform .22s var(--motion-ease),box-shadow .22s,filter .22s}
+.btn:not(:disabled):hover{transform:translateY(-2px);filter:saturate(1.08);box-shadow:0 8px 18px #102b421a}
+.btn:not(:disabled):active{transform:translateY(0) scale(.985)}
+.btn:not(:disabled):before{content:"";position:absolute;top:-80%;left:-55%;width:34%;height:260%;transform:rotate(25deg);background:linear-gradient(90deg,transparent,#ffffff48,transparent);transition:left .65s ease;pointer-events:none}
+.btn:not(:disabled):hover:before{left:130%}
+body.app-mode #appScreen{animation:msAppEnter .55s var(--motion-ease) both}
+#sidebar{box-shadow:5px 0 24px #102b4210;transition:width .3s var(--motion-ease),box-shadow .3s}
+#sidebar .side-icon{position:relative;animation:msLogoFloat 5s ease-in-out infinite}
+#sidebar .nav{position:relative;transition:background .22s,color .22s,transform .22s var(--motion-ease),padding .22s}
+#sidebar .nav:after{content:"";position:absolute;left:0;top:22%;bottom:22%;width:3px;border-radius:0 5px 5px 0;background:#49d5c3;transform:scaleY(0);transition:transform .22s}
+#sidebar .nav.active:after{transform:scaleY(1)}
+#sidebar .nav:hover{transform:translateX(3px)}
+.topbar{backdrop-filter:blur(14px);background:rgba(255,255,255,.92);box-shadow:0 4px 18px #183b5208}
+.page-head h2,.dash-welcome h2{animation:msTextEnter .55s var(--motion-ease) both}
+#pageContent>.panel,#pageContent>.stat,#pageContent>.dash-module,#pageContent>.dash-lower-card{animation:msPanelEnter .55s var(--motion-ease) both;transition:transform .25s var(--motion-ease),box-shadow .25s}
+#pageContent>.panel:hover,#pageContent>.dash-module:hover,#pageContent>.dash-lower-card:hover{transform:translateY(-2px);box-shadow:var(--motion-glow)}
+.dash-stat{position:relative;overflow:hidden;animation:msPanelEnter .65s var(--motion-ease) both}
+.dash-stat:after{content:"";position:absolute;width:90px;height:90px;right:-42px;top:-46px;border-radius:50%;background:currentColor;opacity:.045;transition:transform .4s}
+.dash-stat:hover:after{transform:scale(1.8)}
+.dash-stat-icon{animation:msIconBob 4s ease-in-out infinite;transition:transform .25s}
+.dash-stat:hover .dash-stat-icon{transform:rotate(-7deg) scale(1.06)}
+.dash-module-head{background-size:180% 100%;animation:msGradient 12s linear infinite}
+.dash-module-art{isolation:isolate}
+.dash-module-art:after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 20%,#ffffff75 48%,transparent 72%);transform:translateX(-130%);animation:msShimmer 7s ease-in-out infinite;pointer-events:none}
+.dash-action,.dash-primary,.dash-tool,.dash-report-grid button{transition:transform .22s var(--motion-ease),box-shadow .22s,border-color .22s}
+.dash-action:hover,.dash-primary:hover,.dash-tool:hover,.dash-report-grid button:hover{transform:translateY(-3px) scale(1.015);box-shadow:0 9px 20px #17446d18}
+.table-wrap{box-shadow:0 3px 14px #183b5206;transition:box-shadow .25s}
+.table-wrap:focus-within,.table-wrap:hover{box-shadow:0 8px 22px #183b520c}
+tbody tr{transition:background .2s,transform .2s}
+tbody tr:hover{transform:translateX(2px)}
+.modal{backdrop-filter:blur(7px);animation:msFade .2s ease both}
+.modal-card{animation:msModalIn .35s var(--motion-ease) both;box-shadow:0 24px 80px #102b4230}
+.badge{transition:transform .2s,filter .2s}.badge:hover{transform:scale(1.04);filter:saturate(1.15)}
+#toast{box-shadow:0 12px 35px #102b4230;animation:msToastIn .35s var(--motion-ease) both}
+@keyframes msOrbit{to{transform:rotate(360deg)}}
+@keyframes msGradient{0%{background-position:0% 50%}100%{background-position:220% 50%}}
+@keyframes msCardEnter{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes msAppEnter{from{opacity:.5;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes msTextEnter{from{opacity:0;transform:translateX(-9px)}to{opacity:1;transform:translateX(0)}}
+@keyframes msPanelEnter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes msLogoFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(2deg)}}
+@keyframes msHalo{0%{transform:scale(.88);opacity:.65}100%{transform:scale(1.35);opacity:0}}
+@keyframes msIconBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes msShimmer{0%,65%,100%{transform:translateX(-130%)}82%{transform:translateX(130%)}}
+@keyframes msFade{from{opacity:0}to{opacity:1}}
+@keyframes msModalIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes msToastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:700px){#authScreen:before{width:220px;height:220px;left:-125px;top:-115px}#authScreen:after{width:170px;height:170px;right:-100px;bottom:-90px}.dash-stat-icon{animation-duration:5.5s}.btn:not(:disabled):hover{transform:none}}
+@media(prefers-reduced-motion:reduce){#authScreen:before,#authScreen:after,body.auth-mode .brand-logo,body.auth-mode .brand-logo:after,.dash-stat-icon,.dash-module-head,.dash-module-art:after{animation:none!important}.btn:before{display:none!important}}
+ 
 </style>
  </head>
  <body>
@@ -571,8 +866,8 @@ body{background:radial-gradient(ellipse at 88% 0%,#e8f4ff 0,transparent 34%),#f3
     <div class="brand">
      <div class="brand-logo">S</div>
      <div style="flex:1">
-      <h1>Subha Medical</h1>
-      <p>Medical Software · Pharmacy Management</p>
+      <h1>Medical Software</h1>
+      <p>Pharmacy Management Workspace</p>
      </div>
     </div>
     <div class="auth-tabs">
@@ -1186,7 +1481,7 @@ function productModal(p=null){
  ${field("Barcode","barcode",p?.barcode)}
  ${field("Category","category",p?.category)}
  ${field("HSN code","hsn_code",p?.hsn_code||"")}
- ${field("Product image URL","image_url",p?.image_url||"")}
+ <div class="field image-upload-card"><label>Medicine photo · upload from phone</label><label class="grn-upload-button" for="productPhotoFile"><span class="grn-upload-icon">＋</span><span><b>Choose medicine photo</b><small>Gallery · Camera · JPG · PNG · WEBP · Up to 5 MB</small></span></label><input id="productPhotoFile" class="grn-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/avif" capture="environment" onchange="previewProductPhoto(this)"><input type="hidden" name="image_url" id="productImageUrl" value="${esc(p?.image_url||"")}"><div id="productPhotoPreview" class="grn-file-preview">${p?.image_url?`<img src="${esc(p.image_url)}" style="max-width:92px;max-height:92px;object-fit:contain;border-radius:10px"> Current photo`:'No photo selected'}</div></div>
  ${field("Batch number","batch_number",p?.batch_number)}
  ${field("Expiry date","expiry_date",p?.expiry_date,"","date")}
  ${field("MRP","mrp",p?.mrp??0,"required","number")}
@@ -1199,6 +1494,8 @@ function productModal(p=null){
  $("productForm").onsubmit=async e=>{
   e.preventDefault();
   const d=Object.fromEntries(new FormData(e.target));
+  const photoFile=$("productPhotoFile")?.files?.[0]||null;
+  if(photoFile){try{d.image_url=await uploadProductPhoto(photoFile,p?.id||crypto.randomUUID());}catch(uploadErr){return notify("Photo upload failed: "+uploadErr.message);}}
   // HTML date inputs return an empty string when no expiry is entered; Postgres DATE requires NULL instead.
   d.expiry_date = d.expiry_date ? d.expiry_date : null;
   ["mrp","purchase_price","gst_percent","stock","tablets_per_strip"].forEach(k=>d[k]=Number(d[k]||0));
@@ -1217,6 +1514,8 @@ function productModal(p=null){
  };
  openModal();
 }
+async function previewProductPhoto(input){const file=input?.files?.[0],host=$("productPhotoPreview");if(!host)return;if(!file){host.textContent="No photo selected";return;}if(!/^image\/(jpeg|png|webp|avif)$/.test(file.type)||file.size>5*1024*1024){input.value="";host.textContent="Choose JPG, PNG, WEBP or AVIF under 5 MB.";return;}const url=URL.createObjectURL(file);host.innerHTML=`<img src="${url}" alt="Medicine preview" style="max-width:100px;max-height:100px;object-fit:contain;border-radius:12px"><b>${esc(file.name)}</b>`;}
+async function uploadProductPhoto(file,productKey){if(!pharmacyId())throw new Error("Select a pharmacy workspace first.");if(file.size>5*1024*1024)throw new Error("Image must be under 5 MB.");const ext=({"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/avif":"avif"})[file.type];if(!ext)throw new Error("Unsupported image type.");const path=`${pharmacyId()}/${productKey}-${crypto.randomUUID()}.${ext}`;const {error}=await sb.storage.from("ms-product-images").upload(path,file,{upsert:false,contentType:file.type,cacheControl:"3600"});if(error)throw error;const {data}=sb.storage.from("ms-product-images").getPublicUrl(path);if(!data?.publicUrl)throw new Error("Could not create image URL.");return data.publicUrl;}
 function field(label,name,value="",required="",type="text"){
  return `<div class="field"><label>${label}</label><input id="${name}" name="${name}" type="${type}" value="${esc(value??"")}" ${required}></div>`;
 }
@@ -1958,7 +2257,7 @@ async function renderStaff(){
  <div class="notice" style="margin-top:15px">Staff accounts are created securely through the Supabase Edge Function. The browser never receives an admin/service-role key. Manager access is limited to viewing staff and recording daily audits.</div>`;
  const {data,error}=await sb.from("ms_members").select("*").eq("pharmacy_id",pid).order("created_at",{ascending:true});
  if(error){$("staffRows").innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
- $("staffRows").innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Staff member</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead><tbody>${data.map(m=>`<tr><td data-label="Staff member"><b>${esc(m.full_name|| (m.user_id===currentUser.id?"Current account":String(m.user_id).slice(0,8)+"…"))}</b><br><small>${esc(m.phone||"")}</small></td><td data-label="Role"><select ${!canManage()||m.user_id===currentUser.id||currentMember.role!=="owner"?"disabled":""} onchange="changeStaffRole('${m.id}',this.value)"><option value="owner" ${m.role==="owner"?"selected":""}>Owner</option><option value="admin" ${m.role==="admin"?"selected":""}>Admin</option><option value="manager" ${m.role==="manager"?"selected":""}>Manager</option><option value="pharmacist" ${m.role==="pharmacist"?"selected":""}>Pharmacist</option><option value="cashier" ${m.role==="cashier"?"selected":""}>Cashier</option></select></td><td data-label="Status"><span class="badge ${m.is_active?"green":"red"}">${m.is_active?"Active":"Inactive"}</span></td><td data-label="Permissions"><button class="btn light" onclick="showStaffPermissions('${m.id}')">View</button></td><td data-label="Action"><div class="actions">${canManage()?`<button class="btn light" onclick="editStaff('${m.id}')">Edit</button>`:""}${m.user_id===currentUser.id?"You":canManage()?`<button class="btn ${m.is_active?"danger":"light"}" onclick="toggleStaff('${m.id}',${!m.is_active})">${m.is_active?"Deactivate":"Activate"}</button>`:"View only"}</div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No staff accounts found for this pharmacy.</div>`;
+ $("staffRows").innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Staff member</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead><tbody>${data.map(m=>`<tr><td data-label="Staff member"><b>${esc(m.full_name|| (m.user_id===currentUser.id?"Current account":String(m.user_id).slice(0,8)+"…"))}</b><br><small>${esc(m.phone||"")}</small></td><td data-label="Role"><select ${!canManage()||m.user_id===currentUser.id||currentMember.role!=="owner"?"disabled":""} onchange="changeStaffRole('${m.id}',this.value)"><option value="owner" ${m.role==="owner"?"selected":""}>Owner</option><option value="admin" ${m.role==="admin"?"selected":""}>Admin</option><option value="manager" ${m.role==="manager"?"selected":""}>Manager</option><option value="pharmacist" ${m.role==="pharmacist"?"selected":""}>Pharmacist</option><option value="cashier" ${m.role==="cashier"?"selected":""}>Cashier</option></select></td><td data-label="Status"><span class="badge ${m.is_active?"green":"red"}">${m.is_active?"Active":"Inactive"}</span></td><td data-label="Permissions"><button class="btn light" onclick="showStaffPermissions('${m.id}')">View</button></td><td data-label="Action"><div class="actions">${canManage()&&m.user_id!==currentUser.id?`<button class="btn light" onclick="editStaff('${m.id}')">Edit</button><button class="btn danger" onclick="deleteStaff('${m.id}')">Delete</button>`:""}${m.user_id===currentUser.id?"You":canManage()?`<button class="btn ${m.is_active?"danger":"light"}" onclick="toggleStaff('${m.id}',${!m.is_active})">${m.is_active?"Deactivate":"Activate"}</button>`:"View only"}</div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No staff accounts found for this pharmacy.</div>`;
  window._staffCache=data||[];
  loadDailyAuditHistory();
 }
@@ -1979,12 +2278,14 @@ async function loadDailyAuditHistory(){const host=$("dailyAuditHistory");if(!hos
  
 function editStaff(id){
  const m=(window._staffCache||[]).find(x=>x.id===id);if(!m)return;
- if(!canManage())return notify("Owner/Admin access required.");
+ if(!canManage()||m.user_id===currentUser.id)return notify("Owner/Admin access required. You cannot edit your own membership here.");
  $("modalTitle").textContent="Edit staff details";
- $("modalBody").innerHTML=`<form id="staffEditForm">${field("Staff full name","full_name",m.full_name||"","required")}${field("Phone number","phone",m.phone||"")}${field("Staff code / ID","staff_code",m.staff_code||"")}<button class="btn full">Save staff details</button></form>`;
- $("staffEditForm").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const {error}=await sb.rpc("ms_update_staff_profile",{p_member_id:id,p_full_name:d.full_name,p_phone:d.phone||null,p_staff_code:d.staff_code||null});if(error)return notify(error.message);closeModal();notify("Staff details updated.");renderStaff();};
+ $("modalBody").innerHTML=`<form id="staffEditForm"><div class="form-grid">${field("Staff full name","full_name",m.full_name||"","required")}${field("Phone number","phone",m.phone||"")}</div><button class="btn full">Save staff details</button></form>`;
+ $("staffEditForm").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));try{const {data,error}=await sb.from("ms_members").update({full_name:d.full_name.trim(),phone:d.phone.trim()||null}).eq("id",id).eq("pharmacy_id",pharmacyId()).select("id");if(error)throw error;if(!data?.length)throw new Error("No row updated. Check the ms_members UPDATE RLS policy and pharmacy membership.");closeModal();notify("Staff details updated.");renderStaff();}catch(err){notify("Staff edit failed: "+err.message);}};
  openModal();
 }
+async function deleteStaff(id){const m=(window._staffCache||[]).find(x=>x.id===id);if(!m)return;if(!canManage()||m.user_id===currentUser.id)return notify("You cannot delete your own staff membership.");if(!confirm(`Remove ${m.full_name||m.phone||"this staff member"} from this pharmacy? This removes only the pharmacy membership; it does not delete the Supabase Auth login or other pharmacy memberships.`))return;try{const {data,error}=await sb.from("ms_members").delete().eq("id",id).eq("pharmacy_id",pharmacyId()).select("id");if(error)throw error;if(!data?.length)throw new Error("No row deleted. Check the ms_members DELETE RLS policy.");notify("Staff membership removed.");renderStaff();}catch(err){notify("Staff delete failed: "+err.message);}}
+ 
 function openStaffCreate(){
  if(!canManage())return notify("Owner/Admin access required.");
  $("modalTitle").textContent="Create pharmacy staff account";
