@@ -454,6 +454,70 @@ body{background:radial-gradient(ellipse at 88% 0%,#e8f4ff 0,transparent 34%),#f3
 }
 @media(max-width:380px){#staffRows tbody tr{grid-template-columns:1fr!important}#staffRows tbody td:first-child,#staffRows tbody td:last-child{grid-column:1!important}}
  
+ 
+/* Advanced motion graphics: lightweight CSS/SVG animations, no external animation dependency. */
+.super-admin-hero{display:flex;align-items:center;min-height:205px;isolation:isolate;background:radial-gradient(circle at 82% 45%,#2aa8c6 0,transparent 30%),linear-gradient(112deg,#102f50 0%,#155b8e 54%,#167f9d 100%)}
+.super-hero-copy{position:relative;z-index:3;max-width:690px}
+.super-hero-art{position:absolute;right:18px;top:50%;width:min(34%,260px);transform:translateY(-50%);z-index:2;pointer-events:none;filter:drop-shadow(0 14px 22px #062a4b55)}
+.super-hero-art svg{width:100%;display:block;overflow:visible}
+.hero-orbit{fill:none;stroke:#c7f4ff;stroke-opacity:.35;stroke-width:1.2;stroke-dasharray:5 7;transform-origin:136px 91px;animation:heroSpin 22s linear infinite}
+.hero-orbit-b{stroke:#8df4e4;stroke-opacity:.5;animation-duration:15s;animation-direction:reverse}
+.hero-orbit-path{fill:none;stroke:#fff;stroke-opacity:.5;stroke-width:1.3;stroke-dasharray:3 8;animation:heroDash 12s linear infinite}
+.hero-hub-float{transform-origin:136px 80px;animation:heroBob 4.6s ease-in-out infinite}
+.hero-float-card{transform-origin:42px 56px;animation:heroBob 5.2s ease-in-out infinite}
+.hero-float-card-two{transform-origin:214px 137px;animation-delay:-2.4s;animation-duration:6s}
+.hero-spark{animation:sparkPulse 2.8s ease-in-out infinite}
+.hero-spark-two{animation-delay:-1.3s}
+@keyframes heroSpin{to{transform:rotate(360deg)}}
+@keyframes heroDash{to{stroke-dashoffset:-100}}
+@keyframes heroBob{0%,100%{translate:0 0}50%{translate:0 -8px}}
+@keyframes sparkPulse{0%,100%{opacity:.3;scale:.7}50%{opacity:1;scale:1.35}}
+@keyframes shimmerSweep{0%{background-position:180% 0}100%{background-position:-180% 0}}
+.admin-kpi{position:relative;overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
+.admin-kpi:after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,#dff4ff70 50%,transparent 65%);background-size:220% 100%;animation:shimmerSweep 7s linear infinite;pointer-events:none}
+.admin-kpi:hover{transform:translateY(-4px);box-shadow:0 14px 28px #1b4b7418}
+.admin-quick{position:relative;overflow:hidden}
+.admin-quick:after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;right:-55px;bottom:-60px;background:#8bd8f322;transition:transform .35s ease}
+.admin-quick:hover:after{transform:scale(2.2)}
+#pageContent .panel{animation:softEnter .42s ease both}
+#pageContent .panel:nth-of-type(2){animation-delay:.05s}#pageContent .panel:nth-of-type(3){animation-delay:.1s}
+#pageContent .btn{transition:transform .16s ease,box-shadow .16s ease}
+#pageContent .btn:active{transform:translateY(1px) scale(.98)}
+#pageContent .table-wrap{overscroll-behavior-x:contain}
+@media(max-width:700px){.super-admin-hero{min-height:190px;padding:18px 15px}.super-hero-copy{max-width:72%}.super-hero-art{width:34%;right:5px;opacity:.9}.super-admin-hero h2{font-size:18px;max-width:300px}.super-admin-hero p{max-width:340px;font-size:11px}.super-admin-hero .actions{flex-wrap:wrap}.super-admin-hero .btn{font-size:10px;padding:8px 10px}}
+@media(max-width:420px){.super-admin-hero{min-height:180px}.super-hero-copy{max-width:100%;padding-right:52px}.super-hero-art{width:43%;right:-20px;opacity:.35}.super-admin-hero p{max-width:270px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+ 
+ 
+/* Super Admin visual command centre upgrade */
+.super-live-grid{display:grid;grid-template-columns:minmax(220px,.82fr) minmax(0,1.6fr);gap:14px;margin:14px 0}
+.super-visual-card{position:relative;overflow:hidden;border:1px solid #dceaf5;border-radius:18px;background:linear-gradient(145deg,#fff,#f1f8ff);padding:17px;min-height:205px;box-shadow:0 10px 26px #1d5c8a0d}
+.super-visual-card:before{content:"";position:absolute;width:190px;height:190px;right:-90px;top:-105px;border-radius:50%;background:radial-gradient(circle,#8de8ff55,transparent 68%);animation:adminGlow 6s ease-in-out infinite}
+.super-visual-title{font-size:12px;font-weight:850;color:#214c70;letter-spacing:.35px;position:relative;z-index:1}
+.super-donut-wrap{display:flex;align-items:center;gap:17px;margin-top:15px;position:relative;z-index:1}
+.super-donut{width:116px;height:116px;border-radius:50%;display:grid;place-items:center;flex:0 0 116px;background:conic-gradient(#1685c7 var(--approved),#eab95d 0 var(--pendingEnd),#9a8bd7 0);box-shadow:0 7px 20px #216b9a20;animation:donutReveal 1.1s cubic-bezier(.2,.8,.2,1) both;position:relative}
+.super-donut:before{content:"";position:absolute;inset:12px;border-radius:50%;background:#fff;box-shadow:inset 0 2px 7px #1b52700c}
+.super-donut-center{position:relative;text-align:center;color:#173e60}.super-donut-center b{display:block;font-size:23px;line-height:1.1}.super-donut-center small{font-size:9px;color:#71869a;font-weight:700;text-transform:uppercase;letter-spacing:.7px}
+.super-legend{display:grid;gap:10px;min-width:0}.super-legend-row{display:flex;align-items:center;gap:8px;font-size:11px;color:#587187}.super-legend-dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px}.super-legend-row b{margin-left:auto;color:#183f61;font-size:13px;font-variant-numeric:tabular-nums}
+.super-activity{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:15px;position:relative;z-index:1}
+.super-activity-item{border:1px solid #e3edf5;background:#ffffffc9;border-radius:12px;padding:12px;min-width:0}
+.super-activity-item span{display:block;color:#7b91a4;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.45px}
+.super-activity-item b{display:block;color:#1a4c72;font-size:19px;margin-top:5px}
+.super-activity-item i{display:block;height:4px;border-radius:9px;background:#e7f0f7;overflow:hidden;margin-top:9px}
+.super-activity-item i:after{content:"";display:block;width:var(--bar,45%);height:100%;border-radius:9px;background:linear-gradient(90deg,#39a7d9,#68d6c4);transform-origin:left;animation:barGrow 1.1s ease both}
+.super-admin-hero{isolation:isolate}
+.super-hero-art{filter:drop-shadow(0 12px 20px #062d4c35)}
+.super-admin-hero .super-hero-copy h2{letter-spacing:-.55px;text-shadow:0 2px 18px #06395b45}
+.admin-kpi{transform:translateY(0);will-change:transform}
+.admin-quick{will-change:transform}
+#pageContent .panel-head h3{letter-spacing:-.2px}
+@keyframes adminGlow{0%,100%{transform:translate(0,0) scale(.9);opacity:.65}50%{transform:translate(-14px,12px) scale(1.18);opacity:1}}
+@keyframes donutReveal{from{transform:rotate(-75deg) scale(.82);opacity:.4}to{transform:rotate(0) scale(1);opacity:1}}
+@keyframes barGrow{from{transform:scaleX(.08)}to{transform:scaleX(1)}}
+@keyframes adminCardFloat{0%,100%{translate:0 0}50%{translate:0 -3px}}
+@media(max-width:700px){.super-live-grid{grid-template-columns:1fr}.super-visual-card{min-height:unset;padding:14px}.super-donut{width:102px;height:102px;flex-basis:102px}.super-activity{gap:7px}.super-activity-item{padding:9px}.super-activity-item b{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.super-donut,.super-activity-item i:after,.super-visual-card:before{animation:none!important}}
+ 
 </style>
  </head>
  <body>
@@ -639,6 +703,7 @@ body{background:radial-gradient(ellipse at 88% 0%,#e8f4ff 0,transparent 34%),#f3
   <script>
 /* SUPABASE CONNECTION */
 const SUPABASE_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co";
+const STAFF_ADMIN_FUNCTION_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co/functions/v1/medical-staff-admin";
 const SUPABASE_ANON_KEY = "sb_publishable_yjg6DKw0JTfU3eYayTfo_g_dyocz5kt";
  
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -988,11 +1053,15 @@ async function renderSuperDashboard(){
  const suspended=adminPharmacyOptions.filter(p=>["suspended","rejected"].includes(p.approval_status)).length;
  const selected=adminPharmacyOptions.find(p=>p.id===selectedAdminPharmacyId);
  $("pageContent").innerHTML=`
- <div class="super-admin-hero"><div style="font-size:10px;letter-spacing:1.6px;font-weight:800;color:#bfe7ff">MEDICAL SOFTWARE · CONTROL CENTRE</div><h2>Super Admin Command Dashboard</h2><p>Manage every pharmacy workspace, approvals, staff access and system operations from one secure control centre.</p><div class="actions"><button class="btn" onclick="navigate('pharmacies')">Review pharmacy applications →</button>${selected?`<button class="btn" onclick="navigate('products')">Open ${esc(selected.pharmacy_name)} workspace</button>`:''}</div></div>
+ <div class="super-admin-hero"><div class="super-hero-art" aria-hidden="true"><svg viewBox="0 0 260 190" role="img"><defs><linearGradient id="heroGlass" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#ffffff" stop-opacity=".9"/><stop offset="1" stop-color="#a9e7ff" stop-opacity=".18"/></linearGradient><linearGradient id="heroCore" x1="0" x2="1"><stop stop-color="#8df4e4"/><stop offset="1" stop-color="#77c9ff"/></linearGradient></defs><circle class="hero-orbit hero-orbit-a" cx="136" cy="91" r="73"/><circle class="hero-orbit hero-orbit-b" cx="136" cy="91" r="52"/><path class="hero-orbit-path" d="M42 98C65 16 202 10 226 88S106 187 42 98Z"/><g class="hero-hub-float"><path d="M98 53 136 31 174 53V105L136 127 98 105Z" fill="url(#heroGlass)" stroke="#d9f6ff" stroke-opacity=".8" stroke-width="2"/><path d="M136 31V127M98 53l38 22 38-22M98 105l38-22 38 22" fill="none" stroke="#fff" stroke-opacity=".55"/><rect x="119" y="65" width="34" height="34" rx="10" fill="url(#heroCore)"/><path d="M136 72v20M126 82h20" stroke="#12476d" stroke-width="5" stroke-linecap="round"/></g><g class="hero-float-card"><rect x="13" y="35" width="58" height="43" rx="10" fill="#fff" fill-opacity=".94"/><path d="M25 57h8l5-9 7 17 5-8h9" fill="none" stroke="#138d9c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g><g class="hero-float-card hero-float-card-two"><rect x="183" y="116" width="62" height="42" rx="10" fill="#fff" fill-opacity=".94"/><circle cx="198" cy="137" r="7" fill="#4cc6a4"/><path d="M211 131h24M211 139h18M211 147h13" stroke="#6a91aa" stroke-width="3" stroke-linecap="round"/></g><circle cx="54" cy="132" r="4" fill="#9cf4e7" class="hero-spark"/><circle cx="211" cy="37" r="4" fill="#fff" class="hero-spark hero-spark-two"/></svg></div><div class="super-hero-copy"><div style="font-size:10px;letter-spacing:1.6px;font-weight:800;color:#bfe7ff">MEDICAL SOFTWARE · CONTROL CENTRE</div><h2>Super Admin Command Dashboard</h2><p>Manage every pharmacy workspace, approvals, staff access and system operations from one secure control centre.</p><div class="actions"><button class="btn" onclick="navigate('pharmacies')">Review pharmacy applications →</button>${selected?`<button class="btn" onclick="navigate('products')">Open ${esc(selected.pharmacy_name)} workspace</button>`:''}</div></div></div>
  <div class="grid"><div class="admin-kpi"><small>Total pharmacy accounts</small><strong>${adminPharmacyOptions.length}</strong></div><div class="admin-kpi"><small>Awaiting approval</small><strong>${pending}</strong></div><div class="admin-kpi"><small>Approved workspaces</small><strong>${approved}</strong></div><div class="admin-kpi"><small>Suspended / rejected</small><strong>${suspended}</strong></div></div>
+ <div class="super-live-grid">
+  <section class="super-visual-card"><div class="super-visual-title">WORKSPACE STATUS OVERVIEW</div><div class="super-donut-wrap"><div class="super-donut" style="--approved:${adminPharmacyOptions.length?approved/adminPharmacyOptions.length*100:0}%;--pendingEnd:${adminPharmacyOptions.length?(approved+pending)/adminPharmacyOptions.length*100:0}%"><div class="super-donut-center"><b>${adminPharmacyOptions.length}</b><small>Pharmacies</small></div></div><div class="super-legend"><div class="super-legend-row"><span class="super-legend-dot" style="background:#1685c7"></span>Approved<b>${approved}</b></div><div class="super-legend-row"><span class="super-legend-dot" style="background:#eab95d"></span>Pending<b>${pending}</b></div><div class="super-legend-row"><span class="super-legend-dot" style="background:#9a8bd7"></span>Other status<b>${suspended}</b></div></div></div></section>
+  <section class="super-visual-card"><div class="super-visual-title">ADMIN CONTROL PULSE</div><div class="super-activity"><div class="super-activity-item"><span>Approved</span><b>${approved}</b><i style="--bar:${adminPharmacyOptions.length?approved/adminPharmacyOptions.length*100:0}%"></i></div><div class="super-activity-item"><span>Pending review</span><b>${pending}</b><i style="--bar:${adminPharmacyOptions.length?pending/adminPharmacyOptions.length*100:0}%"></i></div><div class="super-activity-item"><span>Suspended / rejected</span><b>${suspended}</b><i style="--bar:${adminPharmacyOptions.length?suspended/adminPharmacyOptions.length*100:0}%"></i></div></div><div style="display:flex;align-items:center;gap:9px;margin-top:17px;color:#6b8498;font-size:10px;position:relative;z-index:1"><span style="width:8px;height:8px;border-radius:50%;background:#28bd91;box-shadow:0 0 0 5px #28bd9120;animation:sparkPulse 2s infinite"></span>Live counts from registered pharmacy records <button class="btn light" style="margin-left:auto;padding:7px 10px;font-size:10px" onclick="renderSuperDashboard()">Refresh overview ↻</button></div></section>
+ </div>
  <div class="panel"><div class="panel-head"><div><h3>Quick access</h3><p class="feature-note">Select a pharmacy from the top bar to open its billing, inventory, purchasing, reports and settings.</p></div><span class="badge green">Global Admin</span></div>
  <div class="admin-quick-grid">
-  <button class="admin-quick" onclick="navigate('pharmacies')"><span class="aq-icon">⌂</span><span><b>Pharmacy approvals</b><small>Approve, reject or suspend accounts</small></span></button>
+  <button class="admin-quick" onclick="navigate('pharmacies')"><span class="aq-icon">⌂</span><span><b>Pharmacy approvals</b><small>Approve, reject, suspend and securely delete pharmacy data</small></span></button>
   <button class="admin-quick" onclick="navigate('staff')"><span class="aq-icon">♙</span><span><b>Staff & roles</b><small>Manage staff in selected workspace</small></span></button>
   <button class="admin-quick" onclick="navigate('purchases')"><span class="aq-icon">⇩</span><span><b>Stock inward</b><small>Post purchase invoices and batches</small></span></button>
   <button class="admin-quick" onclick="navigate('products')"><span class="aq-icon">▤</span><span><b>Medicine inventory</b><small>View products and current stock</small></span></button>
@@ -1014,7 +1083,7 @@ function renderProductImport(){
  <div class="panel"><div class="panel-head"><h3>Upload medicine file</h3><span class="badge green">CSV · XLSX · XLS</span></div><p class="feature-note">Supported columns: name, brand, barcode, category, hsn_code, batch_number, expiry_date, mrp, purchase_price, gst_percent, stock, unit, image_url. Review all rows before importing.</p><div class="field"><label>Select CSV / Excel file</label><input id="productImportFile" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"></div><div class="actions"><button class="btn" onclick="readProductImportFile()">Read & Preview File</button><button class="btn light" onclick="downloadProductImportTemplate()">Download CSV Template</button></div></div>
  <div class="panel"><div class="panel-head"><h3>Review import <span id="impCount" class="badge">0 rows</span></h3><button class="btn" onclick="saveProductImport()">Import Selected Rows</button></div><div class="feature-note">Matching priority: barcode, then medicine name + batch. Existing products are skipped unless Update matching existing is selected. Imported stock replaces the current product-level quantity; use Stock Inward for purchase quantities and batch movements.</div><label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:12px"><input id="impUpdateExisting" type="checkbox"> Update matching existing products</label><div class="table-wrap"><table><thead><tr><th>Import</th><th>Medicine</th><th>Brand</th><th>Batch</th><th>MRP</th><th>Purchase</th><th>Qty</th><th>HSN</th><th>Image</th><th>Match</th></tr></thead><tbody id="productImportRows"><tr><td colspan="10" class="empty">Choose a CSV or Excel file to preview products.</td></tr></tbody></table></div><div id="impSaveStatus" class="feature-note"></div></div>`;
 }
-function normalizeImportedProduct(x){const get=(...keys)=>{for(const k of keys){const v=x?.[k]??x?.[k.toLowerCase()];if(v!==undefined&&v!==null&&v!=="")return v;}return "";};return {name:String(get("name","product_name","medicine","title")).trim(),brand:get("brand","manufacturer"),barcode:get("barcode","ean","sku","product_code"),category:get("category","type"),hsn_code:get("hsn_code","hsn","hsn_code_no"),batch_number:get("batch_number","batch","lot"),expiry_date:normalizeImportDate(get("expiry_date","expiry","exp_date")),mrp:numImport(get("mrp","maximum_retail_price")),purchase_price:numImport(get("purchase_price","ptr","purchase_rate","rate")),gst_percent:numImport(get("gst_percent","gst","tax")),stock:numImport(get("stock","quantity","qty","available_quantity")),unit:get("unit","uom")||"PCS",image_url:get("image_url","image","image_link","photo","thumbnail")};}
+function normalizeImportedProduct(x){const get=(...keys)=>{for(const k of keys){const v=x?.[k]??x?.[k.toLowerCase()];if(v!==undefined&&v!==null&&v!=="")return v;}return "";};return {name:String(get("name","product_name","medicine","title")).trim(),brand:get("brand","manufacturer"),barcode:get("barcode","ean","sku","product_code"),category:get("category","type"),hsn_code:get("hsn_code","hsn","hsn_code_no"),batch_number:get("batch_number","batch","lot"),expiry_date:(normalizeImportDate(get("expiry_date","expiry","exp_date"))||null),mrp:numImport(get("mrp","maximum_retail_price")),purchase_price:numImport(get("purchase_price","ptr","purchase_rate","rate")),gst_percent:numImport(get("gst_percent","gst","tax")),stock:numImport(get("stock","quantity","qty","available_quantity")),unit:get("unit","uom")||"PCS",image_url:get("image_url","image","image_link","photo","thumbnail")};}
 function numImport(v){if(v===""||v==null)return 0;const n=Number(String(v).replace(/[₹,]/g,""));return Number.isFinite(n)?n:0;}
 function normalizeImportDate(v){if(!v)return null;const d=new Date(v);if(!Number.isNaN(d.getTime()))return d.toISOString().slice(0,10);const m=String(v).match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);return m?`${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`:null;}
 async function readProductImportFile(){if(!canManage())return notify("Permission denied.");const file=$("productImportFile")?.files?.[0];if(!file)return notify("Choose a CSV or Excel file.");try{let rows;if(file.name.toLowerCase().endsWith(".csv")){const text=await file.text();rows=parseSimpleCSV(text);}else{if(!window.XLSX)throw new Error("Excel library did not load. Try CSV format.");const wb=XLSX.read(await file.arrayBuffer(),{type:"array"});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""});}productImportRows=rows.map(normalizeImportedProduct).filter(x=>x.name);renderProductImportPreview();notify(`${productImportRows.length} products ready for review.`);}catch(e){notify("File read failed: "+e.message);}}
@@ -1022,7 +1091,7 @@ function parseSimpleCSV(text){const lines=text.replace(/^\uFEFF/,"").split(/\r?\
 function renderProductImportPreview(){const host=$("productImportRows");if(!host)return;$("impCount").textContent=productImportRows.length+" rows";host.innerHTML=productImportRows.length?productImportRows.map((p,i)=>{const match=products.find(x=>(p.barcode&&String(x.barcode||"").toLowerCase()===String(p.barcode).toLowerCase())||(String(x.name||"").trim().toLowerCase()===p.name.toLowerCase()&&String(x.batch_number||"").toLowerCase()===String(p.batch_number||"").toLowerCase()));return `<tr><td><input type="checkbox" class="imp-pick" data-i="${i}" checked></td><td><b>${esc(p.name)}</b></td><td>${esc(p.brand||"-")}</td><td>${esc(p.batch_number||"-")}</td><td>${money(p.mrp)}</td><td>${money(p.purchase_price)}</td><td>${p.stock}</td><td>${esc(p.hsn_code||"-")}</td><td>${safeWebUrl(p.image_url)?`<a href="${esc(safeWebUrl(p.image_url))}" target="_blank" rel="noopener">View</a>`:"-"}</td><td>${match?`<span class="badge">Match found</span>`:`<span class="badge green">New</span>`}</td></tr>`;}).join(""):`<tr><td colspan="10" class="empty">No valid product rows found.</td></tr>`;}
 function downloadProductImportTemplate(){const csv="name,brand,barcode,category,hsn_code,batch_number,expiry_date,mrp,purchase_price,gst_percent,stock,unit,image_url\nParacetamol 500mg,ABC,890000000001,Tablet,30049099,B001,2027-12-31,20,12,12,100,PCS,https://example.com/image.jpg\n";const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="Subha_Medical_Product_Import_Template.csv";a.click();URL.revokeObjectURL(a.href);}
 async function saveProductImport(){if(!canManage())return notify("Permission denied.");const picks=[...document.querySelectorAll(".imp-pick:checked")].map(x=>Number(x.dataset.i));if(!picks.length)return notify("Select at least one row.");const updateExisting=$("impUpdateExisting")?.checked;let added=0,updated=0,skipped=0,failed=[];const source="CSV/Excel";
- for(const i of picks){const p=productImportRows[i];const match=products.find(x=>(p.barcode&&String(x.barcode||"").toLowerCase()===String(p.barcode).toLowerCase())||(String(x.name||"").trim().toLowerCase()===p.name.toLowerCase()&&String(x.batch_number||"").toLowerCase()===String(p.batch_number||"").toLowerCase()));if(match&&!updateExisting){skipped++;continue;}const d={name:p.name,brand:p.brand||null,barcode:p.barcode||null,category:p.category||null,hsn_code:p.hsn_code||null,batch_number:p.batch_number||null,expiry_date:p.expiry_date,mrp:p.mrp,purchase_price:p.purchase_price,gst_percent:p.gst_percent,stock:p.stock,unit:p.unit||"PCS",image_url:p.image_url||null};try{let q;if(match){q=await sb.from("ms_products").update(d).eq("id",match.id).eq("pharmacy_id",pharmacyId());if(q.error)throw q.error;updated++;}else{q=await sb.from("ms_products").insert({...d,pharmacy_id:pharmacyId()});if(q.error)throw q.error;added++;}}catch(e){failed.push(`${p.name}: ${e.message}`);}}
+ for(const i of picks){const p=productImportRows[i];const match=products.find(x=>(p.barcode&&String(x.barcode||"").toLowerCase()===String(p.barcode).toLowerCase())||(String(x.name||"").trim().toLowerCase()===p.name.toLowerCase()&&String(x.batch_number||"").toLowerCase()===String(p.batch_number||"").toLowerCase()));if(match&&!updateExisting){skipped++;continue;}const d={name:p.name,brand:p.brand||null,barcode:p.barcode||null,category:p.category||null,hsn_code:p.hsn_code||null,batch_number:p.batch_number||null,expiry_date:p.expiry_date||null,mrp:p.mrp,purchase_price:p.purchase_price,gst_percent:p.gst_percent,stock:p.stock,unit:p.unit||"PCS",image_url:p.image_url||null};try{let q;if(match){q=await sb.from("ms_products").update(d).eq("id",match.id).eq("pharmacy_id",pharmacyId());if(q.error)throw q.error;updated++;}else{q=await sb.from("ms_products").insert({...d,pharmacy_id:pharmacyId()});if(q.error)throw q.error;added++;}}catch(e){failed.push(`${p.name}: ${e.message}`);}}
  try{await sb.from("ms_product_import_logs").insert({pharmacy_id:pharmacyId(),source_name:source,source_type:"file",rows_seen:picks.length,rows_added:added,rows_updated:updated,rows_skipped:skipped,rows_failed:failed.length,details:failed.slice(0,30),created_by:currentUser.id});}catch(e){console.warn("Import log not saved",e);}
  await refreshData();renderProductImport();$("impSaveStatus")&&($("impSaveStatus").textContent=`Import completed: ${added} added, ${updated} updated, ${skipped} skipped, ${failed.length} failed.`);notify(`Import complete: ${added} added, ${updated} updated, ${skipped} skipped, ${failed.length} failed.`);if(failed.length)console.warn("Import errors",failed);
 }
@@ -1108,7 +1177,10 @@ function productModal(p=null){
  $("productForm").onsubmit=async e=>{
   e.preventDefault();
   const d=Object.fromEntries(new FormData(e.target));
+  // HTML date inputs return an empty string when no expiry is entered; Postgres DATE requires NULL instead.
+  d.expiry_date = d.expiry_date ? d.expiry_date : null;
   ["mrp","purchase_price","gst_percent","stock","tablets_per_strip"].forEach(k=>d[k]=Number(d[k]||0));
+  if(!Number.isFinite(d.stock) || d.stock < 0) throw new Error("Stock must be zero or a positive number.");
   try{
    if(p){
     const {error}=await sb.from("ms_products").update(d).eq("id",p.id).eq("pharmacy_id",pharmacyId());
@@ -1865,8 +1937,8 @@ function editStaff(id){
 function openStaffCreate(){
  if(!canManage())return notify("Owner/Admin access required.");
  $("modalTitle").textContent="Create pharmacy staff account";
- $("modalBody").innerHTML=`<form id="staffCreateForm"><div class="notice" style="margin-bottom:14px">Creates a separate login for this pharmacy only. Requires the deployed medical-staff-admin- Edge Function.</div>${field("Staff full name","name","","required")}${field("Staff email","email","","required","email")}${field("Temporary password (minimum 8 characters)","password","","required","password")}<div class="field"><label>Role</label><select name="role"><option value="admin">Admin</option><option value="manager">Manager</option><option value="pharmacist">Pharmacist</option><option value="cashier">Cashier</option></select></div><button class="btn full">Create Staff Account</button></form>`;
- $("staffCreateForm").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));try{const {data,error}=await sb.functions.invoke("medical-staff-admin-",{body:{action:"create_staff",pharmacy_id:pharmacyId(),name:d.name,email:d.email,password:d.password,role:d.role}});if(error)throw error;if(data?.error)throw new Error(data.error);closeModal();notify("Staff account created.");renderStaff();}catch(err){notify("Staff creation unavailable: "+err.message);}};
+ $("modalBody").innerHTML=`<form id="staffCreateForm"><div class="notice" style="margin-bottom:14px">Creates a separate login for this pharmacy only. Uses the deployed medical-staff-admin Edge Function on this Supabase project.</div>${field("Staff full name","name","","required")}${field("Staff email","email","","required","email")}${field("Temporary password (minimum 8 characters)","password","","required","password")}<div class="field"><label>Role</label><select name="role"><option value="admin">Admin</option><option value="manager">Manager</option><option value="pharmacist">Pharmacist</option><option value="cashier">Cashier</option></select></div><button class="btn full">Create Staff Account</button></form>`;
+ $("staffCreateForm").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const submit=e.target.querySelector('button[type="submit"],button:not([type])');if(submit){submit.disabled=true;submit.textContent="Creating staff...";}try{const {data:sessionData,error:sessionError}=await sb.auth.getSession();if(sessionError)throw sessionError;const accessToken=sessionData?.session?.access_token;if(!accessToken)throw new Error("Your login session expired. Sign in again.");const response=await fetch(STAFF_ADMIN_FUNCTION_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+accessToken},body:JSON.stringify({action:"create_staff",pharmacy_id:pharmacyId(),name:d.name,email:d.email,password:d.password,role:d.role})});let result={};try{result=await response.json();}catch(_){throw new Error("Edge Function returned an unreadable response. Check its deployment and logs.");}if(!response.ok||result?.error||result?.success===false)throw new Error(result?.error||("Edge Function request failed (HTTP "+response.status+")"));closeModal();notify("Staff account created successfully.");renderStaff();}catch(err){notify("Staff creation failed: "+(err?.message||String(err)));if(submit){submit.disabled=false;submit.textContent="Create Staff Account";}}};
  openModal();
 }
 async function toggleStaff(id,active){if(!confirm((active?"Activate":"Deactivate")+" this staff account?"))return;const {error}=await sb.from("ms_members").update({is_active:active}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Staff status updated.");renderStaff();}
@@ -1888,9 +1960,9 @@ async function renderPharmacies(){
  <button class="btn" onclick="setApproval('${p.id}','approved')">Approve</button>
  <button class="btn danger" onclick="setApproval('${p.id}','rejected')">Reject</button>
  <button class="btn light" onclick="setApproval('${p.id}','suspended')">Suspend</button>
- <button class="btn danger" onclick="deletePharmacyApplication('${p.id}')">Delete</button>
+ <button class="btn danger" onclick="deletePharmacyApplication('${p.id}')">Delete pharmacy + data</button>
  </div></td></tr>`).join(""):`<tr><td colspan="6" class="empty">No pharmacy registrations yet.</td></tr>`}
- </tbody></table></div></div>`;
+ </tbody></table></div></div><div class="notice" style="margin-top:14px"><b>Super Admin deletion:</b> permanent pharmacy database deletion requires the <code>ms_super_admin_delete_pharmacy</code> SQL function. The confirmation requires the exact pharmacy code. Auth login accounts and Storage files are intentionally preserved.</div>`;
 }
 async function setApproval(id,status){
  if(!isSuper())return notify("Super Admin access required.");
@@ -1902,15 +1974,21 @@ async function setApproval(id,status){
 }
 async function deletePharmacyApplication(id){
  if(!isSuper())return notify("Super Admin access required.");
- const ok=confirm(`Delete the selected pharmacy record?\n\nThis action removes only the ms_pharmacies record. It does NOT delete the Supabase Auth user or automatically erase linked pharmacy data. If other database records reference this pharmacy, Supabase may block the deletion. Continue only if you understand this scope.`);
- if(!ok)return;
+ const pharmacy=adminPharmacyOptions.find(x=>x.id===id);
+ if(!pharmacy)return notify("Pharmacy record not found. Refresh the approval list.");
+ const code=prompt(`PERMANENT PHARMACY DATA DELETION\n\nThis removes the pharmacy and its linked database records, including inventory, customers, staff memberships, purchases, sales, GRNs, returns and audit history.\n\nSupabase Auth login accounts and Storage files are NOT deleted by this database operation.\n\nTo continue, type this pharmacy code exactly: ${pharmacy.pharmacy_code||"(no code)"}`);
+ if(code===null)return;
+ if(String(code).trim()!==String(pharmacy.pharmacy_code||""))return notify("Pharmacy code did not match. Nothing was deleted.");
+ if(!confirm(`FINAL CONFIRMATION\n\nPermanently delete ${pharmacy.pharmacy_name||"this pharmacy"} and its linked pharmacy database records?\n\nThis cannot be undone. Continue only after exporting any records you need.`))return;
  try{
-  const {error}=await sb.from("ms_pharmacies").delete().eq("id",id);
+  const {data,error}=await sb.rpc("ms_super_admin_delete_pharmacy",{p_pharmacy_id:id,p_confirmation_code:String(code).trim()});
   if(error)throw error;
+  if(data?.success===false)throw new Error(data.message||"Pharmacy deletion was not completed.");
   if(selectedAdminPharmacyId===id){selectedAdminPharmacyId=null;currentPharmacy=null;products=[];customers=[];sales=[];suppliers=[];pharmacySettings={};updateSuperPharmacySelector();}
-  notify("Pharmacy record deleted. Auth account and related data were not automatically deleted.");
+  adminPharmacyOptions=adminPharmacyOptions.filter(x=>x.id!==id);
+  notify("Pharmacy database records deleted. Auth accounts and Storage files remain untouched.");
   await renderPharmacies();
- }catch(e){notify("Could not delete pharmacy record: "+e.message+". Related records or database policies may prevent deletion; no linked data was force-deleted.");}
+ }catch(e){notify("Pharmacy deletion failed; no partial deletion was committed. Install the Super Admin deletion SQL and check the error: "+(e?.message||String(e)));}
 }
 async function renderSettings(){
  const p=currentPharmacy||{},owner=canManage()||String(currentUser?.email||"").toLowerCase()==="subhamedical2325@gmail.com";
