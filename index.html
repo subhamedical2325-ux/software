@@ -1607,8 +1607,9 @@ async function renderBilling(){
     <div class="field" style="margin:8px 0"><label>Bill discount (₹)</label><input id="billDiscount" type="number" min="0" step="0.01" value="0" oninput="renderCart()"><small id="discountLimitNote" class="feature-note"></small></div>
     <div class="total-row final"><span>Net payable</span><b id="billTotal">₹0.00</b></div></div>
    <div class="payment-head"><b>Payment mode</b><label class="split-toggle"><input id="splitPaymentToggle" type="checkbox" onchange="toggleSplitPayment()"> Split payment</label></div>
-   <div id="singlePaymentBox" class="bill-meta"><div class="field"><label>Payment method</label><select id="billPayment"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option><option value="credit">Credit</option></select></div></div>
-   <div id="splitPaymentBox" class="split-payment-box hidden"><div class="split-payment-grid"><div class="field"><label>Cash (₹)</label><input id="splitCash" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>UPI (₹)</label><input id="splitUpi" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Card (₹)</label><input id="splitCard" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Credit (₹)</label><input id="splitCredit" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div></div><div class="split-total-line"><span>Allocated</span><b id="splitAllocated">₹0.00</b><span>Balance</span><b id="splitBalance">₹0.00</b></div><small id="splitPaymentHint" class="feature-note">Enter amounts to match the net payable.</small></div>
+   <div id="singlePaymentBox" class="bill-meta"><div class="field"><label>Payment method</label><select id="billPayment" onchange="renderBillUpiPayment()"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option><option value="credit">Credit</option></select></div></div>
+   <div id="billUpiPaymentBox" class="split-payment-box hidden" style="margin-top:8px"><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div id="billUpiQr" style="background:#fff;padding:8px;border-radius:8px;min-width:116px;min-height:116px;display:grid;place-items:center">UPI QR</div><div style="flex:1;min-width:150px"><b>Scan to pay</b><div class="feature-note">QR amount is linked to this bill total.</div><div id="billUpiAmount" style="font-size:19px;font-weight:800;margin:6px 0">₹0.00</div><small id="billUpiVpa" class="feature-note"></small></div></div><div class="field" style="margin-top:8px"><label>UPI reference / UTR number</label><input id="billUpiReference" placeholder="Enter UPI transaction reference number"></div></div>
+   <div id="splitPaymentBox" class="split-payment-box hidden"><div class="split-payment-grid"><div class="field"><label>Cash (₹)</label><input id="splitCash" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>UPI (₹)</label><input id="splitUpi" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Card (₹)</label><input id="splitCard" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Credit (₹)</label><input id="splitCredit" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div></div><div class="split-total-line"><span>Allocated</span><b id="splitAllocated">₹0.00</b><span>Balance</span><b id="splitBalance">₹0.00</b></div><small id="splitPaymentHint" class="feature-note">Enter amounts to match the net payable.</small><div id="splitUpiPaymentBox" class="hidden" style="margin-top:9px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div id="splitUpiQr" style="background:#fff;padding:7px;border-radius:8px;min-width:112px;min-height:112px;display:grid;place-items:center"></div><div><b>Scan UPI amount</b><div id="splitUpiAmount" style="font-size:17px;font-weight:800">₹0.00</div><small class="feature-note" id="splitUpiVpa"></small></div></div><div class="field" style="margin-top:8px"><label>UPI reference / UTR number</label><input id="splitUpiReference" placeholder="Enter UPI transaction reference number"></div></div></div>
    <button class="btn full" style="margin-top:13px;min-height:45px" onclick="completeSale()">Complete Sale · Save & Print</button>
    <p class="feature-note" style="margin:8px 0 0">Verify UPI/card payment before completing the bill.</p>
   </section>
@@ -1619,7 +1620,7 @@ function toggleSplitPayment(){
  const enabled=$("splitPaymentToggle")?.checked;
  $("singlePaymentBox")?.classList.toggle("hidden",enabled);
  $("splitPaymentBox")?.classList.toggle("hidden",!enabled);
- if(enabled){["splitCash","splitUpi","splitCard","splitCredit"].forEach(id=>{if($(id))$(id).value="0";});syncSplitPayment();}
+ if(enabled){["splitCash","splitUpi","splitCard","splitCredit"].forEach(id=>{if($(id))$(id).value="0";});syncSplitPayment();}else renderBillUpiPayment();
 }
 function syncSplitPayment(){
  const vals=["splitCash","splitUpi","splitCard","splitCredit"].map(id=>Math.max(0,Number($(id)?.value||0)));
@@ -1627,17 +1628,57 @@ function syncSplitPayment(){
  if($("splitAllocated"))$("splitAllocated").textContent=money(allocated);
  if($("splitBalance"))$("splitBalance").textContent=money(balance);
  const hint=$("splitPaymentHint");if(hint){hint.textContent=Math.abs(balance)<0.005?"Payment allocation matches the bill total.":balance>0?`Remaining amount to allocate: ${money(balance)}`:`Over-allocated by ${money(Math.abs(balance))}`;hint.style.color=Math.abs(balance)<0.005?"#15966a":"#d84c59";}
+ renderBillUpiPayment();
 }
 function getBillPayment(){
- if(!$("splitPaymentToggle")?.checked)return {method:$("billPayment").value,status:$("billPayment").value==="credit"?"pending":"paid"};
+ if(!$("splitPaymentToggle")?.checked){const method=$("billPayment").value;return {method,status:method==="credit"?"pending":"paid",upiAmount:method==="upi"?calculateBill().total:0,reference:method==="upi"?($("billUpiReference")?.value.trim()||""): ""};}
  const keys=["cash","upi","card","credit"],vals=keys.map(k=>Math.max(0,Number($("split"+k[0].toUpperCase()+k.slice(1))?.value||0)));
  const total=vals.reduce((a,b)=>a+b,0),due=calculateBill().total;
  if(vals.some(v=>!Number.isFinite(v))||Math.abs(total-due)>0.009)throw new Error(`Split payment amounts must total exactly ${money(due)}.`);
  if(!vals.some(v=>v>0))throw new Error("Enter at least one split payment amount.");
  const method="split:"+keys.map((k,i)=>`${k}=${vals[i].toFixed(2)}`).filter((x,i)=>vals[i]>0).join(";");
- return {method,status:vals[3]>0?"pending":"paid"};
+ return {method,status:vals[3]>0?"pending":"paid",upiAmount:vals[1],reference:vals[1]>0?($("splitUpiReference")?.value.trim()||""):""};
+}
+function renderBillUpiPayment(){
+ const split=$("splitPaymentToggle")?.checked===true;
+ const method=$("billPayment")?.value||"cash";
+ const amount=split?Math.max(0,Number($("splitUpi")?.value||0)):(method==="upi"?calculateBill().total:0);
+ if($("billUpiPaymentBox"))$("billUpiPaymentBox").classList.toggle("hidden",split||method!=="upi");
+ if($("splitUpiPaymentBox"))$("splitUpiPaymentBox").classList.toggle("hidden",!split||amount<=0);
+ if(!amount||(!split&&method!=="upi"))return;
+ const upi=String(pharmacySettings.upi_id||"").trim();
+ const name=String(pharmacySettings.upi_name||currentPharmacy?.pharmacy_name||"Pharmacy").trim();
+ const invoice=$("billInvoicePreview")?.textContent||("SM-"+Date.now());
+ const qrHost=$(split?"splitUpiQr":"billUpiQr");
+ const amountHost=$(split?"splitUpiAmount":"billUpiAmount");
+ const vpaHost=$(split?"splitUpiVpa":"billUpiVpa");
+ if(amountHost)amountHost.textContent=money(amount);
+ if(vpaHost)vpaHost.textContent=upi||"Set UPI ID in Pharmacy Settings";
+ if(qrHost)qrHost.innerHTML="";
+ if(!upi){if(qrHost)qrHost.textContent="UPI ID required";return;}
+ if(typeof QRCode==="undefined"){if(qrHost)qrHost.textContent="QR library unavailable";return;}
+ const uri="upi://pay?pa="+encodeURIComponent(upi)+"&pn="+encodeURIComponent(name)+"&am="+Number(amount).toFixed(2)+"&cu=INR&tn="+encodeURIComponent(invoice);
+ new QRCode(qrHost,{text:uri,width:112,height:112});
+}
+function renderBillUpiPayment(){
+ const split=$("splitPaymentToggle")?.checked===true,method=$("billPayment")?.value||"cash";
+ const amount=split?Math.max(0,Number($("splitUpi")?.value||0)):(method==="upi"?calculateBill().total:0);
+ if($("billUpiPaymentBox"))$("billUpiPaymentBox").classList.toggle("hidden",split||method!=="upi");
+ if($("splitUpiPaymentBox"))$("splitUpiPaymentBox").classList.toggle("hidden",!split||amount<=0);
+ if(!amount||(!split&&method!=="upi"))return;
+ const upi=String(pharmacySettings.upi_id||"").trim(),name=String(pharmacySettings.upi_name||currentPharmacy?.pharmacy_name||"Pharmacy").trim();
+ const invoice=$("billInvoicePreview")?.textContent||("SM-"+Date.now()),qrHost=$(split?"splitUpiQr":"billUpiQr");
+ const amountHost=$(split?"splitUpiAmount":"billUpiAmount"),vpaHost=$(split?"splitUpiVpa":"billUpiVpa");
+ if(amountHost)amountHost.textContent=money(amount);if(vpaHost)vpaHost.textContent=upi||"Set UPI ID in Pharmacy Settings";
+ if(qrHost)qrHost.innerHTML="";
+ if(!upi){if(qrHost)qrHost.textContent="UPI ID required";return;}
+ if(typeof QRCode==="undefined"){if(qrHost)qrHost.textContent="QR library unavailable";return;}
+ const uri="upi://pay?pa="+encodeURIComponent(upi)+"&pn="+encodeURIComponent(name)+"&am="+Number(amount).toFixed(2)+"&cu=INR&tn="+encodeURIComponent(invoice);
+ new QRCode(qrHost,{text:uri,width:112,height:112});
 }
 function searchBill(q){
+ q=String(q||"").trim();
+ if(!q){$("billResults").innerHTML=`<div class="empty">⌕ Start typing a medicine name, brand, batch or barcode. Matching medicines will appear here.</div>`;return;}
  const list=products.filter(p=>(p.name+" "+(p.brand||"")+" "+(p.barcode||"")+" "+(p.batch_number||"")).toLowerCase().includes(String(q||"").toLowerCase())).slice(0,80);
  $("billResults").innerHTML=list.length?`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Stock</th><th>Unit</th><th>MRP</th><th>GST</th><th></th></tr></thead><tbody>${list.map(p=>`<tr><td><span class="medicine-name">${esc(p.name)}</span><span class="medicine-sub">${esc(p.brand||"")} · Exp ${esc(p.expiry_date||"-")}</span></td><td><b>${esc(p.batch_number||"-")}</b></td><td>${esc(p.stock)}</td><td>${esc(p.unit||"PCS")}</td><td>${money(p.mrp)}</td><td>${esc(p.gst_percent||0)}%</td><td><button class="btn light" data-bill-product onclick="addToCart('${p.id}')">+ Add</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No matching medicine found in this pharmacy.</div>`;
 }
@@ -1696,7 +1737,7 @@ function renderCart(){
  if($("discountLimitNote"))$("discountLimitNote").textContent=`Maximum permitted discount: ${money(t.maxDiscount)}.`;
  if($("billSubtotal"))$("billSubtotal").textContent=money(t.subtotal);if($("billGst"))$("billGst").textContent=money(t.gst);if($("billTotal"))$("billTotal").textContent=money(t.total);
  if($("billItemCount"))$("billItemCount").textContent=`${cart.length} items · Edit quantity / rate / discount`;if($("billItemCountSide"))$("billItemCountSide").textContent=cart.length;
- if($("splitPaymentToggle")?.checked)syncSplitPayment();
+ if($("splitPaymentToggle")?.checked)syncSplitPayment();else renderBillUpiPayment();
 }
 function changeCartUnit(id,unit){const item=cart.find(x=>x.id===id);if(item){item.unit=unit;renderCart();}}
 function changeCartRate(id,rate){const item=cart.find(x=>x.id===id);rate=Number(rate);if(!item||!Number.isFinite(rate)||rate<0)return notify("Enter a valid rate.");if(rate+0.001<Number(item.purchase_price||0)*1.2)return notify("Rate must preserve the minimum 20% purchase-cost margin.");item.mrp=rate;renderCart();}
@@ -1716,6 +1757,7 @@ async function completeSale(){
  let paymentInfo;
  try{paymentInfo=getBillPayment();
   const payment=paymentInfo.method;
+  if(paymentInfo.upiAmount>0&&!paymentInfo.reference)throw new Error("Enter the UPI reference / UTR number before saving this bill.");
   let customerId=window.billCustomerId||null;
   const phone=$("billPhone")?.value.trim()||"",customerName=$("billCustomerName")?.value.trim()||"";
   if(phone||customerName){
@@ -1738,6 +1780,7 @@ async function completeSale(){
    total:t.total,
    payment_method:payment,
    payment_status:paymentInfo.status,
+   payment_reference_number:paymentInfo.reference||null,
    created_by:currentUser.id
   };
   const {data:created,error}=await sb.from("ms_sales").insert(sale).select().single();
@@ -1760,7 +1803,8 @@ async function completeSale(){
    if(stockError)throw stockError;
   }
   window.lastCompletedBill={sale:created,items:cart.map(x=>({...x})),totals:t,customerPhone:phone,customerName:customerName||"Customer"};
-  printInvoice(created,cart,t);
+  const firstPrintLabel=await getServerBillCopyLabel(created.id);
+  printInvoice(created,cart,t,firstPrintLabel);
   cart=[];
   await refreshData();
   renderBilling();
@@ -1786,19 +1830,20 @@ function buildBillPdf(bill){
  const body=items.map(p=>[String(p.name),String(p.batch_number||"-"),String(p.qty),Number(p.mrp||0).toFixed(2),(Number(p.qty||0)*Number(p.mrp||0)*(1-Number(p.discount_pct||0)/100)).toFixed(2)]);
  if(doc.autoTable){doc.autoTable({startY:y,head:[["Medicine","Batch","Qty","Rate","Amount"]],body,theme:"grid",styles:{fontSize:size==="A4"?8:6,cellPadding:1.4},headStyles:{fontSize:size==="A4"?8:6},margin:{left:margin,right:margin}});y=doc.lastAutoTable.finalY+5;}else{body.forEach(r=>{doc.setFontSize(6);doc.text(r.join(" | "),margin,y,{maxWidth:pageW-2*margin});y+=5;});}
  addLine("Subtotal",money(totals.subtotal));addLine("Discount",money(totals.discount));addLine("GST included",money(totals.gst));doc.setFont("helvetica","bold");addLine("NET PAYABLE",money(totals.total));doc.setFont("helvetica","normal");addLine("Payment",sale.payment_method||"-");addLine("Status",sale.payment_status||"-");
- if(pharmacySettings.upi_id)addLine("UPI",pharmacySettings.upi_id);
+ if(sale.payment_reference_number)addLine("UPI Ref",sale.payment_reference_number);
  y+=3;doc.setFontSize(8);doc.text(String(pharmacySettings.print_footer||"Thank you. Visit again!"),pageW/2,y,{align:"center",maxWidth:pageW-2*margin});
- if(pharmacySettings.payment_qr_data_url){try{const q=pharmacySettings.payment_qr_data_url;doc.addImage(q,q.startsWith("data:image/png")?"PNG":"JPEG",pageW/2-10,y+4,20,20);}catch(e){}}
+ 
  return doc;
 }
-function showLastBillActions(){const old=$("lastBillActions");if(old)old.remove();if(!window.lastCompletedBill)return;const host=document.createElement("div");host.id="lastBillActions";host.className="panel";host.innerHTML=`<b>Last invoice: ${esc(window.lastCompletedBill.sale.invoice_number)}</b><div class="feature-tools"><button class="btn light" onclick="downloadLastBillPdf()">Download bill PDF</button><button class="btn" onclick="shareLastBillWhatsApp()">WhatsApp bill to customer</button></div><small class="feature-note">WhatsApp sharing uses your phone's share sheet when PDF attachment sharing is supported. Otherwise download the PDF and attach it in WhatsApp.</small>`;$("pageContent").prepend(host);}
+function showLastBillActions(){const old=$("lastBillActions");if(old)old.remove();if(!window.lastCompletedBill)return;const host=document.createElement("div");host.id="lastBillActions";host.className="panel";host.innerHTML=`<b>Last invoice: ${esc(window.lastCompletedBill.sale.invoice_number)}</b><div class="feature-tools"><button class="btn" onclick="reprintLastBill()">Print bill again</button><button class="btn light" onclick="downloadLastBillPdf()">Download bill PDF</button><button class="btn" onclick="shareLastBillWhatsApp()">WhatsApp bill to customer</button></div><small class="feature-note">WhatsApp sharing uses your phone's share sheet when PDF attachment sharing is supported. Otherwise download the PDF and attach it in WhatsApp.</small>`;$("pageContent").prepend(host);}
+async function reprintLastBill(){const b=window.lastCompletedBill;if(!b)return notify("No completed bill available.");try{const label=await getServerBillCopyLabel(b.sale.id);printInvoice(b.sale,b.items,b.totals,label);}catch(e){notify("Print history could not be saved. Run the supplied SQL first. "+(e.message||e));}}
 function downloadLastBillPdf(){try{const b=window.lastCompletedBill;if(!b)return notify("No completed bill available.");buildBillPdf(b).save((b.sale.invoice_number||"invoice")+".pdf");}catch(e){notify(e.message||"PDF could not be created.");}}
 async function shareLastBillWhatsApp(){try{const b=window.lastCompletedBill;if(!b)return notify("No completed bill available.");const doc=buildBillPdf(b),blob=doc.output("blob"),file=new File([blob],(b.sale.invoice_number||"invoice")+".pdf",{type:"application/pdf"});const phone=String(b.customerPhone||"").replace(/\D/g,"");const textMsg=`Hello ${b.customerName||"Customer"}, your pharmacy bill ${b.sale.invoice_number} total ${money(b.totals.total)} is ready.`;
  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"Pharmacy bill",text:textMsg});return;}
  doc.save(file.name);const digits=phone.length===10?"91"+phone:phone;const url="https://wa.me/"+(digits||"")+"?text="+encodeURIComponent(textMsg+(digits?"":" Please find the attached PDF bill."));window.open(url,"_blank");notify("PDF downloaded. Attach it to the WhatsApp message if it did not attach automatically.");
  }catch(e){if(e.name!=="AbortError")notify("WhatsApp sharing failed: "+(e.message||e));}}
  
-function printInvoice(sale,items,t){
+function printInvoice(sale,items,t,copyLabel="DUPLICATE"){
  const w=window.open("","_blank","width=700,height=800");
  if(!w)return notify("Allow pop-ups to print the invoice.");
  const size=pharmacySettings.print_paper_size||"80mm";
@@ -1806,16 +1851,16 @@ function printInvoice(sale,items,t){
  const header=currentPharmacy?.pharmacy_name||pharmacySettings.print_header||"Pharmacy";
  const logo=pharmacySettings.logo_data_url?`<img src="${pharmacySettings.logo_data_url}" style="max-width:100px;max-height:65px;display:block;margin:0 auto 6px">`:"";
  const footer=pharmacySettings.print_footer||"Thank you. Visit again!";
- const upi=pharmacySettings.upi_id?`<p style="text-align:center;font-size:11px">UPI: ${esc(pharmacySettings.upi_id)}</p>`:"";
- const billQr=pharmacySettings.payment_qr_data_url?`<img src="${pharmacySettings.payment_qr_data_url}" style="width:105px;height:105px;object-fit:contain;display:block;margin:8px auto">`:"";
+ const upi="";
+ const billQr="";
  w.document.write(`<!DOCTYPE html><html><head><title>${esc(sale.invoice_number)}</title>
  <style>@page{size:${width} auto;margin:5mm}body{font-family:Arial;padding:8px;color:#222;max-width:${width==="210mm"?"190mm":width};margin:auto;font-size:12px}h1{text-align:center;font-size:18px;margin:4px}p{text-align:center;margin:5px 0}table{width:100%;border-collapse:collapse;margin-top:12px}td,th{border-bottom:1px solid #ddd;padding:6px 3px;text-align:left;font-size:11px}.right{text-align:right}.total{font-size:17px;font-weight:bold}</style>
  </head><body>${logo}<h1>${esc(header)}</h1><p>${esc(pharmacySettings.bill_print_address||currentPharmacy?.address||"")}</p><p>${esc(currentPharmacy?.phone||"")}</p>
- <p>${esc(pharmacySettings.gst_number?"GSTIN: "+pharmacySettings.gst_number:"")} ${esc(pharmacySettings.drug_license?" · DL: "+pharmacySettings.drug_license:"")}</p><hr><p>Invoice: ${esc(sale.invoice_number)}<br>${new Date(sale.created_at).toLocaleString()}</p><p style="text-align:left">Customer: ${esc($("billCustomerName")?.value||"Walk-in")} · Phone: ${esc($("billPhone")?.value||"-")}<br>Address: ${esc($("billCustomerAddress")?.value||"-")}<br>Doctor: ${esc($("billDoctor")?.value||"-")}<br>Pharmacist: ${esc($("billPharmacist")?.value||"-")}<br>Billing staff: ${esc(currentMember?.full_name||currentUser.email)}</p>
+ <p>${esc(pharmacySettings.gst_number?"GSTIN: "+pharmacySettings.gst_number:"")} ${esc(pharmacySettings.drug_license?" · DL: "+pharmacySettings.drug_license:"")}</p><hr><p>Invoice: ${esc(sale.invoice_number)}<br>${new Date(sale.created_at).toLocaleString()}<br><b style="letter-spacing:1px;border:1px solid #333;padding:3px 9px;display:inline-block;margin-top:5px">${esc(copyLabel)}</b></p><p style="text-align:left">Customer: ${esc(sale.customer_name||$("billCustomerName")?.value||"Walk-in")} · Phone: ${esc(sale.customer_phone||$("billPhone")?.value||"-")}<br>Address: ${esc(sale.customer_address||$("billCustomerAddress")?.value||"-")}<br>Doctor: ${esc(sale.doctor_name||$("billDoctor")?.value||"-")}<br>Pharmacist: ${esc(sale.pharmacist_name||$("billPharmacist")?.value||"-")}<br>Entered by: ${esc(sale.billing_staff_name||currentMember?.full_name||currentUser.email)}</p>
  <table><tr><th>Medicine</th><th>Batch</th><th>Qty</th><th>Rate</th><th class="right">Amount</th></tr>
  ${items.map(p=>`<tr><td>${esc(p.name)}${pharmacySettings.show_batch_expiry===false||pharmacySettings.show_batch_expiry==="no"?"":`<br><small>Exp: ${esc(p.expiry_date||"-")}</small>`}${Number(p.discount_pct||0)>0?`<br><small>Discount ${Number(p.discount_pct).toFixed(1)}%</small>`:""}</td><td>${esc(p.batch_number||"-")}</td><td>${p.qty}</td><td>${money(p.mrp)}</td><td class="right">${money(p.qty*p.mrp*(1-Number(p.discount_pct||0)/100))}</td></tr>`).join("")}
  </table><p class="right">Subtotal: ${money(t.subtotal)}<br>Discount: ${money(t.discount)}<br>GST included: ${money(t.gst)}</p>
- <p class="right total">Total: ${money(t.total)}</p><p style="text-align:left;font-size:11px">Payment: ${esc(sale.payment_method||"-")}<br>Status: ${esc(sale.payment_status||"-")}</p>${upi}${billQr}${pharmacySettings.bill_terms?`<hr><p style="text-align:left;font-size:10px">${esc(pharmacySettings.bill_terms)}</p>`:""}<hr><p>${esc(footer)}</p>
+ <p class="right total">Total: ${money(t.total)}</p><p style="text-align:left;font-size:11px">Payment: ${esc(sale.payment_method||"-")}<br>Status: ${esc(sale.payment_status||"-")}${sale.payment_reference_number?`<br>UPI reference: ${esc(sale.payment_reference_number)}`:""}</p>${pharmacySettings.bill_terms?`<hr><p style="text-align:left;font-size:10px">${esc(pharmacySettings.bill_terms)}</p>`:""}<hr><p>${esc(footer)}</p>
  <script>window.onload=()=>window.print();<\/script></body></html>`);
  w.document.close();
 }
@@ -2111,7 +2156,7 @@ async function loadScheduledDrugReport(){
  const host=$("scheduledDrugReport");if(!host)return;host.innerHTML="Loading scheduled drug register…";
  try{const {data,error}=await sb.from("ms_scheduled_drug_sales_report").select("*").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(1000);if(error)throw error;
  activeReportRows=data||[];activeReportTitle="Scheduled drug register";
- host.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Date</th><th>Invoice</th><th>Medicine</th><th>Schedule</th><th>Batch</th><th>Qty</th><th>Customer / Phone</th><th>Doctor</th><th>Pharmacist</th><th>Billing staff</th><th>Prescription</th></tr></thead><tbody>${data.map(r=>`<tr><td>${new Date(r.created_at).toLocaleString()}</td><td>${esc(r.invoice_number||"")}</td><td>${esc(r.product_name||"")}</td><td>${esc(r.schedule||r.drug_schedule||"")}</td><td>${esc(r.batch_number||"")}</td><td>${esc(r.quantity||0)}</td><td>${esc(r.customer_name||"-")}<br>${esc(r.customer_phone||"")}</td><td>${esc(r.doctor_name||"-")}</td><td>${esc(r.pharmacist_name||"-")}</td><td>${esc(r.billing_staff_name||"-")}</td><td>${r.prescription_attached?"Attached":"Not attached"}</td></tr>`).join("")}</tbody></table></div>`:"No scheduled drug sales found.";
+ host.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Date</th><th>Invoice / Bill No.</th><th>Medicine</th><th>Schedule</th><th>Batch</th><th>Qty</th><th>Customer / Phone</th><th>Doctor</th><th>Pharmacist</th><th>Billing staff</th><th>Prescription</th></tr></thead><tbody>${data.map(r=>`<tr><td>${new Date(r.created_at).toLocaleString()}</td><td>${esc(r.invoice_number||"")}</td><td>${esc(r.product_name||"")}</td><td>${esc(r.schedule||r.drug_schedule||"")}</td><td>${esc(r.batch_number||"")}</td><td>${esc(r.quantity||0)}</td><td>${esc(r.customer_name||"-")}<br>${esc(r.customer_phone||"")}</td><td>${esc(r.doctor_name||"-")}</td><td>${esc(r.pharmacist_name||"-")}</td><td>${esc(r.billing_staff_name||"-")}</td><td>${r.prescription_attached?"Attached":"Not attached"}</td></tr>`).join("")}</tbody></table></div>`:"No scheduled drug sales found.";
  }catch(e){host.innerHTML=`<div class="notice">Scheduled drug report unavailable: ${esc(e.message)}. Run the supplied SQL migration and check table permissions.</div>`;}
 }
 function renderReports(){
@@ -2127,6 +2172,7 @@ function renderReports(){
  <div class="panel"><div class="panel-head"><h3>Scheduled medicine reports</h3><span class="badge">Compliance</span></div><p class="feature-note">Separate dispensing registers by Schedule H, H1, X and G. Data is filtered from the existing pharmacy dispensing register.</p><div class="report-shortcuts"><button class="btn light" onclick="runReport('schedule_H')">H Schedule</button><button class="btn light" onclick="runReport('schedule_H1')">H1 Schedule</button><button class="btn light" onclick="runReport('schedule_X')">X Schedule</button><button class="btn light" onclick="runReport('schedule_G')">G Schedule</button><button class="btn light" onclick="runReport('schedule')">All Schedules</button></div></div>
  <div class="panel"><div class="panel-head"><h3>Sales movement analysis</h3><span class="badge green">Stock insights</span></div><p class="feature-note">Compare medicine movement using recorded sale quantities. Non-moving means no sale found in the loaded sales history.</p><div class="report-shortcuts"><button class="btn light" onclick="runReport('fast_moving')">Fast Moving</button><button class="btn light" onclick="runReport('slow_moving')">Slow Moving</button><button class="btn light" onclick="runReport('non_moving')">Non Moving</button></div></div>
  <div class="panel">
+  <p class="feature-note">Sales register shows the invoice number, pharmacist and the logged-in staff member who entered each bill. Use the individual Print button to print only that bill. The first print is marked ORIGINAL; later prints are marked DUPLICATE.</p>
   <div class="panel-head"><h3>Report filters</h3><div class="actions"><button class="btn light" onclick="exportActiveReport()">Export CSV</button><button class="btn light" onclick="printActiveReport()">Print</button></div></div>
   <div class="form-grid">
    <div class="field"><label>From date</label><input type="date" id="reportFrom"></div>
@@ -2165,12 +2211,15 @@ function setReport(title,headers,rows){
 async function runReport(type){
  try{
   if(type==="sales"){
-   const rows=sales.filter(x=>reportDateOk(x.created_at)).map(x=>[x.invoice_number,new Date(x.created_at).toLocaleString(),Number(x.subtotal||0).toFixed(2),Number(x.discount||0).toFixed(2),Number(x.gst_amount||0).toFixed(2),Number(x.total||0).toFixed(2),x.payment_method||"",x.payment_status||""]);
-   return setReport("Sales register",["Invoice","Date","Subtotal","Discount","GST","Total","Payment","Status"],rows);
+   const records=sales.filter(x=>reportDateOk(x.created_at));
+   activeReportTitle="Sales register";activeReportRows=records.map(x=>[x.invoice_number,new Date(x.created_at).toLocaleString(),x.pharmacist_name||"-",x.billing_staff_name||"-",Number(x.subtotal||0).toFixed(2),Number(x.discount||0).toFixed(2),Number(x.gst_amount||0).toFixed(2),Number(x.total||0).toFixed(2),x.payment_method||"",x.payment_status||"",x.payment_reference_number||"-"]);
+   $("reportTitle").textContent=activeReportTitle;$("reportCount").textContent=records.length+" bills";
+   $("reportOutput").innerHTML=records.length?`<table style="min-width:900px"><thead><tr>${["Invoice / Bill No.","Date & time","Pharmacist","Entered By (logged-in staff)","Subtotal","Discount","GST","Total","Payment","Status","UPI reference","Print bill"].map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${records.map(x=>`<tr><td><b>${esc(x.invoice_number||"-")}</b></td><td>${esc(new Date(x.created_at).toLocaleString())}</td><td>${esc(x.pharmacist_name||"-")}</td><td>${esc(x.billing_staff_name||x.created_by||"-")}</td><td>${money(x.subtotal)}</td><td>${money(x.discount)}</td><td>${money(x.gst_amount)}</td><td><b>${money(x.total)}</b></td><td>${esc(x.payment_method||"-")}</td><td>${esc(x.payment_status||"-")}</td><td>${esc(x.payment_reference_number||"-")}</td><td><button class="btn light" onclick="printSalesReportBill('${String(x.id).replace(/'/g,"\\'")}')">Print this bill</button></td></tr>`).join("")}</tbody></table>`:`<div class="empty">No records found for this report and date range.</div>`;
+   return;
   }
   if(type==="daily_sales"){
-   const groups={};sales.filter(x=>reportDateOk(x.created_at)).forEach(x=>{const d=String(x.created_at).slice(0,10);groups[d]??={count:0,total:0,gst:0};groups[d].count++;groups[d].total+=Number(x.total||0);groups[d].gst+=Number(x.gst_amount||0);});
-   return setReport("Daily sales summary",["Date","Bills","Sales total","GST"],Object.keys(groups).sort().reverse().map(d=>[d,groups[d].count,money(groups[d].total),money(groups[d].gst)]));
+   const groups={};sales.filter(x=>reportDateOk(x.created_at)).forEach(x=>{const d=String(x.created_at).slice(0,10);groups[d]??={count:0,total:0,gst:0,invoices:[],pharmacists:[]};groups[d].count++;groups[d].total+=Number(x.total||0);groups[d].gst+=Number(x.gst_amount||0);groups[d].invoices.push(x.invoice_number);if(x.pharmacist_name)groups[d].pharmacists.push(x.pharmacist_name);});
+   return setReport("Daily sales summary",["Date","Bills","Invoice / Bill Nos.","Pharmacists","Sales total","GST"],Object.keys(groups).sort().reverse().map(d=>[d,groups[d].count,groups[d].invoices.join("; "),[...new Set(groups[d].pharmacists)].join("; "),money(groups[d].total),money(groups[d].gst)]));
   }
   if(type==="stock"){
    return setReport("Stock register",["Medicine","Brand","Batch","Expiry","MRP","Purchase cost","Stock","GST"],products.map(p=>[p.name,p.brand,p.batch_number,p.expiry_date,p.mrp,p.purchase_price,p.stock,p.gst_percent]));
@@ -2197,8 +2246,8 @@ async function runReport(type){
    if(ids.length){const {data,error}=await sb.from("ms_sale_items").select("sale_id,product_id,quantity,line_total").eq("pharmacy_id",pharmacyId()).in("sale_id",ids);if(error)throw error;lines=data||[];}
    const byProduct=new Map(products.map(p=>[p.id,Number(p.purchase_price||0)]));
    const costBySale={};lines.forEach(x=>{costBySale[x.sale_id]=(costBySale[x.sale_id]||0)+Number(x.quantity||0)*(byProduct.get(x.product_id)||0);});
-   const rows=ranged.map(x=>{const cost=costBySale[x.id]||0;const gross=Number(x.total||0)-cost;return [x.invoice_number,new Date(x.created_at).toLocaleDateString(),money(x.total),money(cost),money(gross)];});
-   return setReport("Estimated gross profit (current purchase rates)",["Invoice","Date","Sales total","Estimated cost","Estimated gross profit"],rows);
+   const rows=ranged.map(x=>{const cost=costBySale[x.id]||0;const gross=Number(x.total||0)-cost;return [x.invoice_number,new Date(x.created_at).toLocaleDateString(),x.pharmacist_name||"-",x.billing_staff_name||"-",money(x.total),money(cost),money(gross)];});
+   return setReport("Estimated gross profit (current purchase rates)",["Invoice / Bill No.","Date","Pharmacist","Entered By","Sales total","Estimated cost","Estimated gross profit"],rows);
   }
   if(type==="customers")return setReport("Customer register",["Customer","Phone","Address","Credit balance"],customers.map(c=>[c.name,c.phone,c.address,money(c.credit_balance)]));
   if(type==="suppliers")return setReport("Supplier register",["Supplier","Phone","GST number","Address"],suppliers.map(c=>[c.name,c.phone,c.gst_number,c.address]));
@@ -2213,12 +2262,12 @@ async function runReport(type){
    const ids=sales.filter(x=>reportDateOk(x.created_at)).map(x=>x.id);
    let lines=[];
    if(ids.length){const {data,error}=await sb.from("ms_sale_items").select("product_id,product_name,quantity,sale_id").eq("pharmacy_id",pharmacyId()).in("sale_id",ids);if(error)throw error;lines=data||[];}
-   const totals=new Map();lines.forEach(x=>{const key=x.product_id||x.product_name;const old=totals.get(key)||{qty:0,bills:0,name:x.product_name};old.qty+=Number(x.quantity||0);old.bills++;totals.set(key,old);});
+   const totals=new Map();lines.forEach(x=>{const key=x.product_id||x.product_name;const sale=sales.find(z=>z.id===x.sale_id)||{};const old=totals.get(key)||{qty:0,bills:0,name:x.product_name,ids:[],invoices:[],pharmacists:[]};old.qty+=Number(x.quantity||0);old.bills++;if(sale.invoice_number)old.invoices.push(sale.invoice_number);if(sale.pharmacist_name)old.pharmacists.push(sale.pharmacist_name);totals.set(key,old);});
    let rows=products.map(p=>({p,move:totals.get(p.id)||totals.get(p.name)||{qty:0,bills:0,name:p.name}}));
    if(type==="non_moving")rows=rows.filter(x=>x.move.qty===0).sort((a,b)=>String(a.p.name).localeCompare(String(b.p.name)));
    else if(type==="fast_moving")rows=rows.filter(x=>x.move.qty>0).sort((a,b)=>b.move.qty-a.move.qty);
    else rows=rows.filter(x=>x.move.qty>0).sort((a,b)=>a.move.qty-b.move.qty);
-   return setReport(type==="fast_moving"?"Fast moving medicines":type==="slow_moving"?"Slow moving medicines":"Non-moving medicines",["Medicine","Brand","Batch","Current stock","Sold qty in date range","Sale lines","Unit"],rows.map(x=>[x.p.name,x.p.brand,x.p.batch_number,x.p.stock,x.move.qty,x.move.bills,x.p.unit]));
+   return setReport(type==="fast_moving"?"Fast moving medicines":type==="slow_moving"?"Slow moving medicines":"Non-moving medicines",["Medicine","Brand","Batch","Current stock","Sold qty in date range","Sale lines","Invoice / Bill Nos.","Pharmacists","Unit"],rows.map(x=>[x.p.name,x.p.brand,x.p.batch_number,x.p.stock,x.move.qty,x.move.bills,(x.move.invoices||[]).join("; "),[...new Set(x.move.pharmacists||[])].join("; "),x.p.unit]));
   }
   if(type==="purchases"){
    const {data,error}=await sb.from("ms_purchases").select("invoice_number,created_at,supplier_id,total").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(1000);if(error)throw error;
@@ -2233,6 +2282,24 @@ async function runReport(type){
    return setReport("Daily pharmacy audit",["Audit date","Time","Responsible staff","Completed","Checklist","Notes"],(data||[]).filter(x=>reportDateOk(x.details?.audit_date||x.created_at)).map(x=>{const d=x.details||{};return [d.audit_date||new Date(x.created_at).toLocaleDateString(),d.audit_time||"",d.responsible_name||x.user_id,(d.completed_count||0)+"/"+(d.total_count||7),(d.checklist||[]).filter(c=>c.completed).map(c=>c.label).join("; "),d.notes||""];}));
   }
  }catch(e){$("reportOutput").innerHTML=`<div class="notice">Could not load report: ${esc(e.message)}</div>`;}
+}
+async function getServerBillCopyLabel(saleId){
+ const {data,error}=await sb.rpc("ms_record_bill_print",{p_sale_id:saleId,p_pharmacy_id:pharmacyId()});
+ if(error)throw error;
+ const label=String(data||"").toUpperCase();
+ if(label!=="ORIGINAL"&&label!=="DUPLICATE")throw new Error("Unexpected print status returned by database.");
+ return label;
+}
+async function printSalesReportBill(saleId){
+ try{
+  const sale=sales.find(x=>String(x.id)===String(saleId));if(!sale)return notify("Bill record not found. Refresh reports and try again.");
+  const {data,error}=await sb.from("ms_sale_items").select("product_name,batch_number,quantity,unit_price,gst_percent,line_total").eq("pharmacy_id",pharmacyId()).eq("sale_id",saleId);
+  if(error)throw error;if(!data?.length)return notify("No medicine entries were found for this bill.");
+  const items=data.map(x=>({name:x.product_name,batch_number:x.batch_number,qty:Number(x.quantity||0),mrp:Number(x.unit_price||0),discount_pct:(Number(x.quantity||0)*Number(x.unit_price||0)>0?Math.max(0,Math.min(100,(1-Number(x.line_total||0)/(Number(x.quantity||0)*Number(x.unit_price||0)))*100)):0),expiry_date:""}));
+  const totals={subtotal:Number(sale.subtotal||0),discount:Number(sale.discount||0),gst:Number(sale.gst_amount||0),total:Number(sale.total||0)};
+  const copy=await getServerBillCopyLabel(sale.id);
+  printInvoice(sale,items,totals,copy);
+ }catch(e){notify("Could not print this bill: "+(e.message||e));}
 }
 function exportActiveReport(){
  if(!activeReportRows.length)return notify("No report rows to export.");
@@ -2354,9 +2421,9 @@ async function renderSettings(){
  <div class="field"><label>Terms / return policy</label><textarea name="bill_terms" class="feature-input" rows="2" ${owner?"":"disabled"}>${esc(st.bill_terms||"")}</textarea></div>
  <div class="form-grid"><div class="field"><label>Bill paper size</label><select name="print_paper_size" ${owner?"":"disabled"}><option value="80mm" ${st.print_paper_size==="80mm"?"selected":""}>80 mm thermal</option><option value="58mm" ${st.print_paper_size==="58mm"?"selected":""}>58 mm thermal</option><option value="A4" ${st.print_paper_size==="A4"?"selected":""}>A4 PDF / print</option></select></div><div class="field"><label>Show batch & expiry on bill</label><select name="show_batch_expiry" ${owner?"":"disabled"}><option value="yes" ${st.show_batch_expiry!==false?"selected":""}>Yes</option><option value="no" ${st.show_batch_expiry===false?"selected":""}>No</option></select></div></div>
  ${owner?'<button class="btn" type="submit">Save Bill Sheet Setup</button>':''}</form>
- <div class="form-grid" style="margin-top:16px"><div><label>Pharmacy logo image</label><input id="pharmacyLogoUpload" type="file" accept="image/*" ${owner?"":"disabled"}><div id="pharmacyLogoPreview">${st.logo_data_url?`<img src="${st.logo_data_url}" style="max-width:150px;max-height:90px">`:"No logo uploaded"}</div></div><div><label>Payment QR image (optional)</label><input id="billQrUpload" type="file" accept="image/*" ${owner?"":"disabled"}><div id="billQrPreview">${st.payment_qr_data_url?`<img src="${st.payment_qr_data_url}" style="max-width:130px;max-height:130px">`:"No uploaded QR"}</div></div></div>
+ <div class="form-grid" style="margin-top:16px"><div><label>Pharmacy logo image</label><input id="pharmacyLogoUpload" type="file" accept="image/*" ${owner?"":"disabled"}><div id="pharmacyLogoPreview">${st.logo_data_url?`<img src="${st.logo_data_url}" style="max-width:150px;max-height:90px">`:"No logo uploaded"}</div></div><div><label>Payment QR image (upload any image)</label><input id="billQrUpload" type="file" accept="image/*" ${owner?"":"disabled"}><div id="billQrPreview" style="margin-top:8px">${st.payment_qr_data_url?`<img src="${st.payment_qr_data_url}" alt="Uploaded payment QR image" style="max-width:240px;max-height:240px;object-fit:contain;border:1px solid #dce5e7;border-radius:10px;padding:8px;background:#fff">`:"No payment QR image uploaded"}</div></div></div>
  ${owner?'<div class="feature-tools"><button type="button" class="btn light" onclick="saveBillImages()">Save uploaded images</button></div>':''}</div>
- <div class="panel"><h3>UPI payment setup & QR generator</h3><div class="form-grid">${field("UPI ID (VPA)","upi_id",st.upi_id||"",owner?"":"disabled")}${field("UPI display / account name","upi_name",st.upi_name||p.pharmacy_name||"",owner?"":"disabled")}</div><div class="feature-tools">${owner?'<button class="btn" onclick="saveBillSettingsOnly()" type="button">Save UPI Setup</button>':''}<button type="button" class="btn light" onclick="generateUpiQr()">Generate UPI QR</button></div><div id="upiQrPreview" style="margin-top:15px;text-align:center"></div></div>
+ <div class="panel"><h3>UPI payment setup for bill-time QR</h3><p class="feature-note">The uploaded Payment QR image above is stored as an image preview in settings. A separate bill-time UPI QR is generated with the exact payable amount.</p><div class="form-grid">${field("UPI ID (VPA)","upi_id",st.upi_id||"",owner?"":"disabled")}${field("UPI display / account name","upi_name",st.upi_name||p.pharmacy_name||"",owner?"":"disabled")}</div><div class="feature-tools">${owner?'<button class="btn" onclick="saveBillSettingsOnly()" type="button">Save UPI Setup</button>':''}<button type="button" class="btn light" onclick="generateUpiQr()">Generate UPI QR</button></div><div id="upiQrPreview" style="margin-top:15px;text-align:center"></div></div>
  <div class="panel"><h3>Staff management</h3><button class="btn" onclick="navigate('staff')">Open Staff Management / Create Staff</button></div>
  <div class="panel"><h3>Signed-in account</h3><p>${esc(currentUser.email||"")}</p><p>Role: <b>${esc(currentMember?.role||"")}</b></p><button class="btn danger" onclick="logout()">Sign out</button></div>`;
  const form=$("billSheetForm");if(form&&owner)form.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form));const settings={...pharmacySettings,...d,show_batch_expiry:d.show_batch_expiry==="yes",gst_number:$("gst_number")?.value||"",drug_license:$("drug_license")?.value||"",drug_license_2:$("drug_license_2")?.value||"",bill_email:$("bill_email")?.value||"",website:$("website")?.value||"",print_header:$("print_header")?.value||""};await saveSettingsJson(settings,{pharmacy_name:$("bill_pharmacy_name")?.value,owner_name:$("bill_owner_name")?.value,phone:$("bill_phone")?.value,address:$("bill_address")?.value});};
@@ -2365,7 +2432,7 @@ async function renderSettings(){
 async function saveSettingsJson(settings,profile={}){try{if(!pharmacyId())throw new Error("Select a pharmacy workspace before saving its settings.");if(Object.values(profile).some(v=>v!==undefined)){const clean=Object.fromEntries(Object.entries(profile).filter(([k,v])=>v!==undefined));const {error:pe}=await sb.from("ms_pharmacies").update(clean).eq("id",pharmacyId());if(pe)throw pe;currentPharmacy={...currentPharmacy,...clean};}
  const {error}=await sb.from("ms_pharmacy_settings").upsert({pharmacy_id:pharmacyId(),settings,logo_data_url:settings.logo_data_url||pharmacySettings.logo_data_url||null,updated_by:currentUser.id},{onConflict:"pharmacy_id"});if(error)throw error;pharmacySettings={...settings};notify("Bill sheet settings saved.");}catch(e){notify("Settings save failed: "+e.message);}}
 async function saveBillSettingsOnly(){const settings={...pharmacySettings,upi_id:$("upi_id")?.value.trim()||"",upi_name:$("upi_name")?.value.trim()||""};await saveSettingsJson(settings);if(settings.upi_id)generateUpiQr();}
-async function saveBillImages(){if(!canManage()&&String(currentUser?.email||"").toLowerCase()!=="subhamedical2325@gmail.com")return notify("Admin permission required.");try{const logo=$("pharmacyLogoUpload")?.files?.[0],qr=$("billQrUpload")?.files?.[0];if(!logo&&!qr)return notify("Choose a logo or QR image first.");for(const f of [logo,qr].filter(Boolean)){if(!f.type.startsWith("image/"))throw new Error("Please upload image files only.");if(f.size>1500000)throw new Error("Each image must be below 1.5 MB.");}const settings={...pharmacySettings};if(logo)settings.logo_data_url=await fileAsDataUrl(logo);if(qr)settings.payment_qr_data_url=await fileAsDataUrl(qr);await saveSettingsJson(settings);renderSettings();}catch(e){notify("Image upload failed: "+e.message);}}
+async function saveBillImages(){if(!canManage()&&String(currentUser?.email||"").toLowerCase()!=="subhamedical2325@gmail.com")return notify("Admin permission required.");try{const logo=$("pharmacyLogoUpload")?.files?.[0],qr=$("billQrUpload")?.files?.[0];if(!logo&&!qr)return notify("Choose a logo or QR image first.");for(const f of [logo,qr].filter(Boolean)){if(!f.type.startsWith("image/"))throw new Error("Please upload image files only.");if(f.size>4000000)throw new Error("Each image must be below 4 MB.");}const settings={...pharmacySettings};if(logo)settings.logo_data_url=await fileAsDataUrl(logo);if(qr)settings.payment_qr_data_url=await fileAsDataUrl(qr);await saveSettingsJson(settings);renderSettings();}catch(e){notify("Image upload failed: "+e.message);}}
 function generateUpiQr(){
  if(!canManage())return notify("Only Owner/Admin can generate or manage the pharmacy UPI QR.");
  const upi=($("upi_id")?.value||pharmacySettings.upi_id||"").trim(),name=($("upi_name")?.value||pharmacySettings.upi_name||currentPharmacy?.pharmacy_name||"Subha Medical").trim();
