@@ -1,5 +1,3 @@
-
- 
 <!doctype html>
 <html lang="en">
  <head>
@@ -837,227 +835,30 @@ tbody tr:hover{transform:translateX(2px)}
 @media(max-width:700px){#authScreen:before{width:220px;height:220px;left:-125px;top:-115px}#authScreen:after{width:170px;height:170px;right:-100px;bottom:-90px}.dash-stat-icon{animation-duration:5.5s}.btn:not(:disabled):hover{transform:none}}
 @media(prefers-reduced-motion:reduce){#authScreen:before,#authScreen:after,body.auth-mode .brand-logo,body.auth-mode .brand-logo:after,.dash-stat-icon,.dash-module-head,.dash-module-art:after{animation:none!important}.btn:before{display:none!important}}
  
- 
-/* SUBHA MEDICAL REFERENCE LOGIN DESIGN — visual-only layer */
-body.auth-mode{background:#eaf4fb!important}
-body.auth-mode #authScreen.auth-wrap{
- display:grid!important;grid-template-columns:minmax(0,1.72fr) minmax(390px,.88fr)!important;
- min-height:100svh!important;height:auto!important;padding:0!important;gap:0!important;
- align-items:stretch!important;justify-content:stretch!important;background:#fff!important;overflow:hidden!important
-}
-body.auth-mode .auth-visual{
- display:block!important;position:relative!important;isolation:isolate!important;overflow:hidden!important;
- min-height:100svh!important;padding:0!important;color:#fff!important;
- background:linear-gradient(135deg,#dff8ff 0%,#70c8f1 38%,#0872b8 72%,#063c78 100%)!important
-}
-.pharmacy-scene{position:absolute;inset:0;z-index:-2;overflow:hidden;background:
- linear-gradient(180deg,#d7f3ff 0%,#b7e6fb 37%,#77c7e9 65%,#e8fbff 100%)}
-.pharmacy-scene:before{content:"";position:absolute;inset:0;background:
- radial-gradient(ellipse at 51% 25%,#fff9 0,transparent 42%),
- repeating-linear-gradient(90deg,transparent 0 7%,#fff2 7.2% 7.5%,transparent 7.8% 15%),
- linear-gradient(180deg,transparent 0 66%,#0875b7aa 66.5%,#063c70 100%)}
-.scene-ceiling{position:absolute;top:0;left:0;right:0;height:16%;background:linear-gradient(180deg,#fff,#d5f3ff 72%,transparent);clip-path:polygon(0 0,100% 0,100% 58%,50% 100%,0 58%)}
-.scene-ceiling:after{content:"";position:absolute;left:20%;top:18%;width:20%;height:14px;border-radius:50%;background:#fff;box-shadow:300px 6px 0 #fff,610px 0 0 #fff,900px 10px 0 #fff;filter:drop-shadow(0 0 10px #fff)}
-.shelf{position:absolute;top:17%;bottom:17%;width:25%;border:8px solid #b5d8e8;border-bottom:16px solid #5e9dbd;background:repeating-linear-gradient(180deg,#f7fdff 0 8%,#9bc6dc 8.5% 10%,#e8f8ff 10.5% 24%);box-shadow:inset 0 0 20px #2a709955,0 12px 24px #07517b55}
-.shelf-left{left:-5%;transform:perspective(500px) rotateY(8deg)}
-.shelf-mid{right:-4%;width:27%;transform:perspective(500px) rotateY(-8deg)}
-.shelf i{display:block;height:19%;margin:2%;border-bottom:8px solid #d2e7f2;background:repeating-linear-gradient(90deg,#eaf7ff 0 9px,#168ac7 10px 18px,#fff 19px 27px,#e6b75e 28px 35px,#fff 36px 44px);filter:drop-shadow(0 3px 2px #174f7733)}
-.scene-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 48% 56%,#fff9 0,transparent 42%);animation:pharmacyGlow 7s ease-in-out infinite}
-.scene-floor{position:absolute;left:0;right:0;bottom:0;height:17%;background:linear-gradient(180deg,#bdefff,#168fc4 30%,#07517f 100%);border-top:7px solid #38e7f0;box-shadow:0 -8px 25px #36e8f1aa}
-.scene-floor:after{content:"";position:absolute;inset:20% 0 0;background:repeating-linear-gradient(90deg,transparent 0 19%,#b6efff33 19.2% 19.5%,transparent 19.7% 39%);transform:perspective(200px) rotateX(35deg)}
-.auth-visual-content{position:relative;z-index:1;min-height:100svh;padding:22px clamp(20px,3vw,48px) 74px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto 1fr auto;align-items:center;gap:8px 14px}
-.visual-brand{grid-column:1;grid-row:1;display:flex;align-items:center;gap:9px;width:max-content;padding:7px 15px 7px 8px;background:#fff;border:2px solid #27b8c3;border-radius:50px 12px 12px 50px;color:#0c5367;box-shadow:0 6px 18px #06456a35}
-.visual-brand-mark{width:48px;height:48px;position:relative;display:grid;place-items:center;border-radius:50%;background:#e8fbff;color:#087e80}
-.visual-brand-mark b{font-size:39px;font-weight:900;font-style:italic;line-height:1}
-.visual-brand-mark i{position:absolute;left:-4px;top:15px;font-size:20px;color:#ed3f40;font-style:normal}
-.visual-brand strong,.visual-brand small{display:block;line-height:1.05;letter-spacing:.5px}.visual-brand strong{font-size:15px}.visual-brand small{font-size:10px;font-weight:800}
-.visual-tamil{grid-column:2;grid-row:1;text-align:right;color:#fff;font-size:clamp(15px,1.6vw,23px);font-weight:900;line-height:1.35;text-shadow:0 3px 5px #003e70}
-.visual-tamil b{color:#ffeb39;font-size:1.12em}
-.visual-heading{grid-column:1/-1;grid-row:2;text-align:center;margin:0 auto;max-width:740px;text-shadow:0 3px 5px #063e6a}
-.visual-heading-small{font-size:clamp(25px,3vw,43px);font-weight:900;font-style:italic;color:#fff;line-height:1.05}
-.visual-heading h2{font-size:clamp(29px,3.3vw,48px);font-weight:1000;font-style:italic;line-height:1.05;color:#ffdf25;margin:2px 0 10px;text-shadow:0 4px 2px #07518d,0 0 12px #fff7}
-.visual-pill{display:inline-flex;align-items:center;gap:13px;padding:8px 25px;border:2px solid #42efff;border-radius:40px;background:linear-gradient(90deg,#075c88,#079ca6,#064c83);font-size:clamp(14px,1.5vw,21px);font-weight:800;box-shadow:0 0 15px #12dff4}
-.visual-pill span{color:#ffe938}
-.robot-stage{grid-column:1;grid-row:3;align-self:end;justify-self:center;width:min(100%,390px);height:100%;min-height:280px;display:flex;align-items:flex-end;justify-content:center;position:relative}
-.medical-robot{width:100%;max-height:390px;overflow:visible;filter:drop-shadow(0 12px 12px #05365b65);animation:robotFloat 4s ease-in-out infinite}
-.robot-head{transform-origin:180px 130px;animation:robotHead 5.5s ease-in-out infinite}
-.robot-body{transform-origin:180px 280px;animation:robotBody 4s ease-in-out infinite}
-.robot-wave-arm{transform-origin:258px 235px;animation:robotWave 2.8s ease-in-out infinite}
-.robot-eye{transform-origin:center;animation:robotBlink 4.8s infinite}
-.robot-sparkles{animation:sparkle 3s ease-in-out infinite}
-.visual-features{grid-column:2;grid-row:3;align-self:center;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-width:390px;width:100%}
-.visual-features>div{min-height:92px;padding:9px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;color:#fff;border:2px solid #47e8ff;border-radius:18px;background:linear-gradient(145deg,#0879b9,#064d91);box-shadow:0 5px 12px #033d7660,inset 0 0 10px #4beaff35;transition:transform .25s,box-shadow .25s}
-.visual-features>div:hover{transform:translateY(-5px) scale(1.03);box-shadow:0 9px 22px #00d9ff85}
-.visual-features b{font-size:27px;line-height:1.05}.visual-features span{font-size:clamp(10px,.95vw,13px);font-weight:800;line-height:1.2;text-shadow:0 1px 2px #00365d}
-.visual-footer{position:absolute;left:0;right:0;bottom:0;min-height:57px;padding:10px 18px;display:flex;align-items:center;justify-content:space-around;gap:8px;background:linear-gradient(90deg,#063d70,#087d9b,#04396b);border-top:4px solid #27e5eb;color:#fff;font-size:clamp(9px,.85vw,12px);font-weight:800}
-.visual-footer i{height:28px;width:1px;background:#ffffff9c}
-.visual-slogan{position:absolute;right:18px;bottom:66px;text-align:right;color:#fff;font-family:Georgia,serif;font-style:italic;font-size:clamp(13px,1.35vw,20px);font-weight:700;text-shadow:0 2px 4px #00365d}
-.visual-slogan b{display:block;color:#ffeb36;font-size:1.22em}
-body.auth-mode .auth-card{position:relative;z-index:2;width:100%!important;max-width:none!important;min-height:100svh!important;height:auto!important;margin:0!important;padding:clamp(22px,3vw,48px)!important;align-self:stretch!important;justify-content:center!important;overflow-y:auto!important;border:0!important;border-radius:0!important;background:#f8fcff!important;box-shadow:-10px 0 30px #073d681c!important}
-body.auth-mode .auth-card .brand{margin:0 0 22px!important;padding:0 0 15px!important;border-bottom:1px solid #dce9f1!important}
-body.auth-mode .auth-card .brand-logo{background:linear-gradient(145deg,#0d9b9a,#0875b7)!important;color:#fff!important;box-shadow:0 5px 13px #087b9c35!important}
-body.auth-mode .auth-card .brand h1{font-size:clamp(19px,1.8vw,25px)!important;color:#123e64!important}
-body.auth-mode .auth-card .brand p{font-size:11px!important;color:#607d91!important}
-body.auth-mode .auth-card #loginForm:before{content:"Welcome Back!"!important;display:block!important;font-size:clamp(24px,2.1vw,31px)!important;text-align:center!important;color:#123e64!important;margin:0 0 4px!important}
-body.auth-mode .auth-card #loginForm:after{content:"Your Trusted Pharmacy Partner"!important;display:block!important;text-align:center!important;font-size:13px!important;font-style:italic!important;font-weight:700!important;color:#214f78!important;margin:0 0 20px!important}
-body.auth-mode .auth-tabs{background:#eaf3f8!important;border-color:#d8e7ef!important}
-body.auth-mode .auth-tabs button.active{background:#fff!important;color:#087e91!important;box-shadow:0 2px 7px #174a6a18!important}
-body.auth-mode .auth-card .field label{color:#244e70!important;font-size:12px!important}
-body.auth-mode .auth-card .field input,body.auth-mode .auth-card .field select{border:1px solid #c8dce8!important;border-radius:24px!important;background:#fff!important;color:#173b5b!important;min-height:48px!important;padding:12px 16px!important;box-shadow:0 3px 8px #0d42620d!important}
-body.auth-mode .auth-card .field input:focus{border-color:#0799b6!important;box-shadow:0 0 0 3px #0799b61c!important}
-body.auth-mode .auth-card .btn.full{min-height:49px!important;border-radius:28px!important;background:linear-gradient(90deg,#087eae,#06b79f)!important;color:#fff!important;font-size:17px!important;box-shadow:0 5px 13px #087eae30!important}
-body.auth-mode .auth-card .btn.light{border:1px solid #cbdde7!important;background:#fff!important;color:#17496c!important}
-body.auth-mode .auth-card #loginForm>div:last-child{justify-content:space-between!important}
-@keyframes robotFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
-@keyframes robotHead{0%,100%{transform:rotate(0)}35%{transform:rotate(-2deg)}68%{transform:rotate(2deg)}}
-@keyframes robotBody{0%,100%{transform:rotate(0)}50%{transform:rotate(.8deg)}}
-@keyframes robotWave{0%,100%{transform:rotate(0)}18%{transform:rotate(-15deg)}36%{transform:rotate(5deg)}54%{transform:rotate(-13deg)}72%{transform:rotate(0)}}
-@keyframes robotBlink{0%,45%,48%,100%{transform:scaleY(1)}46.5%{transform:scaleY(.08)}}
-@keyframes sparkle{0%,100%{opacity:.55}50%{opacity:1}}
-@keyframes pharmacyGlow{0%,100%{opacity:.35}50%{opacity:.75}}
-@media(max-width:1050px){
- body.auth-mode #authScreen.auth-wrap{grid-template-columns:minmax(0,1.25fr) minmax(350px,.9fr)!important}
- .auth-visual-content{padding-left:18px;padding-right:18px}
- .robot-stage{min-height:240px}.visual-features>div{min-height:78px}
-}
-@media(max-width:760px){
- body.auth-mode #authScreen.auth-wrap{grid-template-columns:1fr!important;overflow:visible!important}
- body.auth-mode .auth-visual{min-height:520px!important}
- .auth-visual-content{min-height:520px;padding:13px 15px 66px;grid-template-rows:auto auto 1fr auto;gap:6px 8px}
- .visual-brand-mark{width:37px;height:37px}.visual-brand-mark b{font-size:30px}.visual-brand-mark i{font-size:16px;top:11px}
- .visual-brand strong{font-size:12px}.visual-brand small{font-size:8px}
- .visual-tamil{font-size:13px}
- .visual-heading-small{font-size:clamp(22px,5vw,32px)}.visual-heading h2{font-size:clamp(24px,5.4vw,36px)}
- .visual-pill{font-size:12px;padding:6px 14px}
- .robot-stage{grid-column:1;grid-row:3;min-height:245px;width:100%;max-width:290px}
- .visual-features{grid-column:2;grid-row:3;gap:6px;max-width:260px}
- .visual-features>div{min-height:68px;border-radius:12px;padding:5px 3px}.visual-features b{font-size:21px}.visual-features span{font-size:9px}
- .visual-footer{font-size:8px;padding:8px 5px;gap:4px}.visual-footer i{height:22px}
- .visual-slogan{bottom:62px;right:10px;font-size:12px}
- body.auth-mode .auth-card{min-height:0!important;padding:25px 22px!important}
-}
-@media(max-width:430px){
- body.auth-mode .auth-visual{min-height:480px!important}
- .auth-visual-content{min-height:480px;padding:10px 10px 62px;grid-template-columns:.95fr 1.05fr}
- .robot-stage{min-height:210px}
- .visual-features>div{min-height:62px}
- .visual-features span{font-size:8px}
- .visual-footer{flex-wrap:wrap;justify-content:center;min-height:55px}
- .visual-footer i{display:none}
- body.auth-mode .auth-card{padding:20px 17px!important}
-}
-@media(prefers-reduced-motion:reduce){
- .medical-robot,.robot-head,.robot-body,.robot-wave-arm,.robot-eye,.robot-sparkles,.scene-glow{animation:none!important}
-}
- 
 </style>
  </head>
  <body>
   <!-- LOGIN / REGISTRATION -->
   <section id="authScreen" class="auth-wrap">
-   <div class="auth-visual" aria-label="Subha Medical pharmacy management software">
-    <div class="pharmacy-scene" aria-hidden="true">
-     <div class="scene-ceiling"></div>
-     <div class="shelf shelf-left">
-      <i></i><i></i><i></i><i></i>
+   <div class="auth-visual" aria-hidden="true">
+    <div class="auth-visual-inner">
+     <div class="auth-visual-mark">
+      <span>✚</span>
      </div>
-     <div class="shelf shelf-mid">
-      <i></i><i></i><i></i><i></i>
-     </div>
-     <div class="scene-glow"></div>
-     <div class="scene-floor"></div>
-    </div>
-    <div class="auth-visual-content">
-     <div class="visual-brand">
-      <span class="visual-brand-mark"><b>S</b><i>✚</i></span><span><strong>SUBHA</strong><small>MEDICAL</small></span>
-     </div>
-     <div class="visual-tamil">
-      “ஆரோக்கியமான சமூகமே
-      <br>
-      <b>நமது இலக்கு...</b>”
-     </div>
-     <div class="visual-heading">
-      <div class="visual-heading-small">Advanced Pharmacy</div>
-      <h2>Management Software</h2>
-      <div class="visual-pill">
-       Smart <span>•</span> Secure <span>•</span> Scalable
-      </div>
-     </div>
-     <div class="robot-stage" aria-hidden="true">
-      <svg class="medical-robot" viewBox="0 0 360 390">
+     <div class="auth-art" aria-hidden="true">
+      <svg viewBox="0 0 520 300" role="img" aria-label="Illustration of pharmacy medicine shelves, a prescription and a medical cross">
        <defs>
-        <linearGradient id="botWhite" x1="0" y1="0" x2="1" y2="1">
-         <stop stop-color="#fff" /><stop offset=".55" stop-color="#dcecf7" /><stop offset="1" stop-color="#7da9c9" />
+        <linearGradient id="artBg" x1="0" x2="1" y1="0" y2="1">
+         <stop stop-color="#ffffff" stop-opacity=".25" /><stop offset="1" stop-color="#ffffff" stop-opacity=".04" />
         </linearGradient>
-        <linearGradient id="botBlue" x1="0" y1="0" x2="1" y2="1">
-         <stop stop-color="#26e5ff" /><stop offset="1" stop-color="#0876d9" />
-        </linearGradient>
-        <linearGradient id="botScreen" x1="0" y1="0" x2="0" y2="1">
-         <stop stop-color="#102d54" /><stop offset="1" stop-color="#06152d" />
-        </linearGradient>
-        <filter id="botGlow">
-         <feGaussianBlur stdDeviation="4" result="b" />
-         <feMerge>
-          <feMergeNode in="b" />
-          <feMergeNode in="SourceGraphic" />
-         </feMerge>
-        </filter>
        </defs>
-       <ellipse cx="177" cy="365" rx="112" ry="15" fill="#082b4a" opacity=".25" />
-       <g class="robot-body">
-        <path d="M103 205 Q180 176 256 207 L278 331 Q180 369 82 331Z" fill="url(#botWhite)" stroke="#6e9cbd" stroke-width="4" /> <path d="M122 224 Q180 205 238 224 L247 310 Q180 334 113 310Z" fill="#f7fcff" stroke="#b5d0e2" stroke-width="3" /> <path d="M169 252h22v17h17v22h-17v17h-22v-17h-17v-22h17z" fill="#087ed1" /> <path d="M93 230 Q55 245 52 293" fill="none" stroke="url(#botWhite)" stroke-width="27" stroke-linecap="round" /> <path d="M52 293l-12 23 25 12 17-20" fill="url(#botWhite)" stroke="#6e9cbd" stroke-width="3" />
-        <g class="robot-wave-arm">
-         <path d="M252 230 Q294 214 300 171" fill="none" stroke="url(#botWhite)" stroke-width="27" stroke-linecap="round" /> <path d="M300 171q-4-29 13-39q10-7 15 2q3 7-5 15q19-15 26-3q5 9-9 17q13-4 17 7q2 11-13 15l-24 8z" fill="url(#botWhite)" stroke="#6e9cbd" stroke-width="3" />
-        </g>
-        <path d="M136 204v-20h87v20" fill="none" stroke="#6e9cbd" stroke-width="8" stroke-linecap="round" />
-        <g class="robot-head">
-         <rect x="68" y="48" width="226" height="164" rx="67" fill="url(#botWhite)" stroke="#6e9cbd" stroke-width="5" /> <rect x="86" y="69" width="190" height="119" rx="48" fill="url(#botScreen)" stroke="#bdefff" stroke-width="4" /> <path class="robot-eye" d="M132 119q0-18 15-18t15 18v9q0 18-15 18t-15-18z" fill="#22eaff" filter="url(#botGlow)" /> <path class="robot-eye" d="M203 119q0-18 15-18t15 18v9q0 18-15 18t-15-18z" fill="#22eaff" filter="url(#botGlow)" /> <path d="M151 158q28 24 57 0" fill="none" stroke="#29eaff" stroke-width="6" stroke-linecap="round" filter="url(#botGlow)" /> <circle cx="62" cy="126" r="12" fill="#168fd3" stroke="#dff8ff" stroke-width="4" /> <circle cx="300" cy="126" r="12" fill="#168fd3" stroke="#dff8ff" stroke-width="4" /> <path d="M176 48v-15" stroke="#168fd3" stroke-width="7" stroke-linecap="round" /><circle cx="176" cy="25" r="9" fill="#26eaff" />
-        </g>
-       </g>
-       <g class="robot-sparkles" fill="#fff">
-        <path d="M35 92l5 13 13 5-13 5-5 13-5-13-13-5 13-5z" /><path d="M315 245l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" /><circle cx="45" cy="190" r="4" /><circle cx="320" cy="80" r="5" />
-       </g>
+       <circle cx="390" cy="120" r="108" fill="url(#artBg)" /><circle cx="390" cy="120" r="75" fill="none" stroke="#ffffff35" stroke-width="2" /> <rect x="60" y="95" width="310" height="160" rx="18" fill="#ffffff" fill-opacity=".96" /> <rect x="82" y="116" width="266" height="12" rx="6" fill="#d9efec" /> <rect x="82" y="143" width="74" height="88" rx="9" fill="#eaf7f5" /><rect x="168" y="143" width="74" height="88" rx="9" fill="#f5f0ff" /><rect x="254" y="143" width="74" height="88" rx="9" fill="#fff4df" /> <rect x="100" y="163" width="38" height="48" rx="7" fill="#13a092" /><path d="M109 179h20M119 169v20" stroke="#fff" stroke-width="5" stroke-linecap="round" /> <rect x="186" y="160" width="38" height="52" rx="7" fill="#8c79c8" /><path d="M193 173h24M193 184h24M193 195h15" stroke="#fff" stroke-width="3" stroke-linecap="round" /> <rect x="272" y="160" width="38" height="52" rx="7" fill="#e7ad4d" /><path d="M280 176h22M280 187h22" stroke="#fff" stroke-width="3" stroke-linecap="round" /> <rect x="376" y="52" width="90" height="126" rx="14" fill="#fff" transform="rotate(8 376 52)" /><path d="M399 91l12 12 24-29" fill="none" stroke="#14998e" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" /><path d="M395 125h48M395 140h38" stroke="#c5d6dc" stroke-width="5" stroke-linecap="round" /> <circle cx="438" cy="221" r="28" fill="#f3bd59" /><path d="M438 205v32M422 221h32" stroke="#fff" stroke-width="7" stroke-linecap="round" /> <path d="M42 270h438" stroke="#ffffff55" stroke-width="2" stroke-linecap="round" />
       </svg>
      </div>
-     <div class="visual-features">
-      <div>
-       <b>🛒</b><span>Sales &amp;
-        <br>Billing</span>
-      </div>
-      <div>
-       <b>📦</b><span>Inventory
-        <br>Control</span>
-      </div>
-      <div>
-       <b>📊</b><span>Reports &amp;
-        <br>Analytics</span>
-      </div>
-      <div>
-       <b>▤</b><span>Prescription
-        <br>Desk</span>
-      </div>
-      <div>
-       <b>👥</b><span>Customer
-        <br>Management</span>
-      </div>
-      <div>
-       <b>🏷</b><span>Stock &amp;
-        <br>GRN</span>
-      </div>
-      <div>
-       <b>☁</b><span>Cloud
-        <br>Sync</span>
-      </div>
-      <div>
-       <b>🛡</b><span>Multi-User
-        <br>Access</span>
-      </div>
-     </div>
-     <div class="visual-footer">
-      <span>🛡 Data Security</span><i></i><span>☁ Cloud Sync</span><i></i><span>ϟ Fast Performance</span><i></i><span>♧ Expert Support</span>
-     </div>
-     <div class="visual-slogan">
-      Together for a <b>Healthier Tomorrow...</b>
+     <h2>Smarter Pharmacy Management</h2>
+     <p>One secure workspace for billing, inventory, purchasing and your pharmacy team.</p>
+     <div class="auth-visual-points">
+      <span>Secure access</span><span>Live inventory</span><span>Team management</span>
      </div>
     </div>
    </div>
@@ -2371,7 +2172,7 @@ function renderReports(){
  <div class="panel"><div class="panel-head"><h3>Scheduled medicine reports</h3><span class="badge">Compliance</span></div><p class="feature-note">Separate dispensing registers by Schedule H, H1, X and G. Data is filtered from the existing pharmacy dispensing register.</p><div class="report-shortcuts"><button class="btn light" onclick="runReport('schedule_H')">H Schedule</button><button class="btn light" onclick="runReport('schedule_H1')">H1 Schedule</button><button class="btn light" onclick="runReport('schedule_X')">X Schedule</button><button class="btn light" onclick="runReport('schedule_G')">G Schedule</button><button class="btn light" onclick="runReport('schedule')">All Schedules</button></div></div>
  <div class="panel"><div class="panel-head"><h3>Sales movement analysis</h3><span class="badge green">Stock insights</span></div><p class="feature-note">Compare medicine movement using recorded sale quantities. Non-moving means no sale found in the loaded sales history.</p><div class="report-shortcuts"><button class="btn light" onclick="runReport('fast_moving')">Fast Moving</button><button class="btn light" onclick="runReport('slow_moving')">Slow Moving</button><button class="btn light" onclick="runReport('non_moving')">Non Moving</button></div></div>
  <div class="panel">
-  <p class="feature-note">Sales register shows the invoice number, pharmacist and the logged-in staff member who entered each bill. Use the individual Print button to print only that bill. The first print is marked ORIGINAL; later prints are numbered COPY 1, COPY 2, and so on.</p>
+  <p class="feature-note">Sales register shows the invoice number, pharmacist and the logged-in staff member who entered each bill. Use the individual Print button to print only that bill. The first print is marked ORIGINAL; later prints are marked DUPLICATE.</p>
   <div class="panel-head"><h3>Report filters</h3><div class="actions"><button class="btn light" onclick="exportActiveReport()">Export CSV</button><button class="btn light" onclick="printActiveReport()">Print</button></div></div>
   <div class="form-grid">
    <div class="field"><label>From date</label><input type="date" id="reportFrom"></div>
@@ -2485,14 +2286,9 @@ async function runReport(type){
 async function getServerBillCopyLabel(saleId){
  const {data,error}=await sb.rpc("ms_record_bill_print",{p_sale_id:saleId,p_pharmacy_id:pharmacyId()});
  if(error)throw error;
- const label=String(data||"").trim().toUpperCase();
- if(label==="ORIGINAL")return "ORIGINAL";
- // Supports the numbered copy label returned by the print-history RPC.
- if(/^COPY\s+\d+$/.test(label))return label;
- // Backward compatibility with the current RPC response until its return
- // value is upgraded to COPY 1, COPY 2, etc.
- if(label==="DUPLICATE")return "COPY 1";
- throw new Error("Unexpected print status returned by database.");
+ const label=String(data||"").toUpperCase();
+ if(label!=="ORIGINAL"&&label!=="DUPLICATE")throw new Error("Unexpected print status returned by database.");
+ return label;
 }
 async function printSalesReportBill(saleId){
  try{
@@ -2566,4 +2362,120 @@ function openStaffCreate(){
 }
 async function toggleStaff(id,active){if(!confirm((active?"Activate":"Deactivate")+" this staff account?"))return;const {error}=await sb.from("ms_members").update({is_active:active}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Staff status updated.");renderStaff();}
 async function changeStaffRole(id,role){if(currentMember?.role!=="owner"||!["admin","manager","pharmacist","cashier"].includes(role))return notify("Only the pharmacy owner can assign staff roles.");const {error}=await sb.from("ms_members").update({role}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Staff role updated.");}
-function showStaffPermissions(id){const m=(window._staffCache||[]).find(x=>x.id===id);if(!m)return;const perms=m.permissions||{};$("modalTitle").textContent="Staff permissions";$("modalBody").innerHTML=`<p><b>Role:</b> ${esc(m.role)}</p><pre style="white-space:pre-wrap;background:#f6f5fa;padding:12px;border-radius:8px;font-size:12px">${esc(JSON.stringify(perms,null,2))}</pre><p style="font-size:12px;color:var(--muted)">Permissi
+function showStaffPermissions(id){const m=(window._staffCache||[]).find(x=>x.id===id);if(!m)return;const perms=m.permissions||{};$("modalTitle").textContent="Staff permissions";$("modalBody").innerHTML=`<p><b>Role:</b> ${esc(m.role)}</p><pre style="white-space:pre-wrap;background:#f6f5fa;padding:12px;border-radius:8px;font-size:12px">${esc(JSON.stringify(perms,null,2))}</pre><p style="font-size:12px;color:var(--muted)">Permissions are displayed from the database. Permission editing depends on the installed RLS policy and role-permission rules.</p>`;openModal();}
+async function renderPharmacies(){
+ if(!isSuper()){notify("Super Admin access required.");return navigate("dashboard");}
+ $("pageContent").innerHTML=pageHead("Pharmacy approval","Review and approve pharmacy applications")+"<div class='panel'>Loading registrations...</div>";
+ const {data,error}=await sb.from("ms_pharmacies").select("*").order("created_at",{ascending:false});
+ if(error){$("pageContent").innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
+ $("pageContent").innerHTML=`
+ ${pageHead("Pharmacy approval","Review and approve pharmacy applications")}
+ <div class="panel"><div class="table-wrap"><table><thead><tr><th>Pharmacy</th><th>Owner</th><th>Email</th><th>Code</th><th>Status</th><th>Action</th></tr></thead><tbody>
+ ${data.length?data.map(p=>`<tr>
+ <td><b>${esc(p.pharmacy_name)}</b><br><small>${esc(p.phone||"")}</small></td>
+ <td>${esc(p.owner_name)}</td><td>${esc(p.owner_email)}</td><td>${esc(p.pharmacy_code)}</td>
+ <td><span class="badge ${p.approval_status==="approved"?"green":p.approval_status==="rejected"?"red":""}">${esc(p.approval_status)}</span></td>
+ <td><div class="actions">
+ <button class="btn" onclick="setApproval('${p.id}','approved')">Approve</button>
+ <button class="btn danger" onclick="setApproval('${p.id}','rejected')">Reject</button>
+ <button class="btn light" onclick="setApproval('${p.id}','suspended')">Suspend</button>
+ <button class="btn danger" onclick="deletePharmacyApplication('${p.id}')">Delete pharmacy + data</button>
+ </div></td></tr>`).join(""):`<tr><td colspan="6" class="empty">No pharmacy registrations yet.</td></tr>`}
+ </tbody></table></div></div><div class="notice" style="margin-top:14px"><b>Super Admin deletion:</b> permanent pharmacy database deletion requires the <code>ms_super_admin_delete_pharmacy</code> SQL function. The confirmation requires the exact pharmacy code. Auth login accounts and Storage files are intentionally preserved.</div>`;
+}
+async function setApproval(id,status){
+ if(!isSuper())return notify("Super Admin access required.");
+ if(!confirm("Change pharmacy status to "+status+"?"))return;
+ const {error}=await sb.from("ms_pharmacies").update({approval_status:status}).eq("id",id);
+ if(error)return notify(error.message);
+ notify("Pharmacy status updated.");
+ renderPharmacies();
+}
+async function deletePharmacyApplication(id){
+ if(!isSuper())return notify("Super Admin access required.");
+ const pharmacy=adminPharmacyOptions.find(x=>x.id===id);
+ if(!pharmacy)return notify("Pharmacy record not found. Refresh the approval list.");
+ const code=prompt(`PERMANENT PHARMACY DATA DELETION\n\nThis removes the pharmacy and its linked database records, including inventory, customers, staff memberships, purchases, sales, GRNs, returns and audit history.\n\nSupabase Auth login accounts and Storage files are NOT deleted by this database operation.\n\nTo continue, type this pharmacy code exactly: ${pharmacy.pharmacy_code||"(no code)"}`);
+ if(code===null)return;
+ if(String(code).trim()!==String(pharmacy.pharmacy_code||""))return notify("Pharmacy code did not match. Nothing was deleted.");
+ if(!confirm(`FINAL CONFIRMATION\n\nPermanently delete ${pharmacy.pharmacy_name||"this pharmacy"} and its linked pharmacy database records?\n\nThis cannot be undone. Continue only after exporting any records you need.`))return;
+ try{
+  const {data,error}=await sb.rpc("ms_super_admin_delete_pharmacy",{p_pharmacy_id:id,p_confirmation_code:String(code).trim()});
+  if(error)throw error;
+  if(data?.success===false)throw new Error(data.message||"Pharmacy deletion was not completed.");
+  if(selectedAdminPharmacyId===id){selectedAdminPharmacyId=null;currentPharmacy=null;products=[];customers=[];sales=[];suppliers=[];pharmacySettings={};updateSuperPharmacySelector();}
+  adminPharmacyOptions=adminPharmacyOptions.filter(x=>x.id!==id);
+  notify("Pharmacy database records deleted. Auth accounts and Storage files remain untouched.");
+  await renderPharmacies();
+ }catch(e){notify("Pharmacy deletion failed; no partial deletion was committed. Install the Super Admin deletion SQL and check the error: "+(e?.message||String(e)));}
+}
+async function renderSettings(){
+ const p=currentPharmacy||{},owner=canManage()||String(currentUser?.email||"").toLowerCase()==="subhamedical2325@gmail.com";
+ const st=pharmacySettings||{};
+ $("pageContent").innerHTML=`${pageHead("Pharmacy Settings","Pharmacy profile, payment QR and complete bill-sheet setup")}
+ <div class="panel"><h3>Pharmacy profile</h3><div class="form-grid">${field("Pharmacy name","bill_pharmacy_name",p.pharmacy_name||"",owner?"":"disabled")}${field("Owner name","bill_owner_name",p.owner_name||"",owner?"":"disabled")}${field("Phone number","bill_phone",p.phone||"",owner?"":"disabled")}${field("Email address","pharmacy_contact_email",p.owner_email||currentUser?.email||"",owner?"":"disabled")}</div><div class="field"><label>Full pharmacy address</label><textarea id="bill_address" class="feature-input" rows="2" ${owner?"":"disabled"}>${esc(p.address||"")}</textarea></div></div>
+ <div class="panel"><h3>Complete bill sheet setup</h3><p class="feature-note">These details appear on printed and PDF customer bills. Upload images from your device.</p>
+ <form id="billSheetForm"><div class="form-grid">${field("GSTIN","gst_number",st.gst_number||"",owner?"":"disabled")}${field("Drug licence number","drug_license",st.drug_license||"",owner?"":"disabled")}${field("DL validity / additional licence","drug_license_2",st.drug_license_2||"",owner?"":"disabled")}${field("Bill email","bill_email",st.bill_email||"",owner?"":"disabled")}${field("Website","website",st.website||"",owner?"":"disabled")}${field("Bill heading / tagline","print_header",st.print_header||p.pharmacy_name||"Pharmacy",owner?"":"disabled")}</div>
+ <div class="field"><label>Bill address (printed override)</label><textarea name="bill_print_address" class="feature-input" rows="2" ${owner?"":"disabled"}>${esc(st.bill_print_address||p.address||"")}</textarea></div>
+ <div class="field"><label>Bill footer / thank-you message</label><textarea name="print_footer" class="feature-input" rows="2" ${owner?"":"disabled"}>${esc(st.print_footer||"Thank you. Visit again!")}</textarea></div>
+ <div class="field"><label>Terms / return policy</label><textarea name="bill_terms" class="feature-input" rows="2" ${owner?"":"disabled"}>${esc(st.bill_terms||"")}</textarea></div>
+ <div class="form-grid"><div class="field"><label>Bill paper size</label><select name="print_paper_size" ${owner?"":"disabled"}><option value="80mm" ${st.print_paper_size==="80mm"?"selected":""}>80 mm thermal</option><option value="58mm" ${st.print_paper_size==="58mm"?"selected":""}>58 mm thermal</option><option value="A4" ${st.print_paper_size==="A4"?"selected":""}>A4 PDF / print</option></select></div><div class="field"><label>Show batch & expiry on bill</label><select name="show_batch_expiry" ${owner?"":"disabled"}><option value="yes" ${st.show_batch_expiry!==false?"selected":""}>Yes</option><option value="no" ${st.show_batch_expiry===false?"selected":""}>No</option></select></div></div>
+ ${owner?'<button class="btn" type="submit">Save Bill Sheet Setup</button>':''}</form>
+ <div class="form-grid" style="margin-top:16px"><div><label>Pharmacy logo image</label><input id="pharmacyLogoUpload" type="file" accept="image/*" ${owner?"":"disabled"}><div id="pharmacyLogoPreview">${st.logo_data_url?`<img src="${st.logo_data_url}" style="max-width:150px;max-height:90px">`:"No logo uploaded"}</div></div><div><label>Payment QR image (upload any image)</label><input id="billQrUpload" type="file" accept="image/*" ${owner?"":"disabled"}><div id="billQrPreview" style="margin-top:8px">${st.payment_qr_data_url?`<img src="${st.payment_qr_data_url}" alt="Uploaded payment QR image" style="max-width:240px;max-height:240px;object-fit:contain;border:1px solid #dce5e7;border-radius:10px;padding:8px;background:#fff">`:"No payment QR image uploaded"}</div></div></div>
+ ${owner?'<div class="feature-tools"><button type="button" class="btn light" onclick="saveBillImages()">Save uploaded images</button></div>':''}</div>
+ <div class="panel"><h3>UPI payment setup for bill-time QR</h3><p class="feature-note">The uploaded Payment QR image above is stored as an image preview in settings. A separate bill-time UPI QR is generated with the exact payable amount.</p><div class="form-grid">${field("UPI ID (VPA)","upi_id",st.upi_id||"",owner?"":"disabled")}${field("UPI display / account name","upi_name",st.upi_name||p.pharmacy_name||"",owner?"":"disabled")}</div><div class="feature-tools">${owner?'<button class="btn" onclick="saveBillSettingsOnly()" type="button">Save UPI Setup</button>':''}<button type="button" class="btn light" onclick="generateUpiQr()">Generate UPI QR</button></div><div id="upiQrPreview" style="margin-top:15px;text-align:center"></div></div>
+ <div class="panel"><h3>Staff management</h3><button class="btn" onclick="navigate('staff')">Open Staff Management / Create Staff</button></div>
+ <div class="panel"><h3>Signed-in account</h3><p>${esc(currentUser.email||"")}</p><p>Role: <b>${esc(currentMember?.role||"")}</b></p><button class="btn danger" onclick="logout()">Sign out</button></div>`;
+ const form=$("billSheetForm");if(form&&owner)form.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form));const settings={...pharmacySettings,...d,show_batch_expiry:d.show_batch_expiry==="yes",gst_number:$("gst_number")?.value||"",drug_license:$("drug_license")?.value||"",drug_license_2:$("drug_license_2")?.value||"",bill_email:$("bill_email")?.value||"",website:$("website")?.value||"",print_header:$("print_header")?.value||""};await saveSettingsJson(settings,{pharmacy_name:$("bill_pharmacy_name")?.value,owner_name:$("bill_owner_name")?.value,phone:$("bill_phone")?.value,address:$("bill_address")?.value});};
+ if(st.upi_id&&$("upi_id"))generateUpiQr();
+}
+async function saveSettingsJson(settings,profile={}){try{if(!pharmacyId())throw new Error("Select a pharmacy workspace before saving its settings.");if(Object.values(profile).some(v=>v!==undefined)){const clean=Object.fromEntries(Object.entries(profile).filter(([k,v])=>v!==undefined));const {error:pe}=await sb.from("ms_pharmacies").update(clean).eq("id",pharmacyId());if(pe)throw pe;currentPharmacy={...currentPharmacy,...clean};}
+ const {error}=await sb.from("ms_pharmacy_settings").upsert({pharmacy_id:pharmacyId(),settings,logo_data_url:settings.logo_data_url||pharmacySettings.logo_data_url||null,updated_by:currentUser.id},{onConflict:"pharmacy_id"});if(error)throw error;pharmacySettings={...settings};notify("Bill sheet settings saved.");}catch(e){notify("Settings save failed: "+e.message);}}
+async function saveBillSettingsOnly(){const settings={...pharmacySettings,upi_id:$("upi_id")?.value.trim()||"",upi_name:$("upi_name")?.value.trim()||""};await saveSettingsJson(settings);if(settings.upi_id)generateUpiQr();}
+async function saveBillImages(){if(!canManage()&&String(currentUser?.email||"").toLowerCase()!=="subhamedical2325@gmail.com")return notify("Admin permission required.");try{const logo=$("pharmacyLogoUpload")?.files?.[0],qr=$("billQrUpload")?.files?.[0];if(!logo&&!qr)return notify("Choose a logo or QR image first.");for(const f of [logo,qr].filter(Boolean)){if(!f.type.startsWith("image/"))throw new Error("Please upload image files only.");if(f.size>4000000)throw new Error("Each image must be below 4 MB.");}const settings={...pharmacySettings};if(logo)settings.logo_data_url=await fileAsDataUrl(logo);if(qr)settings.payment_qr_data_url=await fileAsDataUrl(qr);await saveSettingsJson(settings);renderSettings();}catch(e){notify("Image upload failed: "+e.message);}}
+function generateUpiQr(){
+ if(!canManage())return notify("Only Owner/Admin can generate or manage the pharmacy UPI QR.");
+ const upi=($("upi_id")?.value||pharmacySettings.upi_id||"").trim(),name=($("upi_name")?.value||pharmacySettings.upi_name||currentPharmacy?.pharmacy_name||"Subha Medical").trim();
+ if(!upi)return notify("Enter UPI ID first.");
+ const host=$("upiQrPreview");if(!host)return;
+ const uri="upi://pay?pa="+encodeURIComponent(upi)+"&pn="+encodeURIComponent(name)+"&cu=INR";
+ host.innerHTML="<div style='display:inline-block;padding:15px;border:1px solid var(--border);border-radius:12px;background:white'><div id='upiQrCanvas'></div><b style='display:block;margin-top:8px;color:#222'>"+esc(upi)+"</b><small style='color:#555'>Scan to pay</small><br><button class='btn light' style='margin-top:10px' onclick='printUpiQr()'>Print QR</button></div>";
+ if(typeof QRCode==="undefined")return notify("QR generator library did not load.");
+ new QRCode($("upiQrCanvas"),{text:uri,width:220,height:220});
+}
+function printUpiQr(){
+ const host=$("upiQrPreview"),canvas=host?.querySelector("canvas"),img=host?.querySelector("img");const src=canvas?.toDataURL()||img?.src;if(!src)return notify("Generate the QR first.");
+ const w=window.open("","_blank","width=450,height=550");if(!w)return notify("Allow pop-ups to print QR.");
+ w.document.write(`<html><head><title>UPI QR</title></head><body style="font-family:Arial;text-align:center;padding:25px"><h2>${esc(pharmacySettings.upi_name||currentPharmacy?.pharmacy_name||"Subha Medical")}</h2><img src="${src}" style="width:260px;height:260px"><p>${esc(pharmacySettings.upi_id||"")}</p><script>window.onload=()=>window.print();<\/script></body></html>`);w.document.close();
+}
+ 
+function openModal(){$("modal").classList.remove("hidden");}
+function closeModal(){$("modal").classList.add("hidden");}
+$("modal").addEventListener("click",e=>{if(e.target===$("modal"))closeModal();});
+ 
+async function start(){
+ document.body.classList.add("auth-mode");document.body.classList.remove("app-mode");
+ $("appScreen").classList.add("hidden");$("authScreen").classList.remove("hidden");
+ document.querySelectorAll("#sidebar .nav").forEach(b=>{const label=b.textContent.trim();if(label)b.title=label;});
+ const {data:{session}}=await sb.auth.getSession();
+ if(session){
+  try{await loadApplication(session.user);}
+  catch(e){
+   document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");
+   $("authScreen").classList.remove("hidden");
+   $("appScreen").classList.add("hidden");
+   authMessage(e.message);
+  }
+ }
+ sb.auth.onAuthStateChange((event,session)=>{
+  if(event==="SIGNED_OUT"){
+   document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");
+   $("authScreen").classList.remove("hidden");
+   $("appScreen").classList.add("hidden");
+  }
+ });
+}
+start();
+</script>
+ </body>
+</html>
