@@ -2172,7 +2172,7 @@ function renderReports(){
  <div class="panel"><div class="panel-head"><h3>Scheduled medicine reports</h3><span class="badge">Compliance</span></div><p class="feature-note">Separate dispensing registers by Schedule H, H1, X and G. Data is filtered from the existing pharmacy dispensing register.</p><div class="report-shortcuts"><button class="btn light" onclick="runReport('schedule_H')">H Schedule</button><button class="btn light" onclick="runReport('schedule_H1')">H1 Schedule</button><button class="btn light" onclick="runReport('schedule_X')">X Schedule</button><button class="btn light" onclick="runReport('schedule_G')">G Schedule</button><button class="btn light" onclick="runReport('schedule')">All Schedules</button></div></div>
  <div class="panel"><div class="panel-head"><h3>Sales movement analysis</h3><span class="badge green">Stock insights</span></div><p class="feature-note">Compare medicine movement using recorded sale quantities. Non-moving means no sale found in the loaded sales history.</p><div class="report-shortcuts"><button class="btn light" onclick="runReport('fast_moving')">Fast Moving</button><button class="btn light" onclick="runReport('slow_moving')">Slow Moving</button><button class="btn light" onclick="runReport('non_moving')">Non Moving</button></div></div>
  <div class="panel">
-  <p class="feature-note">Sales register shows the invoice number, pharmacist and the logged-in staff member who entered each bill. Use the individual Print button to print only that bill. The first print is marked ORIGINAL; later prints are marked DUPLICATE.</p>
+  <p class="feature-note">Sales register shows the invoice number, pharmacist and the logged-in staff member who entered each bill. Use the individual Print button to print only that bill. The first print is marked ORIGINAL; later prints are numbered COPY 1, COPY 2, and so on.</p>
   <div class="panel-head"><h3>Report filters</h3><div class="actions"><button class="btn light" onclick="exportActiveReport()">Export CSV</button><button class="btn light" onclick="printActiveReport()">Print</button></div></div>
   <div class="form-grid">
    <div class="field"><label>From date</label><input type="date" id="reportFrom"></div>
@@ -2286,9 +2286,14 @@ async function runReport(type){
 async function getServerBillCopyLabel(saleId){
  const {data,error}=await sb.rpc("ms_record_bill_print",{p_sale_id:saleId,p_pharmacy_id:pharmacyId()});
  if(error)throw error;
- const label=String(data||"").toUpperCase();
- if(label!=="ORIGINAL"&&label!=="DUPLICATE")throw new Error("Unexpected print status returned by database.");
- return label;
+ const label=String(data||"").trim().toUpperCase();
+ if(label==="ORIGINAL")return "ORIGINAL";
+ // Supports the numbered copy label returned by the print-history RPC.
+ if(/^COPY\s+\d+$/.test(label))return label;
+ // Backward compatibility with the current RPC response until its return
+ // value is upgraded to COPY 1, COPY 2, etc.
+ if(label==="DUPLICATE")return "COPY 1";
+ throw new Error("Unexpected print status returned by database.");
 }
 async function printSalesReportBill(saleId){
  try{
