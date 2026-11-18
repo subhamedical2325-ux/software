@@ -1273,7 +1273,16 @@ const SUPABASE_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co";
 const STAFF_ADMIN_FUNCTION_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co/functions/v1/medical-staff-admin";
 const SUPABASE_ANON_KEY = "sb_publishable_yjg6DKw0JTfU3eYayTfo_g_dyocz5kt";
  
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* Initialise Supabase safely. A blocked CDN must not stop the rest of the
+   application script from running or prevent login/button handlers binding. */
+let sb = null;
+try {
+ if (window.supabase && typeof window.supabase.createClient === "function") {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+ }
+} catch (supabaseInitError) {
+ console.error("Supabase client initialisation failed:", supabaseInitError);
+}
  
 let currentUser = null;
 let currentMember = null;
@@ -1322,7 +1331,7 @@ $("loginForm").addEventListener("submit",async e=>{
  e.preventDefault();clearAuthMessage();
  const btn=$("loginButton");btn.disabled=true;btn.textContent="Signing in...";
  try{
-  if(!window.supabase||!sb)throw new Error("The secure login service did not load. Refresh the page and try again.");
+  if(!window.supabase||!sb)throw new Error("The login service could not load. Check your internet connection or browser content blocker, then refresh.");
   const email=$("loginEmail").value.trim().toLowerCase();
   const password=$("loginPassword").value;
   if(!email||!password)throw new Error("Enter your registered email address and password.");
@@ -2621,6 +2630,4 @@ async function loadDailyAuditHistory(){const host=$("dailyAuditHistory");if(!hos
  
 function editStaff(id){
  const m=(window._staffCache||[]).find(x=>x.id===id);if(!m)return;
- if(!canManage()||m.user_id===currentUser.id)return notify("Owner/Admin access required. You cannot edit your own membership here.");
- $("modalTitle").textContent="Edit staff details";
- $("modalBody").innerHTML=`<form id="staffEditForm"><div class="form-grid">${field("Staff full name","full_name",m.full_name||"","required")}${field("Phone number","phone",m.phone||"")}</div><button class="btn full">Save staff details</button
+ if(!canManage()||m.user_id==
