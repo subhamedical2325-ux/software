@@ -2561,32 +2561,7 @@ function exportActiveReport(){
 function printActiveReport(){
  const host=$("reportOutput");if(!host)return;
  const w=window.open("","_blank","width=900,height=700");if(!w)return notify("Allow pop-ups to print reports.");
- w.document.write("<html><head><title>"+esc(activeReportTitle)+"</title><style>@page{size:"+((pharmacySettings.print_paper_size==="A4")?"A4":"A4")+";margin:12mm}body{font-family:Arial;padding:10px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:11px}h2{text-align:center}.no-print{display:none!important}\n
-/* DESKTOP MODE ON SMALL SCREENS: keep the existing mobile layout intact,
-   but make the sidebar slide in/out instead of permanently occupying space. */
-@media (min-width:701px) and (max-width:1100px){
-  #sidebar{
-    position:fixed!important;
-    left:0!important;top:0!important;bottom:0!important;
-    width:264px!important;min-width:264px!important;
-    transform:translateX(-105%)!important;
-    transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s ease!important;
-    z-index:1000!important;
-  }
-  #sidebar.open{
-    transform:translateX(0)!important;
-    box-shadow:14px 0 40px #071e3266!important;
-  }
-  #sidebar:hover,#sidebar:focus-within{width:264px!important;min-width:264px!important}
-  .main{margin-left:0!important;min-width:0!important}
-  .mobile-menu{
-    display:inline-flex!important;align-items:center;justify-content:center;
-    width:38px;height:38px;border:1px solid #dce8ec!important;
-    background:#edf6f7!important;color:#123b53!important;
-    border-radius:10px!important;font-size:19px!important;cursor:pointer;
-  }
-}
-</style></head><body><h2>"+esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")+" — "+esc(activeReportTitle)+"</h2>"+host.innerHTML+"<script>window.onload=()=>window.print();<\\/script></body></html>");w.document.close();
+ w.document.write("<html><head><title>"+esc(activeReportTitle)+"</title><style>@page{size:"+((pharmacySettings.print_paper_size==="A4")?"A4":"A4")+";margin:12mm}body{font-family:Arial;padding:10px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:11px}h2{text-align:center}.no-print{display:none!important}\n</style></head><body><h2>"+esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")+" — "+esc(activeReportTitle)+"</h2>"+host.innerHTML+"<script>window.onload=()=>window.print();<\\/script></body></html>");w.document.close();
 }
 async function renderStaff(){
  window.pharmacyStaff=[];
