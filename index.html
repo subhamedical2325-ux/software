@@ -1,3 +1,5 @@
+
+ 
 <!doctype html>
 <html lang="en">
  <head>
@@ -1814,7 +1816,14 @@ async function completeSale(){
   notify("Billing error: "+err.message+" Please check the saved bill before retrying.");
  }
 }
-function buildBillPdf(bill){
+function billGstSplit(totals){
+ const gst=Math.max(0,Number(totals?.gst||0));
+ const cgst=Number((gst/2).toFixed(2));
+ const sgst=Number((gst-cgst).toFixed(2));
+ const taxable=Number((Number(totals?.subtotal||0)-gst).toFixed(2));
+ return {gst,cgst,sgst,taxable};
+}
+function buildBillPdf(bill,copyLabel="ORIGINAL"){
  const lib=window.jspdf;if(!lib?.jsPDF)throw new Error("PDF library did not load. Check internet connection and retry.");
  const {sale,items,totals}=bill;const size=pharmacySettings.print_paper_size||"80mm";
  const doc=new lib.jsPDF({orientation:"portrait",unit:"mm",format:size==="A4"?"a4":[80,240]});
@@ -1826,10 +1835,10 @@ function buildBillPdf(bill){
  doc.setFont("helvetica","normal");doc.setFontSize(8);
  [pharmacySettings.bill_print_address||currentPharmacy?.address, currentPharmacy?.phone, pharmacySettings.gst_number&&("GSTIN: "+pharmacySettings.gst_number),pharmacySettings.drug_license&&("Drug Licence: "+pharmacySettings.drug_license),pharmacySettings.bill_email].filter(Boolean).forEach(v=>{doc.text(String(v),pageW/2,y,{align:"center",maxWidth:pageW-2*margin});y+=4;});
  doc.line(margin,y,pageW-margin,y);y+=5;
- addLine("Invoice",sale.invoice_number);addLine("Date",new Date(sale.created_at||Date.now()).toLocaleString());addLine("Customer",bill.customerName||sale.customer_name||"Walk-in");addLine("Mobile",bill.customerPhone||sale.customer_phone||"-");addLine("Pharmacist",sale.pharmacist_name||"-");addLine("Billing staff",sale.billing_staff_name||"-");
+ addLine("Invoice",sale.invoice_number);addLine("Copy",copyLabel);addLine("Date",new Date(sale.created_at||Date.now()).toLocaleString());addLine("Customer",bill.customerName||sale.customer_name||"Walk-in");addLine("Mobile",bill.customerPhone||sale.customer_phone||"-");addLine("Pharmacist",sale.pharmacist_name||"-");addLine("Billing staff",sale.billing_staff_name||"-");
  const body=items.map(p=>[String(p.name),String(p.batch_number||"-"),String(p.qty),Number(p.mrp||0).toFixed(2),(Number(p.qty||0)*Number(p.mrp||0)*(1-Number(p.discount_pct||0)/100)).toFixed(2)]);
  if(doc.autoTable){doc.autoTable({startY:y,head:[["Medicine","Batch","Qty","Rate","Amount"]],body,theme:"grid",styles:{fontSize:size==="A4"?8:6,cellPadding:1.4},headStyles:{fontSize:size==="A4"?8:6},margin:{left:margin,right:margin}});y=doc.lastAutoTable.finalY+5;}else{body.forEach(r=>{doc.setFontSize(6);doc.text(r.join(" | "),margin,y,{maxWidth:pageW-2*margin});y+=5;});}
- addLine("Subtotal",money(totals.subtotal));addLine("Discount",money(totals.discount));addLine("GST included",money(totals.gst));doc.setFont("helvetica","bold");addLine("NET PAYABLE",money(totals.total));doc.setFont("helvetica","normal");addLine("Payment",sale.payment_method||"-");addLine("Status",sale.payment_status||"-");
+ const taxSplit=billGstSplit(totals);addLine("Subtotal (incl. GST)",money(totals.subtotal));addLine("Taxable value",money(taxSplit.taxable));addLine("CGST",money(taxSplit.cgst));addLine("SGST",money(taxSplit.sgst));addLine("Discount",money(totals.discount));doc.setFont("helvetica","bold");addLine("NET PAYABLE",money(totals.total));doc.setFont("helvetica","normal");addLine("Payment",sale.payment_method||"-");addLine("Status",sale.payment_status||"-");
  if(sale.payment_reference_number)addLine("UPI Ref",sale.payment_reference_number);
  y+=3;doc.setFontSize(8);doc.text(String(pharmacySettings.print_footer||"Thank you. Visit again!"),pageW/2,y,{align:"center",maxWidth:pageW-2*margin});
  
@@ -1843,7 +1852,7 @@ async function shareLastBillWhatsApp(){try{const b=window.lastCompletedBill;if(!
  doc.save(file.name);const digits=phone.length===10?"91"+phone:phone;const url="https://wa.me/"+(digits||"")+"?text="+encodeURIComponent(textMsg+(digits?"":" Please find the attached PDF bill."));window.open(url,"_blank");notify("PDF downloaded. Attach it to the WhatsApp message if it did not attach automatically.");
  }catch(e){if(e.name!=="AbortError")notify("WhatsApp sharing failed: "+(e.message||e));}}
  
-function printInvoice(sale,items,t,copyLabel="DUPLICATE"){
+function printInvoice(sale,items,t,copyLabel="ORIGINAL"){
  const w=window.open("","_blank","width=700,height=800");
  if(!w)return notify("Allow pop-ups to print the invoice.");
  const size=pharmacySettings.print_paper_size||"80mm";
@@ -1851,6 +1860,7 @@ function printInvoice(sale,items,t,copyLabel="DUPLICATE"){
  const header=currentPharmacy?.pharmacy_name||pharmacySettings.print_header||"Pharmacy";
  const logo=pharmacySettings.logo_data_url?`<img src="${pharmacySettings.logo_data_url}" style="max-width:100px;max-height:65px;display:block;margin:0 auto 6px">`:"";
  const footer=pharmacySettings.print_footer||"Thank you. Visit again!";
+ const taxSplit=billGstSplit(t);
  const upi="";
  const billQr="";
  w.document.write(`<!DOCTYPE html><html><head><title>${esc(sale.invoice_number)}</title>
@@ -1859,8 +1869,8 @@ function printInvoice(sale,items,t,copyLabel="DUPLICATE"){
  <p>${esc(pharmacySettings.gst_number?"GSTIN: "+pharmacySettings.gst_number:"")} ${esc(pharmacySettings.drug_license?" · DL: "+pharmacySettings.drug_license:"")}</p><hr><p>Invoice: ${esc(sale.invoice_number)}<br>${new Date(sale.created_at).toLocaleString()}<br><b style="letter-spacing:1px;border:1px solid #333;padding:3px 9px;display:inline-block;margin-top:5px">${esc(copyLabel)}</b></p><p style="text-align:left">Customer: ${esc(sale.customer_name||$("billCustomerName")?.value||"Walk-in")} · Phone: ${esc(sale.customer_phone||$("billPhone")?.value||"-")}<br>Address: ${esc(sale.customer_address||$("billCustomerAddress")?.value||"-")}<br>Doctor: ${esc(sale.doctor_name||$("billDoctor")?.value||"-")}<br>Pharmacist: ${esc(sale.pharmacist_name||$("billPharmacist")?.value||"-")}<br>Entered by: ${esc(sale.billing_staff_name||currentMember?.full_name||currentUser.email)}</p>
  <table><tr><th>Medicine</th><th>Batch</th><th>Qty</th><th>Rate</th><th class="right">Amount</th></tr>
  ${items.map(p=>`<tr><td>${esc(p.name)}${pharmacySettings.show_batch_expiry===false||pharmacySettings.show_batch_expiry==="no"?"":`<br><small>Exp: ${esc(p.expiry_date||"-")}</small>`}${Number(p.discount_pct||0)>0?`<br><small>Discount ${Number(p.discount_pct).toFixed(1)}%</small>`:""}</td><td>${esc(p.batch_number||"-")}</td><td>${p.qty}</td><td>${money(p.mrp)}</td><td class="right">${money(p.qty*p.mrp*(1-Number(p.discount_pct||0)/100))}</td></tr>`).join("")}
- </table><p class="right">Subtotal: ${money(t.subtotal)}<br>Discount: ${money(t.discount)}<br>GST included: ${money(t.gst)}</p>
- <p class="right total">Total: ${money(t.total)}</p><p style="text-align:left;font-size:11px">Payment: ${esc(sale.payment_method||"-")}<br>Status: ${esc(sale.payment_status||"-")}${sale.payment_reference_number?`<br>UPI reference: ${esc(sale.payment_reference_number)}`:""}</p>${pharmacySettings.bill_terms?`<hr><p style="text-align:left;font-size:10px">${esc(pharmacySettings.bill_terms)}</p>`:""}<hr><p>${esc(footer)}</p>
+ </table><p class="right">Subtotal (incl. GST): ${money(t.subtotal)}<br>Taxable value: ${money(taxSplit.taxable)}<br>CGST: ${money(taxSplit.cgst)}<br>SGST: ${money(taxSplit.sgst)}<br>Discount: ${money(t.discount)}</p>
+ <p class="right total">Net Payable: ${money(t.total)}</p><p style="text-align:left;font-size:11px">Payment: ${esc(sale.payment_method||"-")}<br>Status: ${esc(sale.payment_status||"-")}${sale.payment_reference_number?`<br>UPI reference: ${esc(sale.payment_reference_number)}`:""}</p>${pharmacySettings.bill_terms?`<hr><p style="text-align:left;font-size:10px">${esc(pharmacySettings.bill_terms)}</p>`:""}<hr><p>${esc(footer)}</p>
  <script>window.onload=()=>window.print();<\/script></body></html>`);
  w.document.close();
 }
@@ -2172,7 +2182,7 @@ function renderReports(){
  <div class="panel"><div class="panel-head"><h3>Scheduled medicine reports</h3><span class="badge">Compliance</span></div><p class="feature-note">Separate dispensing registers by Schedule H, H1, X and G. Data is filtered from the existing pharmacy dispensing register.</p><div class="report-shortcuts"><button class="btn light" onclick="runReport('schedule_H')">H Schedule</button><button class="btn light" onclick="runReport('schedule_H1')">H1 Schedule</button><button class="btn light" onclick="runReport('schedule_X')">X Schedule</button><button class="btn light" onclick="runReport('schedule_G')">G Schedule</button><button class="btn light" onclick="runReport('schedule')">All Schedules</button></div></div>
  <div class="panel"><div class="panel-head"><h3>Sales movement analysis</h3><span class="badge green">Stock insights</span></div><p class="feature-note">Compare medicine movement using recorded sale quantities. Non-moving means no sale found in the loaded sales history.</p><div class="report-shortcuts"><button class="btn light" onclick="runReport('fast_moving')">Fast Moving</button><button class="btn light" onclick="runReport('slow_moving')">Slow Moving</button><button class="btn light" onclick="runReport('non_moving')">Non Moving</button></div></div>
  <div class="panel">
-  <p class="feature-note">Sales register shows the invoice number, pharmacist and the logged-in staff member who entered each bill. Use the individual Print button to print only that bill. The first print is marked ORIGINAL; later prints are marked DUPLICATE.</p>
+  <p class="feature-note">Sales register shows the invoice number, pharmacist and the logged-in staff member who entered each bill. Use the individual Print button to print only that bill. The first print is marked ORIGINAL; later prints are numbered COPY 1, COPY 2, COPY 3 and so on.</p>
   <div class="panel-head"><h3>Report filters</h3><div class="actions"><button class="btn light" onclick="exportActiveReport()">Export CSV</button><button class="btn light" onclick="printActiveReport()">Print</button></div></div>
   <div class="form-grid">
    <div class="field"><label>From date</label><input type="date" id="reportFrom"></div>
@@ -2284,10 +2294,10 @@ async function runReport(type){
  }catch(e){$("reportOutput").innerHTML=`<div class="notice">Could not load report: ${esc(e.message)}</div>`;}
 }
 async function getServerBillCopyLabel(saleId){
- const {data,error}=await sb.rpc("ms_record_bill_print",{p_sale_id:saleId,p_pharmacy_id:pharmacyId()});
+ const {data,error}=await sb.rpc("ms_record_bill_print_v2",{p_sale_id:saleId,p_pharmacy_id:pharmacyId()});
  if(error)throw error;
- const label=String(data||"").toUpperCase();
- if(label!=="ORIGINAL"&&label!=="DUPLICATE")throw new Error("Unexpected print status returned by database.");
+ const label=String(data||"").trim().toUpperCase();
+ if(label!=="ORIGINAL"&&!/^COPY \d+$/.test(label))throw new Error("Unexpected print status returned by database. Run the Bill Copy Sequence SQL setup.");
  return label;
 }
 async function printSalesReportBill(saleId){
@@ -2470,12 +2480,4 @@ async function start(){
  sb.auth.onAuthStateChange((event,session)=>{
   if(event==="SIGNED_OUT"){
    document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");
-   $("authScreen").classList.remove("hidden");
-   $("appScreen").classList.add("hidden");
-  }
- });
-}
-start();
-</script>
- </body>
-</html>
+   $("authScreen").c
