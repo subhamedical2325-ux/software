@@ -1,3 +1,5 @@
+
+ 
 <!doctype html>
 <html lang="en">
  <head>
@@ -948,65 +950,7 @@ body.auth-mode .auth-card #loginForm>div:last-child{justify-content:space-betwee
  .medical-robot,.robot-head,.robot-body,.robot-wave-arm,.robot-eye,.robot-sparkles,.scene-glow{animation:none!important}
 }
  
- 
-/* FINAL LOGIN UPDATE: pharmacy-software workstation artwork; no mascot/robot */
-body.auth-mode .auth-visual-content{
- grid-template-columns:1fr 1fr!important;
- grid-template-rows:auto auto minmax(245px,1fr) auto!important;
-}
-body.auth-mode .robot-stage,body.auth-mode .medical-robot{display:none!important}
-body.auth-mode .login-workstation-art{
- grid-column:1!important;grid-row:3!important;align-self:center!important;justify-self:center!important;
- position:relative;width:min(100%,440px);min-height:265px;display:flex;align-items:center;justify-content:center;
- perspective:900px;isolation:isolate;
-}
-.workstation-glow{position:absolute;width:85%;height:72%;border-radius:50%;background:#4be5ff55;filter:blur(35px);z-index:-1;animation:workGlow 5s ease-in-out infinite alternate}
-.workstation-window{
- width:88%;border:5px solid #d9f6ff;border-radius:16px;background:#f7fcff;
- box-shadow:0 24px 48px #032e5870,0 0 0 1px #ffffff90;
- overflow:hidden;transform:rotateY(-9deg) rotateX(3deg);animation:workFloat 6s ease-in-out infinite;
-}
-.workstation-top{height:30px;background:linear-gradient(90deg,#063d70,#087e9e);display:flex;align-items:center;gap:5px;padding:0 10px;color:#fff}
-.workstation-top>span{width:7px;height:7px;border-radius:50%;background:#b9f5ff}
-.workstation-top>b{font-size:8px;letter-spacing:1.2px;margin-left:8px}
-.workstation-body{display:flex;min-height:175px}
-.workstation-rail{width:34px;background:#103c62;display:flex;flex-direction:column;align-items:center;gap:13px;padding:12px 0;color:#d7f7ff;font-style:normal}
-.workstation-rail i{font-style:normal;font-size:14px}
-.workstation-screen{flex:1;padding:13px;color:#153d5e}
-.workstation-title{font-size:12px;font-weight:900;margin-bottom:10px}
-.workstation-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.workstation-kpis i{font-style:normal;background:#e8f5fb;border:1px solid #d1e8f3;border-radius:6px;padding:8px 5px;display:flex;flex-direction:column;gap:4px}
-.workstation-kpis b{font-size:17px;color:#087eae}.workstation-kpis small{font-size:8px;color:#54728a}
-.workstation-chart{height:62px;margin-top:10px;padding:7px 12px 0;display:flex;align-items:end;gap:9px;border-bottom:1px solid #c8dfe9;background:linear-gradient(180deg,#eaf8fc,#fff)}
-.workstation-chart span{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#20c5b0,#1686c5);animation:chartRise 1.1s ease both}
-.workstation-chart span:nth-child(1){height:34%}.workstation-chart span:nth-child(2){height:52%}.workstation-chart span:nth-child(3){height:43%}.workstation-chart span:nth-child(4){height:72%}.workstation-chart span:nth-child(5){height:60%}.workstation-chart span:nth-child(6){height:88%}.workstation-chart span:nth-child(7){height:76%}
-.workstation-lines{display:flex;gap:6px;margin-top:9px}.workstation-lines i{height:5px;border-radius:5px;background:#d8eaf1;flex:1}.workstation-lines i:first-child{flex:1.7;background:#9bd8d7}
-.workstation-float{position:absolute;display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid #ffffffa8;border-radius:10px;background:#ffffffed;color:#124a70;box-shadow:0 9px 24px #032f5850;font-size:18px;animation:workFloat 4s ease-in-out infinite}
-.workstation-float b,.workstation-float small{display:block}.workstation-float b{font-size:10px}.workstation-float small{font-size:8px;color:#658196;margin-top:2px}
-.float-stock{right:-2%;top:17%}.float-billing{left:-2%;bottom:8%;animation-delay:-1.8s}
-body.auth-mode .visual-features{grid-column:2!important;grid-row:3!important;align-self:center!important}
-body.auth-mode .visual-features>div{min-height:76px;border-radius:12px;background:linear-gradient(145deg,#0b80b8,#064779);border:1px solid #71e5f0;box-shadow:0 8px 18px #033d7650}
-@keyframes workFloat{0%,100%{transform:translateY(0) rotateY(-9deg) rotateX(3deg)}50%{transform:translateY(-8px) rotateY(-6deg) rotateX(2deg)}}
-@keyframes workGlow{from{opacity:.45;transform:scale(.92)}to{opacity:.9;transform:scale(1.08)}}
-@keyframes chartRise{from{height:5%;opacity:.3}to{opacity:1}}
-@media(max-width:760px){
- body.auth-mode .auth-visual{min-height:560px!important}
- body.auth-mode .auth-visual-content{min-height:560px!important;grid-template-columns:1fr 1fr!important;grid-template-rows:auto auto minmax(230px,1fr) auto!important}
- body.auth-mode .login-workstation-art{grid-column:1!important;grid-row:3!important;min-height:220px;width:100%}
- body.auth-mode .visual-features{grid-column:2!important;grid-row:3!important;gap:6px}
- .workstation-window{width:96%}.workstation-float{padding:6px 8px}.float-stock{right:-3%}.float-billing{left:-3%}
-}
-@media(max-width:430px){
- body.auth-mode .auth-visual{min-height:520px!important}
- body.auth-mode .auth-visual-content{min-height:520px!important;padding:10px 10px 62px!important}
- body.auth-mode .login-workstation-art{min-height:205px}
- .workstation-body{min-height:145px}.workstation-screen{padding:9px}.workstation-chart{height:48px}
- .workstation-float{font-size:14px;padding:5px 7px}.workstation-float b{font-size:8px}.workstation-float small{font-size:7px}
- body.auth-mode .visual-features>div{min-height:59px!important}
-}
-@media(prefers-reduced-motion:reduce){.login-workstation-art *{animation:none!important}}
- 
- </style>
+</style>
  </head>
  <body>
   <!-- LOGIN / REGISTRATION -->
@@ -1039,36 +983,41 @@ body.auth-mode .visual-features>div{min-height:76px;border-radius:12px;backgroun
        Smart <span>•</span> Secure <span>•</span> Scalable
       </div>
      </div>
-     <div class="login-workstation-art" aria-hidden="true">
-      <div class="workstation-glow"></div>
-      <div class="workstation-window">
-       <div class="workstation-top">
-        <span></span><span></span><span></span><b>PHARMACY WORKSPACE</b>
-       </div>
-       <div class="workstation-body">
-        <div class="workstation-rail">
-         <i>▦</i><i>▤</i><i>▥</i><i>⚙</i>
-        </div>
-        <div class="workstation-screen">
-         <div class="workstation-title">Today’s Overview</div>
-         <div class="workstation-kpis">
-          <i><b>₹</b><small>Sales</small></i><i><b>▣</b><small>Stock</small></i><i><b>▤</b><small>Bills</small></i>
-         </div>
-         <div class="workstation-chart">
-          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-         </div>
-         <div class="workstation-lines">
-          <i></i><i></i><i></i>
-         </div>
-        </div>
-       </div>
-      </div>
-      <div class="workstation-float float-stock">
-       📦 <b>Inventory</b><small>Stock control</small>
-      </div>
-      <div class="workstation-float float-billing">
-       🧾 <b>Smart Billing</b><small>Fast checkout</small>
-      </div>
+     <div class="robot-stage" aria-hidden="true">
+      <svg class="medical-robot" viewBox="0 0 360 390">
+       <defs>
+        <linearGradient id="botWhite" x1="0" y1="0" x2="1" y2="1">
+         <stop stop-color="#fff" /><stop offset=".55" stop-color="#dcecf7" /><stop offset="1" stop-color="#7da9c9" />
+        </linearGradient>
+        <linearGradient id="botBlue" x1="0" y1="0" x2="1" y2="1">
+         <stop stop-color="#26e5ff" /><stop offset="1" stop-color="#0876d9" />
+        </linearGradient>
+        <linearGradient id="botScreen" x1="0" y1="0" x2="0" y2="1">
+         <stop stop-color="#102d54" /><stop offset="1" stop-color="#06152d" />
+        </linearGradient>
+        <filter id="botGlow">
+         <feGaussianBlur stdDeviation="4" result="b" />
+         <feMerge>
+          <feMergeNode in="b" />
+          <feMergeNode in="SourceGraphic" />
+         </feMerge>
+        </filter>
+       </defs>
+       <ellipse cx="177" cy="365" rx="112" ry="15" fill="#082b4a" opacity=".25" />
+       <g class="robot-body">
+        <path d="M103 205 Q180 176 256 207 L278 331 Q180 369 82 331Z" fill="url(#botWhite)" stroke="#6e9cbd" stroke-width="4" /> <path d="M122 224 Q180 205 238 224 L247 310 Q180 334 113 310Z" fill="#f7fcff" stroke="#b5d0e2" stroke-width="3" /> <path d="M169 252h22v17h17v22h-17v17h-22v-17h-17v-22h17z" fill="#087ed1" /> <path d="M93 230 Q55 245 52 293" fill="none" stroke="url(#botWhite)" stroke-width="27" stroke-linecap="round" /> <path d="M52 293l-12 23 25 12 17-20" fill="url(#botWhite)" stroke="#6e9cbd" stroke-width="3" />
+        <g class="robot-wave-arm">
+         <path d="M252 230 Q294 214 300 171" fill="none" stroke="url(#botWhite)" stroke-width="27" stroke-linecap="round" /> <path d="M300 171q-4-29 13-39q10-7 15 2q3 7-5 15q19-15 26-3q5 9-9 17q13-4 17 7q2 11-13 15l-24 8z" fill="url(#botWhite)" stroke="#6e9cbd" stroke-width="3" />
+        </g>
+        <path d="M136 204v-20h87v20" fill="none" stroke="#6e9cbd" stroke-width="8" stroke-linecap="round" />
+        <g class="robot-head">
+         <rect x="68" y="48" width="226" height="164" rx="67" fill="url(#botWhite)" stroke="#6e9cbd" stroke-width="5" /> <rect x="86" y="69" width="190" height="119" rx="48" fill="url(#botScreen)" stroke="#bdefff" stroke-width="4" /> <path class="robot-eye" d="M132 119q0-18 15-18t15 18v9q0 18-15 18t-15-18z" fill="#22eaff" filter="url(#botGlow)" /> <path class="robot-eye" d="M203 119q0-18 15-18t15 18v9q0 18-15 18t-15-18z" fill="#22eaff" filter="url(#botGlow)" /> <path d="M151 158q28 24 57 0" fill="none" stroke="#29eaff" stroke-width="6" stroke-linecap="round" filter="url(#botGlow)" /> <circle cx="62" cy="126" r="12" fill="#168fd3" stroke="#dff8ff" stroke-width="4" /> <circle cx="300" cy="126" r="12" fill="#168fd3" stroke="#dff8ff" stroke-width="4" /> <path d="M176 48v-15" stroke="#168fd3" stroke-width="7" stroke-linecap="round" /><circle cx="176" cy="25" r="9" fill="#26eaff" />
+        </g>
+       </g>
+       <g class="robot-sparkles" fill="#fff">
+        <path d="M35 92l5 13 13 5-13 5-5 13-5-13-13-5 13-5z" /><path d="M315 245l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" /><circle cx="45" cy="190" r="4" /><circle cx="320" cy="80" r="5" />
+       </g>
+      </svg>
      </div>
      <div class="visual-features">
       <div>
@@ -1273,16 +1222,7 @@ const SUPABASE_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co";
 const STAFF_ADMIN_FUNCTION_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co/functions/v1/medical-staff-admin";
 const SUPABASE_ANON_KEY = "sb_publishable_yjg6DKw0JTfU3eYayTfo_g_dyocz5kt";
  
-/* Initialise Supabase safely. A blocked CDN must not stop the rest of the
-   application script from running or prevent login/button handlers binding. */
-let sb = null;
-try {
- if (window.supabase && typeof window.supabase.createClient === "function") {
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
- }
-} catch (supabaseInitError) {
- console.error("Supabase client initialisation failed:", supabaseInitError);
-}
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
  
 let currentUser = null;
 let currentMember = null;
@@ -1331,30 +1271,21 @@ $("loginForm").addEventListener("submit",async e=>{
  e.preventDefault();clearAuthMessage();
  const btn=$("loginButton");btn.disabled=true;btn.textContent="Signing in...";
  try{
-  if(!window.supabase||!sb)throw new Error("The login service could not load. Check your internet connection or browser content blocker, then refresh.");
-  const email=$("loginEmail").value.trim().toLowerCase();
-  const password=$("loginPassword").value;
-  if(!email||!password)throw new Error("Enter your registered email address and password.");
-  /* Authenticate first. Pharmacy-code lookup before sign-in can be blocked by Supabase RLS on GitHub Pages. */
-  const {data,error}=await sb.auth.signInWithPassword({email,password});
-  if(error)throw error;
   const customerId=$("loginCustomerId").value.trim();
   let requestedPharmacyId=null;
   if(customerId){
-   const {data:pharmacy,error:pharmacyError}=await sb.from("ms_pharmacies")
-    .select("id,approval_status").eq("pharmacy_code",customerId).maybeSingle();
-   if(pharmacyError)throw new Error("Signed in, but the pharmacy code could not be checked: "+pharmacyError.message);
-   if(!pharmacy)throw new Error("Customer ID / Pharmacy Code was not found. Check the code or leave it blank to use your account's default pharmacy.");
+   const {data:pharmacy,error:pharmacyError}=await sb.from("ms_pharmacies").select("id,approval_status").eq("pharmacy_code",customerId).maybeSingle();
+   if(pharmacyError)throw pharmacyError;
+   if(!pharmacy)throw new Error("Customer ID / Pharmacy Code was not found.");
    requestedPharmacyId=pharmacy.id;
   }
+  const {data,error}=await sb.auth.signInWithPassword({
+   email:$("loginEmail").value.trim(),
+   password:$("loginPassword").value
+  });
+  if(error)throw error;
   await loadApplication(data.user,requestedPharmacyId);
- }catch(err){
-  document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");
-  $("appScreen").classList.add("hidden");$("authScreen").classList.remove("hidden");
-  authMessage(err?.message||"Login failed. Check your connection and account details.");
-  /* Do not leave a half-loaded session that silently loops on the next page visit. */
-  try{const {data}=await sb.auth.getSession();if(data?.session)await sb.auth.signOut();}catch(_){}
- }
+ }catch(err){document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");$("appScreen").classList.add("hidden");$("authScreen").classList.remove("hidden");authMessage(err.message||"Login failed");}
  finally{btn.disabled=false;btn.textContent="Log In";}
 });
  
@@ -2082,14 +2013,6 @@ async function completeSale(){
   notify("Billing error: "+err.message+" Please check the saved bill before retrying.");
  }
 }
-function getBillGstSplit(items){
- const gstTotal=(items||[]).reduce((sum,p)=>{
-  const gross=Number(p.qty||0)*Number(p.mrp||0)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100);
-  const rate=Math.max(0,Number(p.gst_percent||0));
-  return sum+(rate>0?gross*rate/(100+rate):0);
- },0);
- return {cgst:gstTotal/2,sgst:gstTotal/2,total:gstTotal};
-}
 function buildBillPdf(bill){
  const lib=window.jspdf;if(!lib?.jsPDF)throw new Error("PDF library did not load. Check internet connection and retry.");
  const {sale,items,totals}=bill;const size=pharmacySettings.print_paper_size||"80mm";
@@ -2105,11 +2028,7 @@ function buildBillPdf(bill){
  addLine("Invoice",sale.invoice_number);addLine("Date",new Date(sale.created_at||Date.now()).toLocaleString());addLine("Customer",bill.customerName||sale.customer_name||"Walk-in");addLine("Mobile",bill.customerPhone||sale.customer_phone||"-");addLine("Pharmacist",sale.pharmacist_name||"-");addLine("Billing staff",sale.billing_staff_name||"-");
  const body=items.map(p=>[String(p.name),String(p.batch_number||"-"),String(p.qty),Number(p.mrp||0).toFixed(2),(Number(p.qty||0)*Number(p.mrp||0)*(1-Number(p.discount_pct||0)/100)).toFixed(2)]);
  if(doc.autoTable){doc.autoTable({startY:y,head:[["Medicine","Batch","Qty","Rate","Amount"]],body,theme:"grid",styles:{fontSize:size==="A4"?8:6,cellPadding:1.4},headStyles:{fontSize:size==="A4"?8:6},margin:{left:margin,right:margin}});y=doc.lastAutoTable.finalY+5;}else{body.forEach(r=>{doc.setFontSize(6);doc.text(r.join(" | "),margin,y,{maxWidth:pageW-2*margin});y+=5;});}
- addLine("Subtotal",money(totals.subtotal));addLine("Discount",money(totals.discount));
- const gstSplit=getBillGstSplit(items);
- doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("GST BREAKUP (included in rate)",margin,y);y+=4.5;doc.setFont("helvetica","normal");
- addLine("CGST",money(gstSplit.cgst));addLine("SGST",money(gstSplit.sgst));
- doc.setFont("helvetica","bold");addLine("NET PAYABLE",money(totals.total));doc.setFont("helvetica","normal");addLine("Payment",sale.payment_method||"-");addLine("Status",sale.payment_status||"-");
+ addLine("Subtotal",money(totals.subtotal));addLine("Discount",money(totals.discount));addLine("GST included",money(totals.gst));doc.setFont("helvetica","bold");addLine("NET PAYABLE",money(totals.total));doc.setFont("helvetica","normal");addLine("Payment",sale.payment_method||"-");addLine("Status",sale.payment_status||"-");
  if(sale.payment_reference_number)addLine("UPI Ref",sale.payment_reference_number);
  y+=3;doc.setFontSize(8);doc.text(String(pharmacySettings.print_footer||"Thank you. Visit again!"),pageW/2,y,{align:"center",maxWidth:pageW-2*margin});
  
@@ -2139,7 +2058,7 @@ function printInvoice(sale,items,t,copyLabel="DUPLICATE"){
  <p>${esc(pharmacySettings.gst_number?"GSTIN: "+pharmacySettings.gst_number:"")} ${esc(pharmacySettings.drug_license?" · DL: "+pharmacySettings.drug_license:"")}</p><hr><p>Invoice: ${esc(sale.invoice_number)}<br>${new Date(sale.created_at).toLocaleString()}<br><b style="letter-spacing:1px;border:1px solid #333;padding:3px 9px;display:inline-block;margin-top:5px">${esc(copyLabel)}</b></p><p style="text-align:left">Customer: ${esc(sale.customer_name||$("billCustomerName")?.value||"Walk-in")} · Phone: ${esc(sale.customer_phone||$("billPhone")?.value||"-")}<br>Address: ${esc(sale.customer_address||$("billCustomerAddress")?.value||"-")}<br>Doctor: ${esc(sale.doctor_name||$("billDoctor")?.value||"-")}<br>Pharmacist: ${esc(sale.pharmacist_name||$("billPharmacist")?.value||"-")}<br>Entered by: ${esc(sale.billing_staff_name||currentMember?.full_name||currentUser.email)}</p>
  <table><tr><th>Medicine</th><th>Batch</th><th>Qty</th><th>Rate</th><th class="right">Amount</th></tr>
  ${items.map(p=>`<tr><td>${esc(p.name)}${pharmacySettings.show_batch_expiry===false||pharmacySettings.show_batch_expiry==="no"?"":`<br><small>Exp: ${esc(p.expiry_date||"-")}</small>`}${Number(p.discount_pct||0)>0?`<br><small>Discount ${Number(p.discount_pct).toFixed(1)}%</small>`:""}</td><td>${esc(p.batch_number||"-")}</td><td>${p.qty}</td><td>${money(p.mrp)}</td><td class="right">${money(p.qty*p.mrp*(1-Number(p.discount_pct||0)/100))}</td></tr>`).join("")}
- </table><p class="right">Subtotal: ${money(t.subtotal)}<br>Discount: ${money(t.discount)}<br><b>GST BREAKUP (included in rate)</b><br>CGST: ${money(getBillGstSplit(items).cgst)}<br>SGST: ${money(getBillGstSplit(items).sgst)}</p>
+ </table><p class="right">Subtotal: ${money(t.subtotal)}<br>Discount: ${money(t.discount)}<br>GST included: ${money(t.gst)}</p>
  <p class="right total">Total: ${money(t.total)}</p><p style="text-align:left;font-size:11px">Payment: ${esc(sale.payment_method||"-")}<br>Status: ${esc(sale.payment_status||"-")}${sale.payment_reference_number?`<br>UPI reference: ${esc(sale.payment_reference_number)}`:""}</p>${pharmacySettings.bill_terms?`<hr><p style="text-align:left;font-size:10px">${esc(pharmacySettings.bill_terms)}</p>`:""}<hr><p>${esc(footer)}</p>
  <script>window.onload=()=>window.print();<\/script></body></html>`);
  w.document.close();
@@ -2630,4 +2549,21 @@ async function loadDailyAuditHistory(){const host=$("dailyAuditHistory");if(!hos
  
 function editStaff(id){
  const m=(window._staffCache||[]).find(x=>x.id===id);if(!m)return;
- if(!canManage()||m.user_id==
+ if(!canManage()||m.user_id===currentUser.id)return notify("Owner/Admin access required. You cannot edit your own membership here.");
+ $("modalTitle").textContent="Edit staff details";
+ $("modalBody").innerHTML=`<form id="staffEditForm"><div class="form-grid">${field("Staff full name","full_name",m.full_name||"","required")}${field("Phone number","phone",m.phone||"")}</div><button class="btn full">Save staff details</button></form>`;
+ $("staffEditForm").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));try{const {data,error}=await sb.from("ms_members").update({full_name:d.full_name.trim(),phone:d.phone.trim()||null}).eq("id",id).eq("pharmacy_id",pharmacyId()).select("id");if(error)throw error;if(!data?.length)throw new Error("No row updated. Check the ms_members UPDATE RLS policy and pharmacy membership.");closeModal();notify("Staff details updated.");renderStaff();}catch(err){notify("Staff edit failed: "+err.message);}};
+ openModal();
+}
+async function deleteStaff(id){const m=(window._staffCache||[]).find(x=>x.id===id);if(!m)return;if(!canManage()||m.user_id===currentUser.id)return notify("You cannot delete your own staff membership.");if(!confirm(`Remove ${m.full_name||m.phone||"this staff member"} from this pharmacy? This removes only the pharmacy membership; it does not delete the Supabase Auth login or other pharmacy memberships.`))return;try{const {data,error}=await sb.from("ms_members").delete().eq("id",id).eq("pharmacy_id",pharmacyId()).select("id");if(error)throw error;if(!data?.length)throw new Error("No row deleted. Check the ms_members DELETE RLS policy.");notify("Staff membership removed.");renderStaff();}catch(err){notify("Staff delete failed: "+err.message);}}
+ 
+function openStaffCreate(){
+ if(!canManage())return notify("Owner/Admin access required.");
+ $("modalTitle").textContent="Create pharmacy staff account";
+ $("modalBody").innerHTML=`<form id="staffCreateForm"><div class="notice" style="margin-bottom:14px">Creates a separate login for this pharmacy only. Uses the deployed medical-staff-admin Edge Function on this Supabase project.</div>${field("Staff full name","name","","required")}${field("Staff email","email","","required","email")}${field("Temporary password (minimum 8 characters)","password","","required","password")}<div class="field"><label>Role</label><select name="role"><option value="admin">Admin</option><option value="manager">Manager</option><option value="pharmacist">Pharmacist</option><option value="cashier">Cashier</option></select></div><button class="btn full">Create Staff Account</button></form>`;
+ $("staffCreateForm").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const submit=e.target.querySelector('button[type="submit"],button:not([type])');if(submit){submit.disabled=true;submit.textContent="Creating staff...";}try{const {data:sessionData,error:sessionError}=await sb.auth.getSession();if(sessionError)throw sessionError;const accessToken=sessionData?.session?.access_token;if(!accessToken)throw new Error("Your login session expired. Sign in again.");const response=await fetch(STAFF_ADMIN_FUNCTION_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+accessToken},body:JSON.stringify({action:"create_staff",pharmacy_id:pharmacyId(),name:d.name,email:d.email,password:d.password,role:d.role})});let result={};try{result=await response.json();}catch(_){throw new Error("Edge Function returned an unreadable response. Check its deployment and logs.");}if(!response.ok||result?.error||result?.success===false)throw new Error(result?.error||("Edge Function request failed (HTTP "+response.status+")"));closeModal();notify("Staff account created successfully.");renderStaff();}catch(err){notify("Staff creation failed: "+(err?.message||String(err)));if(submit){submit.disabled=false;submit.textContent="Create Staff Account";}}};
+ openModal();
+}
+async function toggleStaff(id,active){if(!confirm((active?"Activate":"Deactivate")+" this staff account?"))return;const {error}=await sb.from("ms_members").update({is_active:active}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Staff status updated.");renderStaff();}
+async function changeStaffRole(id,role){if(currentMember?.role!=="owner"||!["admin","manager","pharmacist","cashier"].includes(role))return notify("Only the pharmacy owner can assign staff roles.");const {error}=await sb.from("ms_members").update({role}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Staff role updated.");}
+function showStaffPermissions(id){const m=(window._staffCache||[]).find(x=>x.id===id);if(!m)return;const perms=m.permissions||{};$("modalTitle").textContent="Staff permissions";$("modalBody").innerHTML=`<p><b>Role:</b> ${esc(m.role)}</p><pre style="white-space:pre-wrap;background:#f6f5fa;padding:12px;border-radius:8px;font-size:12px">${esc(JSON.stringify(perms,null,2))}</pre><p style="font-size:12px;color:var(--muted)">Permissi
