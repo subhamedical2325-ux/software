@@ -868,6 +868,102 @@ tbody tr:hover{transform:translateX(2px)}
 .main{margin-left:244px!important;min-width:0!important}
 @media(max-width:700px){#sidebar{width:248px!important;min-width:248px!important;transform:translateX(-100%)!important;transition:transform .22s ease!important;z-index:30!important}#sidebar.open{transform:translateX(0)!important;box-shadow:12px 0 35px #081e2e66!important}.main{margin-left:0!important}.topbar{padding-left:10px!important}}
 
+
+
+/* ADVANCED VISUAL LAYER — preserves the existing teal/navy/gold palette and all app logic */
+#sidebar{
+ width:264px!important;padding:18px 13px 16px!important;
+ background:linear-gradient(165deg,#102b42 0%,#123b53 58%,#0d293f 100%)!important;
+ box-shadow:10px 0 34px #102b421c;overflow-y:auto!important;overflow-x:hidden!important;
+ transition:width .28s cubic-bezier(.2,.8,.2,1),transform .28s ease!important
+}
+#sidebar:hover,#sidebar:focus-within{width:264px!important}
+#sidebar .side-brand{justify-content:flex-start!important;gap:12px!important;padding:5px 9px 20px!important;min-height:64px}
+#sidebar .side-brand>div:last-child{display:block!important}
+#sidebar .side-icon{width:43px!important;height:43px!important;border-radius:14px!important;background:linear-gradient(145deg,#12a79b,#087b80)!important;color:#fff!important;box-shadow:0 8px 18px #061e304d;font-size:22px!important}
+#sidebar .side-brand strong{font-size:13px;letter-spacing:.8px;color:#f5ffff}
+#sidebar .side-brand small{font-size:10px;color:#a9c8d2}
+#sidebar .nav-main-label{display:block!important;padding:19px 10px 8px;color:#80a7b8;font-size:9px;font-weight:900;letter-spacing:1.8px}
+#sidebar .nav-title{display:block!important}
+#sidebar .nav,#sidebar .nav-group-toggle{font-size:12px!important}
+#sidebar .nav{height:auto!important;min-height:40px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:11px!important;padding:9px 11px!important;margin:3px 0!important;border-radius:10px!important;color:#c5d9e1!important;white-space:normal!important}
+#sidebar .nav span{display:inline-grid!important;place-items:center!important;flex:0 0 25px!important;width:25px!important;height:25px!important;font-size:17px!important;line-height:1!important}
+#sidebar .nav b{font-size:12px!important}
+#sidebar .nav.active{background:linear-gradient(100deg,#087f83,#12627a)!important;color:#fff!important;box-shadow:0 5px 14px #061e3038}
+#sidebar .nav:hover{background:#ffffff13!important;color:#fff!important;transform:translateX(3px)}
+#sidebar .nav-group{margin:6px 0!important;border:1px solid #ffffff12!important;border-radius:13px!important;background:#ffffff08!important;overflow:hidden!important;transition:border-color .2s,background .2s}
+#sidebar .nav-group.open{border-color:#1ba69b66!important;background:#ffffff0d!important}
+#sidebar .nav-group-toggle{min-height:47px!important;padding:9px 11px!important;border-radius:12px!important;color:#edf8fa!important}
+#sidebar .nav-group-toggle .group-icon{width:29px!important;height:29px!important;flex:0 0 29px!important;display:grid!important;place-items:center!important;border-radius:9px!important;background:#ffffff12!important;font-size:17px!important}
+#sidebar .nav-group-toggle b{font-size:12px!important;letter-spacing:.15px!important}
+#sidebar .nav-group-toggle:hover,#sidebar .nav-group.open>.nav-group-toggle{background:#ffffff12!important}
+#sidebar .group-chevron{color:#8fb9c4;font-size:16px;transition:transform .25s}
+#sidebar .nav-submenu{display:grid!important;grid-template-rows:0fr!important;visibility:hidden!important;max-height:0!important;opacity:0!important;overflow:hidden!important;transition:max-height .3s ease,opacity .22s ease,padding .22s ease!important;padding:0 8px!important}
+#sidebar .nav-group.open .nav-submenu{grid-template-rows:1fr!important;visibility:visible!important;max-height:560px!important;opacity:1!important;padding:3px 8px 10px!important}
+#sidebar .nav-sub{min-height:37px!important;padding:7px 9px 7px 13px!important;margin:2px 0!important;font-size:11px!important;border-left:2px solid #ffffff20!important;border-radius:7px!important}
+#sidebar .nav-sub span{font-size:15px!important;flex-basis:23px!important}
+#sidebar .nav-sub.active{border-left-color:#ffc928!important;background:#087f8340!important}
+#sidebar .sidebar-footer{padding:17px 5px 5px!important;border-top:1px solid #ffffff18;margin-top:16px}
+#sidebar .sidebar-footer .btn{font-size:12px!important;background:#ffffff12!important;border:1px solid #ffffff25!important;color:#fff!important}
+.main{margin-left:264px!important;transition:margin-left .28s ease}
+.topbar{height:64px!important;padding:0 25px!important;box-shadow:0 4px 18px #153b5010}
+.content{padding:22px!important}
+.panel,.stat,.dash-module,.dash-lower-card{border-radius:15px!important;box-shadow:0 8px 26px #173b500b!important}
+.panel:hover,.stat:hover{box-shadow:0 14px 30px #173b5018!important}
+.btn{border-radius:10px!important;box-shadow:0 4px 12px #0c77751a;transition:transform .2s,box-shadow .2s,filter .2s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.04);box-shadow:0 8px 18px #0c777525}
+.nav-group-toggle:focus-visible,.nav:focus-visible,.btn:focus-visible{outline:2px solid #ffc928;outline-offset:2px}
+/* Login: keep original teal/navy palette, add a polished animated split-screen */
+body.auth-mode #authScreen{display:grid!important;grid-template-columns:minmax(0,1.12fr) minmax(390px,.88fr)!important;align-items:stretch!important;justify-content:stretch!important;padding:0!important;background:#f5f8fa!important;overflow:hidden}
+body.auth-mode .auth-visual{display:flex!important;min-height:100svh!important;position:relative!important;overflow:hidden!important;padding:clamp(28px,5vw,72px)!important;background:linear-gradient(145deg,#159e91 0%,#087f7b 58%,#075d68 100%)!important}
+body.auth-mode .auth-visual:before{width:680px;height:680px;right:-260px;top:-180px;left:auto;animation:loginOrbit 22s linear infinite}
+body.auth-mode .auth-visual:after{width:500px;height:500px;right:-110px;bottom:-270px;left:auto;top:auto;animation:loginOrbit 28s linear infinite reverse}
+body.auth-mode .auth-visual-inner{max-width:610px!important;animation:loginReveal .8s ease both}
+body.auth-mode .auth-art{max-width:520px!important;margin:0 0 28px!important;animation:loginFloat 5s ease-in-out infinite!important}
+body.auth-mode .auth-art svg{filter:drop-shadow(0 18px 22px #003f4030)}
+body.auth-mode .auth-visual-inner h2{font-size:clamp(32px,4vw,52px)!important;letter-spacing:-1.3px!important}
+body.auth-mode .auth-visual-inner p{font-size:14px!important}
+body.auth-mode .auth-visual-points span{backdrop-filter:blur(8px);box-shadow:0 5px 18px #003c3c16}
+body.auth-mode .auth-card{width:100%!important;max-width:600px!important;min-height:100svh!important;margin:0 auto!important;padding:clamp(28px,5vw,72px)!important;border:0!important;border-radius:0!important;box-shadow:-18px 0 55px #123c5010!important;animation:loginCardIn .65s cubic-bezier(.2,.8,.2,1) both}
+body.auth-mode .auth-card .brand{margin-bottom:36px!important;padding-bottom:18px!important;border-bottom:1px solid #e7eef0!important}
+body.auth-mode .auth-card .brand-logo{width:54px!important;height:54px!important;flex-basis:54px!important;border-radius:17px!important;font-size:25px!important;box-shadow:0 10px 22px #087f832b!important}
+body.auth-mode .auth-card .brand h1{font-size:23px!important}
+body.auth-mode .auth-card #loginForm:before{font-size:30px!important;letter-spacing:-.8px!important}
+body.auth-mode .auth-card #loginForm:after{font-size:12px!important;margin-bottom:25px!important}
+body.auth-mode .auth-card .field{margin-bottom:17px!important}
+body.auth-mode .auth-card .field label{font-size:12px!important}
+body.auth-mode .auth-card .field input{min-height:48px!important;border-radius:10px!important;padding:13px 14px!important;background:#fbfdfd!important}
+body.auth-mode .auth-card .field input:focus{border-color:#0b9289!important;box-shadow:0 0 0 4px #0b928916!important}
+body.auth-mode .auth-card .btn.full{min-height:49px!important;border-radius:10px!important;font-size:14px!important;box-shadow:0 8px 18px #087f8330!important}
+body.auth-mode .auth-tabs{padding:5px!important;border-radius:11px!important;background:#eef5f5!important}
+body.auth-mode .auth-tabs button{font-size:13px!important;border-radius:8px!important}
+body.auth-mode .auth-card #loginForm>div:last-child .btn{font-size:11px!important}
+@keyframes loginOrbit{to{transform:rotate(360deg)}}
+@keyframes loginFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes loginReveal{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:translateX(0)}}
+@keyframes loginCardIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){#sidebar{width:250px!important}.main{margin-left:250px!important}body.auth-mode #authScreen{grid-template-columns:1fr!important}body.auth-mode .auth-visual{min-height:300px!important;padding:25px!important}body.auth-mode .auth-art{max-width:310px!important;margin:0 auto 12px!important}body.auth-mode .auth-visual-inner h2{font-size:27px!important}body.auth-mode .auth-card{min-height:auto!important;max-width:100%!important;padding:32px 26px!important}}
+@media(max-width:700px){
+ #sidebar{width:270px!important;transform:translateX(-105%)!important;z-index:40!important;max-height:100dvh!important}
+ #sidebar.open{transform:translateX(0)!important;box-shadow:14px 0 40px #071e3266!important}
+ #sidebar:hover,#sidebar:focus-within{width:270px!important}
+ .main{margin-left:0!important}
+ .topbar{height:58px!important;padding:0 12px!important}
+ .content{padding:12px!important}
+ body.auth-mode #authScreen{display:flex!important;flex-direction:column!important;min-height:100svh!important;overflow:auto!important}
+ body.auth-mode .auth-visual{display:flex!important;min-height:205px!important;padding:17px 20px!important;align-items:flex-end!important}
+ body.auth-mode .auth-art{display:none!important}
+ body.auth-mode .auth-visual-inner h2{font-size:22px!important;margin:0 0 5px!important}
+ body.auth-mode .auth-visual-inner p{font-size:10px!important;line-height:1.5!important}
+ body.auth-mode .auth-visual-points{margin-top:9px!important}
+ body.auth-mode .auth-visual-points span{font-size:9px!important;padding:5px 8px!important}
+ body.auth-mode .auth-card{min-height:auto!important;padding:24px 20px 30px!important;box-shadow:0 -10px 30px #123c5010!important}
+ body.auth-mode .auth-card .brand{margin-bottom:20px!important}
+ body.auth-mode .auth-card #loginForm:before{font-size:24px!important}
+ body.auth-mode .auth-card .field input{min-height:44px!important}
+}
+@media(prefers-reduced-motion:reduce){#sidebar,*,*::before,*::after{animation:none!important;transition:none!important}}
+
 </style>
  </head>
  <body>
@@ -989,57 +1085,57 @@ tbody tr:hover{transform:translateX(2px)}
      <div><strong>MEDICAL SOFTWARE</strong><small>Pharmacy Workstation</small></div>
     </div>
     <div class="nav-main-label">MAIN MENU</div>
-    <button class="nav nav-dashboard active" title="Dashboard" data-page="dashboard" onclick="navigate('dashboard')"><span>▦</span><b>Dashboard</b></button>
+    <button class="nav nav-dashboard active" title="Dashboard" data-page="dashboard" onclick="navigate('dashboard')"><span>📊</span><b>Dashboard</b></button>
 
     <div class="nav-group" data-nav-group="sales">
-     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('sales')"><span class="group-icon">▣</span><b>Sales & Customers</b><span class="group-chevron">⌄</span></button>
+     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('sales')"><span class="group-icon">🧾</span><b>Sales & Customers</b><span class="group-chevron">⌄</span></button>
      <div class="nav-submenu">
-      <button class="nav nav-sub" title="POS Billing" data-page="billing" onclick="navigate('billing')"><span>▣</span>POS Billing</button>
-      <button class="nav nav-sub" title="Customers" data-page="customers" onclick="navigate('customers')"><span>♙</span>Customers</button>
+      <button class="nav nav-sub" title="POS Billing" data-page="billing" onclick="navigate('billing')"><span>💳</span>POS Billing</button>
+      <button class="nav nav-sub" title="Customers" data-page="customers" onclick="navigate('customers')"><span>👥</span>Customers</button>
      </div>
     </div>
     <div class="nav-group" data-nav-group="inventory">
-     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('inventory')"><span class="group-icon">▤</span><b>Inventory</b><span class="group-chevron">⌄</span></button>
+     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('inventory')"><span class="group-icon">💊</span><b>Inventory</b><span class="group-chevron">⌄</span></button>
      <div class="nav-submenu">
-      <button class="nav nav-sub" title="Medicine Inventory" data-page="products" onclick="navigate('products')"><span>▤</span>Medicine Stock</button>
-      <button class="nav nav-sub" title="CSV and Excel Product Import" data-page="productimport" onclick="navigate('productimport')"><span>⇧</span>CSV / Excel Import</button>
-      <button class="nav nav-sub" title="Rack, Shelf and Bin locations" data-page="rack" onclick="navigate('rack')"><span>▦</span>Rack / Shelf / Bin</button>
-      <button class="nav nav-sub" title="Item Master" data-page="itemmaster" onclick="navigate('itemmaster')"><span>▧</span>Item Master</button>
-      <button class="nav nav-sub" title="Barcode Scanner" data-page="scanner" onclick="navigate('scanner')"><span>⌗</span>Barcode Scanner</button>
-      <button class="nav nav-sub" title="Stock Audit" data-page="audit" onclick="navigate('audit')"><span>✓</span>Stock Audit</button>
+      <button class="nav nav-sub" title="Medicine Inventory" data-page="products" onclick="navigate('products')"><span>💊</span>Medicine Stock</button>
+      <button class="nav nav-sub" title="CSV and Excel Product Import" data-page="productimport" onclick="navigate('productimport')"><span>📥</span>CSV / Excel Import</button>
+      <button class="nav nav-sub" title="Rack, Shelf and Bin locations" data-page="rack" onclick="navigate('rack')"><span>🗄️</span>Rack / Shelf / Bin</button>
+      <button class="nav nav-sub" title="Item Master" data-page="itemmaster" onclick="navigate('itemmaster')"><span>📋</span>Item Master</button>
+      <button class="nav nav-sub" title="Barcode Scanner" data-page="scanner" onclick="navigate('scanner')"><span>▥</span>Barcode Scanner</button>
+      <button class="nav nav-sub" title="Stock Audit" data-page="audit" onclick="navigate('audit')"><span>🔍</span>Stock Audit</button>
      </div>
     </div>
     <div class="nav-group" data-nav-group="purchasing">
-     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('purchasing')"><span class="group-icon">⇩</span><b>Purchasing</b><span class="group-chevron">⌄</span></button>
+     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('purchasing')"><span class="group-icon">📦</span><b>Purchasing</b><span class="group-chevron">⌄</span></button>
      <div class="nav-submenu">
-      <button class="nav nav-sub" title="Suppliers" data-page="suppliers" onclick="navigate('suppliers')"><span>♧</span>Suppliers</button>
-      <button class="nav nav-sub" title="Purchase Entry" data-page="purchases" onclick="navigate('purchases')"><span>⇩</span>Purchase Entry</button>
-      <button class="nav nav-sub" title="Purchase Orders and GRN" data-page="purchaseorders" onclick="navigate('purchaseorders')"><span>▣</span>Purchase Orders / GRN</button>
-      <button class="nav nav-sub" title="Supplier Invoice OCR" data-page="billocr" onclick="navigate('billocr')"><span>▤</span>Bill OCR / Inward</button>
-      <button class="nav nav-sub" title="Manufacturers" data-page="manufacturers" onclick="navigate('manufacturers')"><span>⌂</span>Manufacturers</button>
+      <button class="nav nav-sub" title="Suppliers" data-page="suppliers" onclick="navigate('suppliers')"><span>🏭</span>Suppliers</button>
+      <button class="nav nav-sub" title="Purchase Entry" data-page="purchases" onclick="navigate('purchases')"><span>🛒</span>Purchase Entry</button>
+      <button class="nav nav-sub" title="Purchase Orders and GRN" data-page="purchaseorders" onclick="navigate('purchaseorders')"><span>📑</span>Purchase Orders / GRN</button>
+      <button class="nav nav-sub" title="Supplier Invoice OCR" data-page="billocr" onclick="navigate('billocr')"><span>🧾</span>Bill OCR / Inward</button>
+      <button class="nav nav-sub" title="Manufacturers" data-page="manufacturers" onclick="navigate('manufacturers')"><span>🏢</span>Manufacturers</button>
      </div>
     </div>
     <div class="nav-group" data-nav-group="reports">
-     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('reports')"><span class="group-icon">▥</span><b>Reports & Returns</b><span class="group-chevron">⌄</span></button>
+     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('reports')"><span class="group-icon">📈</span><b>Reports & Returns</b><span class="group-chevron">⌄</span></button>
      <div class="nav-submenu">
-      <button class="nav nav-sub" title="Sales and Inventory Reports" data-page="reports" onclick="navigate('reports')"><span>▥</span>Reports & Registers</button>
-      <button class="nav nav-sub" title="Sales and Vendor Returns" data-page="returns" onclick="navigate('returns')"><span>↩</span>Sales / Purchase Returns</button>
+      <button class="nav nav-sub" title="Sales and Inventory Reports" data-page="reports" onclick="navigate('reports')"><span>📊</span>Reports & Registers</button>
+      <button class="nav nav-sub" title="Sales and Vendor Returns" data-page="returns" onclick="navigate('returns')"><span>↩️</span>Sales / Purchase Returns</button>
      </div>
     </div>
     <div class="nav-group" data-nav-group="care">
-     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('care')"><span class="group-icon">✚</span><b>Patient Services</b><span class="group-chevron">⌄</span></button>
+     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('care')"><span class="group-icon">🩺</span><b>Patient Services</b><span class="group-chevron">⌄</span></button>
      <div class="nav-submenu">
-      <button class="nav nav-sub" title="Prescription Desk" data-page="prescriptions" onclick="navigate('prescriptions')"><span>✚</span>Prescription Desk</button>
-      <button class="nav nav-sub" title="Refill Reminders" data-page="reminders" onclick="navigate('reminders')"><span>◷</span>Refill Reminders</button>
+      <button class="nav nav-sub" title="Prescription Desk" data-page="prescriptions" onclick="navigate('prescriptions')"><span>📝</span>Prescription Desk</button>
+      <button class="nav nav-sub" title="Refill Reminders" data-page="reminders" onclick="navigate('reminders')"><span>⏰</span>Refill Reminders</button>
      </div>
     </div>
     <div class="nav-group" data-nav-group="admin">
-     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('admin')"><span class="group-icon">⚙</span><b>Administration</b><span class="group-chevron">⌄</span></button>
+     <button class="nav-group-toggle" type="button" aria-expanded="false" onclick="toggleNavGroup('admin')"><span class="group-icon">⚙️</span><b>Administration</b><span class="group-chevron">⌄</span></button>
      <div class="nav-submenu">
-      <button class="nav nav-sub" title="Cashbook and Expenses" data-page="cashbook" onclick="navigate('cashbook')"><span>₹</span>Cashbook & Expenses</button>
-      <button class="nav nav-sub" title="Staff and Roles" data-page="staff" onclick="navigate('staff')"><span>♙</span>Staff & Roles</button>
-      <button class="nav nav-sub hidden" id="pharmacyNav" title="Pharmacy Approval" data-page="pharmacies" onclick="navigate('pharmacies')"><span>⌂</span>Pharmacy Approval</button>
-      <button class="nav nav-sub" title="Settings" data-page="settings" onclick="navigate('settings')"><span>⚙</span>Settings</button>
+      <button class="nav nav-sub" title="Cashbook and Expenses" data-page="cashbook" onclick="navigate('cashbook')"><span>💰</span>Cashbook & Expenses</button>
+      <button class="nav nav-sub" title="Staff and Roles" data-page="staff" onclick="navigate('staff')"><span>👨‍⚕️</span>Staff & Roles</button>
+      <button class="nav nav-sub hidden" id="pharmacyNav" title="Pharmacy Approval" data-page="pharmacies" onclick="navigate('pharmacies')"><span>🏥</span>Pharmacy Approval</button>
+      <button class="nav nav-sub" title="Settings" data-page="settings" onclick="navigate('settings')"><span>⚙️</span>Settings</button>
      </div>
     </div>
     <div class="sidebar-footer"><button class="btn full" onclick="logout()"><span>↪</span> Sign Out</button></div>
@@ -2465,7 +2561,32 @@ function exportActiveReport(){
 function printActiveReport(){
  const host=$("reportOutput");if(!host)return;
  const w=window.open("","_blank","width=900,height=700");if(!w)return notify("Allow pop-ups to print reports.");
- w.document.write("<html><head><title>"+esc(activeReportTitle)+"</title><style>@page{size:"+((pharmacySettings.print_paper_size==="A4")?"A4":"A4")+";margin:12mm}body{font-family:Arial;padding:10px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:11px}h2{text-align:center}.no-print{display:none!important}\n</style></head><body><h2>"+esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")+" — "+esc(activeReportTitle)+"</h2>"+host.innerHTML+"<script>window.onload=()=>window.print();<\\/script></body></html>");w.document.close();
+ w.document.write("<html><head><title>"+esc(activeReportTitle)+"</title><style>@page{size:"+((pharmacySettings.print_paper_size==="A4")?"A4":"A4")+";margin:12mm}body{font-family:Arial;padding:10px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:11px}h2{text-align:center}.no-print{display:none!important}\n
+/* DESKTOP MODE ON SMALL SCREENS: keep the existing mobile layout intact,
+   but make the sidebar slide in/out instead of permanently occupying space. */
+@media (min-width:701px) and (max-width:1100px){
+  #sidebar{
+    position:fixed!important;
+    left:0!important;top:0!important;bottom:0!important;
+    width:264px!important;min-width:264px!important;
+    transform:translateX(-105%)!important;
+    transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s ease!important;
+    z-index:1000!important;
+  }
+  #sidebar.open{
+    transform:translateX(0)!important;
+    box-shadow:14px 0 40px #071e3266!important;
+  }
+  #sidebar:hover,#sidebar:focus-within{width:264px!important;min-width:264px!important}
+  .main{margin-left:0!important;min-width:0!important}
+  .mobile-menu{
+    display:inline-flex!important;align-items:center;justify-content:center;
+    width:38px;height:38px;border:1px solid #dce8ec!important;
+    background:#edf6f7!important;color:#123b53!important;
+    border-radius:10px!important;font-size:19px!important;cursor:pointer;
+  }
+}
+</style></head><body><h2>"+esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")+" — "+esc(activeReportTitle)+"</h2>"+host.innerHTML+"<script>window.onload=()=>window.print();<\\/script></body></html>");w.document.close();
 }
 async function renderStaff(){
  window.pharmacyStaff=[];
@@ -2631,6 +2752,20 @@ async function start(){
   }
  });
 }
+
+/* Navigation interaction polish: one expandable feature group at a time. */
+window.toggleNavGroup=function(group){
+ const el=document.querySelector(`#sidebar [data-nav-group="${group}"]`);
+ if(!el)return;
+ const opening=!el.classList.contains('open');
+ document.querySelectorAll('#sidebar .nav-group').forEach(other=>{
+  if(other!==el){other.classList.remove('open');other.querySelector('.nav-group-toggle')?.setAttribute('aria-expanded','false');}
+ });
+ el.classList.toggle('open',opening);
+ el.querySelector('.nav-group-toggle')?.setAttribute('aria-expanded',String(opening));
+};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('sidebar')?.classList.remove('open');});
+
 start();
 </script>
  </body>
