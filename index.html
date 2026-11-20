@@ -1958,50 +1958,85 @@ async function renderBilling(){
  renderCart();searchBill("");
 }
 let emergencyCart=[];
-let emergencyOptions=[];
+let emergencyBundles=[];
+let emergencyBundleItems=[];
+let emergencyBundleRowCount=0;
 function emergencyIsManager(){return !!canManage() && ["owner","admin","super_admin"].includes(currentMember?.role);}
 async function renderEmergencyBilling(){
  emergencyCart=[];
  const manager=emergencyIsManager();
- let {data,error}=await sb.from("ms_emergency_bill_items").select("id,product_id,keyword,fixed_price,is_active").eq("pharmacy_id",pharmacyId()).eq("is_active",true).order("keyword");
- if(error){$("pageContent").innerHTML=`${pageHead("Emergency Billing","Fast keyword-based billing")}<div class="panel"><div class="notice"><b>Database setup required</b><br>Create the Emergency Billing SQL table and policies first. Details: ${esc(error.message)}</div></div>`;return;}
- emergencyOptions=data||[];
- const productById=new Map(products.map(p=>[String(p.id),p]));
- const valid=emergencyOptions.filter(x=>productById.has(String(x.product_id)));
- $("pageContent").innerHTML=`${pageHead("Emergency Billing","Fast keyword billing · Fixed owner-approved prices · Normal stock deduction")}
- <div class="panel emergency-hero"><div><span class="pos-kicker">QUICK COUNTER WORKFLOW</span><h3>Enter a keyword. Set quantity. Generate bill.</h3><p class="feature-note">Only active items configured by the pharmacy owner or admin appear here.</p></div><div class="emergency-mark">⚡</div></div>
- ${manager?`<div class="panel"><div class="panel-head"><div><h3>Owner / Admin · Emergency item settings</h3><p class="feature-note">Staff accounts cannot see or edit these settings.</p></div></div><form id="emergencySetupForm" class="form-grid"><div class="field"><label>Medicine from inventory</label><select id="emergencyProduct" class="feature-input" required><option value="">Select medicine</option>${products.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} · Stock ${esc(p.stock)} · MRP ${money(p.mrp)}</option>`).join("")}</select></div><div class="field"><label>Shortcut keyword</label><input id="emergencyKeyword" class="feature-input" maxlength="40" placeholder="Example: cold" required></div><div class="field"><label>Fixed billing price (₹)</label><input id="emergencyPrice" class="feature-input" type="number" min="0.01" step="0.01" required></div><div class="field" style="align-self:end"><button class="btn" type="submit">Save emergency item</button></div></form><div id="emergencySettingsRows" class="table-wrap" style="margin-top:14px"></div></div>`:""}
- <div class="panel"><div class="panel-head"><div><h3>Quick medicine selection</h3><p class="feature-note">Search by your saved keyword or medicine name.</p></div><span class="badge green">Live inventory</span></div><div class="field"><label>Keyword / medicine</label><input id="emergencySearch" class="feature-input" placeholder="Type keyword e.g. cold" oninput="filterEmergencyOptions(this.value)" autocomplete="off"></div><div id="emergencyMatches" class="emergency-match-grid">${valid.length?"":"<div class='empty'>No active emergency items configured yet.</div>"}</div></div>
- <div class="panel"><div class="panel-head"><h3>Emergency bill items</h3><button class="btn light" onclick="clearEmergencyCart()">Clear</button></div><div id="emergencyCartRows" class="table-wrap"><div class="empty">Select a keyword item to start.</div></div><div class="emergency-total"><span>Bill total</span><strong id="emergencyTotal">₹0.00</strong></div><div class="feature-tools"><button class="btn full" onclick="completeEmergencySale()">Generate Emergency Bill · Save & Print</button></div></div>`;
- if(manager)renderEmergencySettings();
+ const [bundleRes,itemRes]=await Promise.all([
+  sb.from("ms_emergency_bundles").select("id,keyword,bundle_price,is_active").eq("pharmacy_id",pharmacyId()).eq("is_active",true).order("keyword"),
+  sb.from("ms_emergency_bundle_items").select("id,bundle_id,product_id,quantity").eq("pharmacy_id",pharmacyId())
+ ]);
+ if(bundleRes.error||itemRes.error){const err=bundleRes.error||itemRes.error;$ ("pageContent").innerHTML=`${pageHead("Emergency Billing","Keyword-based multi-medicine billing")}<div class="panel"><div class="notice"><b>Database setup required</b><br>Run the Emergency Billing bundle SQL supplied with this update. Details: ${esc(err.message)}</div></div>`;return;}
+ emergencyBundles=bundleRes.data||[];emergencyBundleItems=itemRes.data||[];
+ const byId=new Map(products.map(p=>[String(p.id),p]));
+ const valid=emergencyBundles.filter(b=>emergencyBundleItems.some(i=>String(i.bundle_id)===String(b.id)&&byId.has(String(i.product_id))));
+ $("pageContent").innerHTML=`${pageHead("Emergency Billing","Keyword packs · Multiple medicines · Fixed package price · Normal stock deduction")}
+ <div class="panel emergency-hero"><div><span class="pos-kicker">QUICK COUNTER WORKFLOW</span><h3>Search a keyword. Enter number of sets. Generate bill.</h3><p class="feature-note">Each keyword can contain multiple medicines with preset quantities and one package price. Only owner/admin can configure packs.</p></div><div class="emergency-mark">⚡</div></div>
+ ${manager?`<div class="panel"><div class="panel-head"><div><h3>Owner / Admin · Emergency keyword pack settings</h3><p class="feature-note">Example: Cold → Amoxy 500 × 2, Relief × 2, Coldact × 2, Rant × 2 · Package price ₹40. Staff cannot access these settings.</p></div></div>
+ <form id="emergencySetupForm">
+  <div class="form-grid"><div class="field"><label>Shortcut keyword</label><input id="emergencyKeyword" class="feature-input" maxlength="40" placeholder="cold" required></div><div class="field"><label>Package price (₹)</label><input id="emergencyPrice" class="feature-input" type="number" min="0.01" step="0.01" placeholder="40" required></div></div>
+  <div class="panel-head" style="margin-top:14px"><h3>Medicines included in this keyword</h3><button class="btn light" type="button" onclick="addEmergencySetupRow()">＋ Add medicine</button></div>
+  <div id="emergencySetupRows"></div>
+  <button class="btn" type="submit" style="margin-top:12px">Save keyword pack</button>
+ </form><div id="emergencySettingsRows" class="table-wrap" style="margin-top:16px"></div></div>`:""}
+ <div class="panel"><div class="panel-head"><div><h3>Quick keyword selection</h3><p class="feature-note">Enter a saved keyword such as cold to find its medicine pack.</p></div><span class="badge green">Live inventory</span></div><div class="field"><label>Keyword</label><input id="emergencySearch" class="feature-input" placeholder="Type keyword e.g. cold" oninput="filterEmergencyOptions(this.value)" autocomplete="off"></div><div id="emergencyMatches" class="emergency-match-grid">${valid.length?"":"<div class='empty'>No active keyword packs configured yet.</div>"}</div></div>
+ <div class="panel"><div class="panel-head"><h3>Emergency bill items</h3><button class="btn light" onclick="clearEmergencyCart()">Clear</button></div><div id="emergencyCartRows" class="table-wrap"><div class="empty">Search a keyword and add a pack.</div></div><div class="emergency-total"><span>Bill total</span><strong id="emergencyTotal">₹0.00</strong></div><div class="feature-tools"><button class="btn full" onclick="completeEmergencySale()">Generate Emergency Bill · Save & Print</button></div></div>`;
+ if(manager){addEmergencySetupRow();await renderEmergencySettings();}
  filterEmergencyOptions("");
 }
-function filterEmergencyOptions(q){
- const host=$("emergencyMatches");if(!host)return;
- q=String(q||"").trim().toLowerCase();
- const byId=new Map(products.map(p=>[String(p.id),p]));
- const rows=emergencyOptions.filter(x=>{const p=byId.get(String(x.product_id));return p&&(!q||String(x.keyword||"").toLowerCase().includes(q)||String(p.name||"").toLowerCase().includes(q));});
- host.innerHTML=rows.length?rows.map(x=>{const p=byId.get(String(x.product_id));return `<button class="emergency-item" type="button" onclick="addEmergencyItem('${esc(x.id)}')"><span class="emergency-item-icon">💊</span><span class="emergency-item-info"><b>${esc(p.name)}</b><small>Keyword: ${esc(x.keyword)} · Stock: ${esc(p.stock)}</small></span><strong>${money(x.fixed_price)}</strong></button>`;}).join(""):`<div class="empty">No matching emergency item found.</div>`;
+function addEmergencySetupRow(productId="",quantity=1){
+ const host=$("emergencySetupRows");if(!host)return;const rowId=++emergencyBundleRowCount;
+ const row=document.createElement("div");row.className="form-grid emergency-config-row";row.style.cssText="padding:10px;margin:8px 0;border:1px solid var(--line,#e5e7eb);border-radius:12px;align-items:end";
+ row.innerHTML=`<div class="field"><label>Medicine</label><select class="feature-input emergency-config-product" required><option value="">Select medicine from inventory</option>${products.map(p=>`<option value="${esc(p.id)}" ${String(p.id)===String(productId)?"selected":""}>${esc(p.name)} · Stock ${esc(p.stock)}</option>`).join("")}</select></div><div class="field"><label>Quantity in one set</label><input class="feature-input emergency-config-qty" type="number" min="1" step="1" value="${quantity}" required></div><div class="field" style="align-self:end"><button type="button" class="btn danger" onclick="this.closest('.emergency-config-row').remove()">Remove</button></div>`;
+ host.appendChild(row);
 }
-function addEmergencyItem(id){
- const cfg=emergencyOptions.find(x=>String(x.id)===String(id));if(!cfg)return;
- const p=products.find(x=>String(x.id)===String(cfg.product_id));if(!p)return notify("Medicine is no longer available in inventory.");
- const qtyItem=emergencyCart.find(x=>String(x.product_id)===String(p.id));
- if(!Number(p.stock)||Number(p.stock)<=0)return notify("This medicine is out of stock.");
- if(qtyItem){if(qtyItem.quantity+1>Number(p.stock))return notify("Insufficient stock.");qtyItem.quantity++;}
- else emergencyCart.push({config_id:cfg.id,product_id:p.id,product_name:p.name,batch_number:p.batch_number||null,quantity:1,fixed_price:Number(cfg.fixed_price),gst_percent:Number(p.gst_percent||0),purchase_price:Number(p.purchase_price||0),stock:Number(p.stock)});
- renderEmergencyCart();
+function filterEmergencyOptions(q){
+ const host=$("emergencyMatches");if(!host)return;q=String(q||"").trim().toLowerCase();
+ const byId=new Map(products.map(p=>[String(p.id),p]));
+ const rows=emergencyBundles.filter(b=>!q||String(b.keyword||"").toLowerCase().includes(q));
+ host.innerHTML=rows.length?rows.map(b=>{const items=emergencyBundleItems.filter(i=>String(i.bundle_id)===String(b.id)).map(i=>({i,p:byId.get(String(i.product_id))})).filter(x=>x.p);return `<div class="emergency-item" style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div class="emergency-item-info" style="flex:1;min-width:180px"><b>⚡ ${esc(b.keyword)}</b><small style="display:block">${items.map(x=>`${esc(x.p.name)} × ${Number(x.i.quantity)}`).join(" · ")}</small><small style="display:block">${items.map(x=>`${esc(x.p.name)} stock ${esc(x.p.stock)}`).join(" · ")}</small></div><div style="display:flex;gap:8px;align-items:center"><strong>${money(b.bundle_price)} / set</strong><input class="feature-input" id="emergencySets_${esc(b.id)}" type="number" min="1" step="1" value="1" style="width:72px" aria-label="Number of sets"><button class="btn" type="button" onclick="addEmergencyBundle('${esc(b.id)}')">Add</button></div></div>`;}).join(""):`<div class="empty">No matching keyword pack found.</div>`;
+}
+function addEmergencyBundle(id){
+ const b=emergencyBundles.find(x=>String(x.id)===String(id));if(!b)return;
+ const sets=Math.floor(Number($("emergencySets_"+id)?.value||1));if(!Number.isInteger(sets)||sets<1)return notify("Enter a valid number of sets.");
+ const components=emergencyBundleItems.filter(i=>String(i.bundle_id)===String(id));if(!components.length)return notify("This keyword pack has no medicines.");
+ const byId=new Map(products.map(p=>[String(p.id),p]));
+ const prepared=[];for(const c of components){const p=byId.get(String(c.product_id));if(!p)return notify("A medicine in this pack is missing from inventory.");const qty=Number(c.quantity)*sets;if(!Number.isInteger(qty)||qty<1)return notify("Invalid configured medicine quantity.");const already=emergencyCart.filter(x=>String(x.product_id)===String(p.id)).reduce((a,x)=>a+x.quantity,0);if(already+qty>Number(p.stock))return notify(`Insufficient stock for ${p.name}. Available: ${p.stock}.`);prepared.push({bundle_id:b.id,keyword:b.keyword,product_id:p.id,product_name:p.name,batch_number:p.batch_number||null,quantity:qty,gst_percent:Number(p.gst_percent||0),purchase_price:Number(p.purchase_price||0),stock:Number(p.stock),bundle_price:Number(b.bundle_price),bundle_sets:sets});}
+ const totalUnits=components.reduce((a,c)=>a+Number(c.quantity),0);const unitRate=Number(b.bundle_price)/totalUnits;
+ prepared.forEach(x=>{x.fixed_price=unitRate;emergencyCart.push(x);});renderEmergencyCart();notify(`${b.keyword} pack added: ${sets} set(s).`);
 }
 function setEmergencyQty(id,value){const x=emergencyCart.find(a=>String(a.product_id)===String(id));if(!x)return;const q=Math.floor(Number(value));if(!Number.isFinite(q)||q<1)return notify("Enter a valid quantity.");if(q>x.stock)return notify("Quantity exceeds available stock.");x.quantity=q;renderEmergencyCart();}
-function renderEmergencyCart(){const host=$("emergencyCartRows");if(!host)return;host.innerHTML=emergencyCart.length?`<table><thead><tr><th>Medicine</th><th>Batch</th><th>Qty</th><th>Fixed rate</th><th>Amount</th><th></th></tr></thead><tbody>${emergencyCart.map(x=>`<tr><td><b>${esc(x.product_name)}</b></td><td>${esc(x.batch_number||"-")}</td><td><input class="feature-input" style="width:76px" type="number" min="1" max="${x.stock}" value="${x.quantity}" onchange="setEmergencyQty('${esc(x.product_id)}',this.value)"></td><td>${money(x.fixed_price)}</td><td><b>${money(x.fixed_price*x.quantity)}</b></td><td><button class="btn danger" onclick="removeEmergencyItem('${esc(x.product_id)}')">Remove</button></td></tr>`).join("")}</tbody></table>`:`<div class="empty">Select a keyword item to start.</div>`;const total=emergencyCart.reduce((a,x)=>a+x.quantity*x.fixed_price,0);if($("emergencyTotal"))$("emergencyTotal").textContent=money(total);}
-function removeEmergencyItem(id){emergencyCart=emergencyCart.filter(x=>String(x.product_id)!==String(id));renderEmergencyCart();}
+function renderEmergencyCart(){const host=$("emergencyCartRows");if(!host)return;host.innerHTML=emergencyCart.length?`<table><thead><tr><th>Keyword pack</th><th>Medicine</th><th>Batch</th><th>Qty</th><th>Amount</th></tr></thead><tbody>${emergencyCart.map(x=>`<tr><td>${esc(x.keyword)}</td><td><b>${esc(x.product_name)}</b></td><td>${esc(x.batch_number||"-")}</td><td>${x.quantity}</td><td><b>${money(x.fixed_price*x.quantity)}</b></td></tr>`).join("")}</tbody></table>`:`<div class="empty">Search a keyword and add a pack.</div>`;const total=emergencyCart.reduce((a,x)=>a+x.quantity*x.fixed_price,0);if($("emergencyTotal"))$("emergencyTotal").textContent=money(total);}
 function clearEmergencyCart(){emergencyCart=[];renderEmergencyCart();}
-async function renderEmergencySettings(){const host=$("emergencySettingsRows");if(!host)return;const {data,error}=await sb.from("ms_emergency_bill_items").select("id,product_id,keyword,fixed_price,is_active").eq("pharmacy_id",pharmacyId()).order("keyword");if(error){host.textContent=error.message;return;}const byId=new Map(products.map(p=>[String(p.id),p]));host.innerHTML=data?.length?`<table><thead><tr><th>Keyword</th><th>Medicine</th><th>Fixed price</th><th>Status</th><th>Action</th></tr></thead><tbody>${data.map(x=>`<tr><td><b>${esc(x.keyword)}</b></td><td>${esc(byId.get(String(x.product_id))?.name||"Medicine unavailable")}</td><td>${money(x.fixed_price)}</td><td>${x.is_active?"Active":"Disabled"}</td><td><button class="btn light" onclick="toggleEmergencyItem('${esc(x.id)}',${!x.is_active})">${x.is_active?"Disable":"Enable"}</button></td></tr>`).join("")}</tbody></table>`:`<div class="empty">No emergency items saved.</div>`;}
-async function saveEmergencyItem(e){e.preventDefault();if(!emergencyIsManager())return notify("Only owner/admin can change emergency settings.");const productId=$("emergencyProduct").value,keyword=$("emergencyKeyword").value.trim().toLowerCase(),price=Number($("emergencyPrice").value);const p=products.find(x=>String(x.id)===String(productId));if(!p||!keyword||!Number.isFinite(price)||price<=0)return notify("Enter medicine, keyword and a valid fixed price.");if(price+0.001<Number(p.purchase_price||0)*1.2)return notify("Fixed price must preserve the 20% minimum purchase-cost margin.");const payload={pharmacy_id:pharmacyId(),product_id:productId,keyword,fixed_price:price,is_active:true};const {error}=await sb.from("ms_emergency_bill_items").upsert(payload,{onConflict:"pharmacy_id,keyword"});if(error)return notify("Save failed: "+error.message);$("emergencySetupForm").reset();notify("Emergency item saved.");await renderEmergencyBilling();}
-async function toggleEmergencyItem(id,active){if(!emergencyIsManager())return notify("Only owner/admin can change emergency settings.");const {error}=await sb.from("ms_emergency_bill_items").update({is_active:active}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);await renderEmergencyBilling();}
+async function renderEmergencySettings(){
+ const host=$("emergencySettingsRows");if(!host)return;
+ const [br,ir]=await Promise.all([sb.from("ms_emergency_bundles").select("id,keyword,bundle_price,is_active").eq("pharmacy_id",pharmacyId()).order("keyword"),sb.from("ms_emergency_bundle_items").select("bundle_id,product_id,quantity").eq("pharmacy_id",pharmacyId())]);
+ if(br.error||ir.error){host.textContent=(br.error||ir.error).message;return;}
+ const byId=new Map(products.map(p=>[String(p.id),p]));
+ host.innerHTML=br.data?.length?`<table><thead><tr><th>Keyword</th><th>Medicines and set quantities</th><th>Package price</th><th>Status</th><th>Action</th></tr></thead><tbody>${br.data.map(b=>{const names=(ir.data||[]).filter(i=>String(i.bundle_id)===String(b.id)).map(i=>`${esc(byId.get(String(i.product_id))?.name||"Medicine unavailable")} × ${i.quantity}`).join("<br>");return `<tr><td><b>${esc(b.keyword)}</b></td><td>${names}</td><td>${money(b.bundle_price)}</td><td>${b.is_active?"Active":"Disabled"}</td><td><button class="btn light" onclick="toggleEmergencyBundle('${esc(b.id)}',${!b.is_active})">${b.is_active?"Disable":"Enable"}</button></td></tr>`;}).join("")}</tbody></table>`:`<div class="empty">No keyword packs saved.</div>`;
+}
+async function saveEmergencyItem(e){
+ e.preventDefault();if(!emergencyIsManager())return notify("Only owner/admin can change emergency settings.");
+ const keyword=$("emergencyKeyword").value.trim().toLowerCase(),price=Number($("emergencyPrice").value);
+ const rows=[...document.querySelectorAll("#emergencySetupRows .emergency-config-row")].map(r=>({product_id:r.querySelector(".emergency-config-product")?.value,quantity:Math.floor(Number(r.querySelector(".emergency-config-qty")?.value))})).filter(x=>x.product_id);
+ if(!keyword||!Number.isFinite(price)||price<=0||!rows.length)return notify("Enter keyword, package price and at least one medicine.");
+ if(rows.some(x=>!Number.isInteger(x.quantity)||x.quantity<1))return notify("Each medicine quantity must be at least 1.");
+ if(new Set(rows.map(x=>String(x.product_id))).size!==rows.length)return notify("Select each medicine only once in a keyword pack.");
+ const {data:bundle,error}=await sb.from("ms_emergency_bundles").upsert({pharmacy_id:pharmacyId(),keyword,bundle_price:price,is_active:true},{onConflict:"pharmacy_id,keyword"}).select("id").single();
+ if(error)return notify("Could not save keyword pack: "+error.message);
+ const {error:deleteError}=await sb.from("ms_emergency_bundle_items").delete().eq("pharmacy_id",pharmacyId()).eq("bundle_id",bundle.id);if(deleteError)return notify("Pack saved but old medicine list could not be replaced: "+deleteError.message);
+ const payload=rows.map(x=>({pharmacy_id:pharmacyId(),bundle_id:bundle.id,product_id:x.product_id,quantity:x.quantity}));
+ const {error:itemError}=await sb.from("ms_emergency_bundle_items").insert(payload);if(itemError)return notify("Pack created but medicine list failed: "+itemError.message);
+ notify("Keyword pack saved with multiple medicines.");await renderEmergencyBilling();
+}
+async function toggleEmergencyBundle(id,active){if(!emergencyIsManager())return notify("Only owner/admin can change emergency settings.");const {error}=await sb.from("ms_emergency_bundles").update({is_active:active}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);await renderEmergencyBilling();}
 async function completeEmergencySale(){
- if(!emergencyCart.length)return notify("Add at least one emergency item.");
- for(const x of emergencyCart){const p=products.find(z=>String(z.id)===String(x.product_id));if(!p||x.quantity>Number(p.stock))return notify("Stock changed. Refresh and try again.");if(x.fixed_price+0.001<Number(p.purchase_price||0)*1.2)return notify("A fixed price is below the minimum permitted margin. Ask the owner to update it.");}
+ if(!emergencyCart.length)return notify("Add at least one keyword pack.");
+ const quantities=new Map();for(const x of emergencyCart)quantities.set(String(x.product_id),(quantities.get(String(x.product_id))||0)+x.quantity);
+ for(const [id,qty] of quantities){const p=products.find(z=>String(z.id)===id);if(!p||qty>Number(p.stock))return notify(`Stock changed for ${p?.name||"a medicine"}. Refresh and try again.`);}
  const subtotal=emergencyCart.reduce((a,x)=>a+x.quantity*x.fixed_price,0);
  const gst=emergencyCart.reduce((a,x)=>a+(x.quantity*x.fixed_price*Number(x.gst_percent||0)/(100+Number(x.gst_percent||0))),0);
  const invoice="SM-EM-"+Date.now();
@@ -2010,11 +2045,11 @@ async function completeEmergencySale(){
   const {data:created,error}=await sb.from("ms_sales").insert(sale).select().single();if(error)throw error;
   const lines=emergencyCart.map(x=>({pharmacy_id:pharmacyId(),sale_id:created.id,product_id:x.product_id,product_name:x.product_name,batch_number:x.batch_number,quantity:x.quantity,unit_price:x.fixed_price,gst_percent:x.gst_percent,line_total:x.quantity*x.fixed_price}));
   const {error:itemError}=await sb.from("ms_sale_items").insert(lines);if(itemError)throw itemError;
-  for(const x of emergencyCart){const {error:stockError}=await sb.from("ms_products").update({stock:Number(x.stock)-x.quantity}).eq("id",x.product_id).eq("pharmacy_id",pharmacyId());if(stockError)throw stockError;}
+  for(const [id,qty] of quantities){const p=products.find(z=>String(z.id)===id);const {error:stockError}=await sb.from("ms_products").update({stock:Number(p.stock)-qty}).eq("id",id).eq("pharmacy_id",pharmacyId());if(stockError)throw stockError;}
   const billItems=emergencyCart.map(x=>({...x,id:x.product_id,name:x.product_name,qty:x.quantity,mrp:x.fixed_price,unit:"PCS"}));
   window.lastCompletedBill={sale:created,items:billItems,totals:{subtotal,gst,discount:0,total:subtotal},customerPhone:"",customerName:"Walk-in"};
   printInvoice(created,billItems,{subtotal,gst,discount:0,total:subtotal},"ORIGINAL");
-  emergencyCart=[];await refreshData();await renderEmergencyBilling();notify("Emergency bill saved. Inventory stock updated.");
+  emergencyCart=[];await refreshData();await renderEmergencyBilling();notify("Emergency bill saved. All included medicine stocks updated.");
  }catch(err){notify("Emergency billing error: "+err.message+" Check the sales records before retrying.");}
 }
 
