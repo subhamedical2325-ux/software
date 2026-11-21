@@ -1798,15 +1798,26 @@ function rackLocationModal(id=null){
 }
  
 function stockUnitFactor(p, selectedUnit=p?.unit){
- const base=String(p?.stock_unit||p?.unit||"PCS").trim().toLowerCase(), chosen=String(selectedUnit||base).trim().toLowerCase();
+ // Inventory stock and saved MRP are stored in the medicine's original stock unit.
+ // Example: 1 Strip × 15 tablets; Tablet sale uses 1/15 of a strip per tablet.
+ const base=String(p?.stock_unit||p?.unit||"PCS").trim().toLowerCase();
+ const chosen=String(selectedUnit||base).trim().toLowerCase();
  const pack=Math.max(1,Number(p?.tablets_per_strip)||1);
  if(base==="strip"&&chosen==="tablet")return 1/pack;
  if(base==="tablet"&&chosen==="strip")return pack;
  return 1;
 }
 function stockAvailableForUnit(p, selectedUnit=p?.unit){return Math.max(0,Number(p?.stock)||0)/stockUnitFactor(p,selectedUnit);}
-function cartRate(p){return Number(p?.mrp||0)*stockUnitFactor(p,p?.unit);}
-function cartPurchaseCost(p){return Number(p?.purchase_price||0)*stockUnitFactor(p,p?.unit);}
+function cartRate(p){return Number((Number(p?.mrp||0)*stockUnitFactor(p,p?.unit)).toFixed(2));}
+function cartPurchaseCost(p){return Number((Number(p?.purchase_price||0)*stockUnitFactor(p,p?.unit)).toFixed(4));}
+function updateStripPricePreview(){
+ const unit=String($("unit")?.value||"PCS").trim().toLowerCase();
+ const mrp=Number($("mrp")?.value||0),pack=Math.max(1,Number($("tablets_per_strip")?.value)||1);
+ const host=$("stripPricePreview");if(!host)return;
+ if(unit==="strip")host.textContent=`1 Strip = ${pack} Tablets · 1 Tablet MRP = ₹${(mrp/pack).toFixed(2)} · 2 Tablets = ₹${(mrp*2/pack).toFixed(2)} (before discount)`;
+ else if(unit==="tablet")host.textContent=`MRP is entered per Tablet. 1 Strip equivalent (${pack} Tablets) = ₹${(mrp*pack).toFixed(2)}.`;
+ else host.textContent=`MRP is entered per ${$("unit")?.value||"unit"}.`;
+}
 function stockDisplay(p){
  const n=Math.max(0,Number(p?.stock)||0),u=String(p?.unit||"PCS");
  if(u.toLowerCase()==="strip"){
@@ -1857,15 +1868,17 @@ function productModal(p=null){
  <div class="field image-upload-card"><label>Medicine photo · upload from phone</label><label class="grn-upload-button" for="productPhotoFile"><span class="grn-upload-icon">＋</span><span><b>Choose medicine photo</b><small>Gallery · Camera · JPG · PNG · WEBP · Up to 5 MB</small></span></label><input id="productPhotoFile" class="grn-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/avif" capture="environment" onchange="previewProductPhoto(this)"><input type="hidden" name="image_url" id="productImageUrl" value="${esc(p?.image_url||"")}"><div id="productPhotoPreview" class="grn-file-preview">${p?.image_url?`<img src="${esc(p.image_url)}" style="max-width:92px;max-height:92px;object-fit:contain;border-radius:10px"> Current photo`:'No photo selected'}</div></div>
  ${field("Batch number","batch_number",p?.batch_number)}
  ${field("Expiry date","expiry_date",p?.expiry_date,"","date")}
- ${field("MRP","mrp",p?.mrp??0,"required","number")}
+ <div class="field"><label id="mrpUnitLabel">MRP (₹ per ${esc(p?.unit||"unit")})</label><input id="mrp" name="mrp" type="number" min="0" step="0.01" value="${esc(p?.mrp??0)}" required><small>Enter the printed MRP for the selected stock unit. For Strip, enter the full strip MRP.</small></div>
  ${field("Purchase price","purchase_price",p?.purchase_price??0,"","number")}
   ${field("GST %","gst_percent",p?.gst_percent??0,"","number")}
  ${field("Opening stock quantity","stock",p?.stock??0,"required","number")}
  ${field("Stock unit (Strip / Tablet / PCS)","unit",p?.unit||"PCS")}
  ${field("Tablets in 1 strip","tablets_per_strip",p?.tablets_per_strip??15,"","number")}
- <div class="field" style="grid-column:1/-1;background:#eef6ff;border:1px solid #cfe3ff;border-radius:10px;padding:10px;font-size:12px;color:#245078"><b>Stock conversion:</b> If Unit is Strip and you enter 1, with 15 tablets per strip, inventory keeps 1 strip = 15 tablets. Selling 2 tablets leaves 13 tablets. MRP and purchase price are entered per stock unit.</div>
+ <div class="field" style="grid-column:1/-1;background:#eef6ff;border:1px solid #cfe3ff;border-radius:10px;padding:10px;font-size:12px;color:#245078"><b>Stock & price calculator</b><div id="stripPricePreview" style="margin-top:6px;font-weight:700">Enter unit, MRP and tablets per strip to see the calculation.</div><small style="display:block;margin-top:5px">Example: Strip MRP ₹150 ÷ 15 tablets = ₹10.00 per tablet. Selling 2 tablets = ₹20.00; stock reduces by 2 tablets. Inventory quantity remains tracked in the original stock unit.</small></div>
  </div><br><button class="btn full">Save medicine</button></form>`;
  [$("name"),$("generic_name")].filter(Boolean).forEach(el=>el.addEventListener("input",updateDrugScheduleSuggestion));
+ [$("unit"),$("mrp"),$("tablets_per_strip")].filter(Boolean).forEach(el=>el.addEventListener("input",updateStripPricePreview));
+ updateStripPricePreview();
  $("productForm").onsubmit=async e=>{
   e.preventDefault();
   const d=Object.fromEntries(new FormData(e.target));
@@ -1893,7 +1906,8 @@ function productModal(p=null){
 async function previewProductPhoto(input){const file=input?.files?.[0],host=$("productPhotoPreview");if(!host)return;if(!file){host.textContent="No photo selected";return;}if(!/^image\/(jpeg|png|webp|avif)$/.test(file.type)||file.size>5*1024*1024){input.value="";host.textContent="Choose JPG, PNG, WEBP or AVIF under 5 MB.";return;}const url=URL.createObjectURL(file);host.innerHTML=`<img src="${url}" alt="Medicine preview" style="max-width:100px;max-height:100px;object-fit:contain;border-radius:12px"><b>${esc(file.name)}</b>`;}
 async function uploadProductPhoto(file,productKey){if(!pharmacyId())throw new Error("Select a pharmacy workspace first.");if(file.size>5*1024*1024)throw new Error("Image must be under 5 MB.");const ext=({"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/avif":"avif"})[file.type];if(!ext)throw new Error("Unsupported image type.");const path=`${pharmacyId()}/${productKey}-${crypto.randomUUID()}.${ext}`;const {error}=await sb.storage.from("ms-product-images").upload(path,file,{upsert:false,contentType:file.type,cacheControl:"3600"});if(error)throw error;const {data}=sb.storage.from("ms-product-images").getPublicUrl(path);if(!data?.publicUrl)throw new Error("Could not create image URL.");return data.publicUrl;}
 function field(label,name,value="",required="",type="text"){
- return `<div class="field"><label>${label}</label><input id="${name}" name="${name}" type="${type}" value="${esc(value??"")}" ${required}></div>`;
+ const numericStep=type==="number"?' step="0.01"':'';
+ return `<div class="field"><label>${label}</label><input id="${name}" name="${name}" type="${type}" value="${esc(value??"")}"${numericStep} ${required}></div>`;
 }
 function editProduct(id){productModal(products.find(p=>p.id===id));}
 async function deleteProduct(id){
