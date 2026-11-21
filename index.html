@@ -1797,18 +1797,49 @@ function rackLocationModal(id=null){
  $("rackLocationForm").onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),d={pharmacy_id:pharmacyId(),product_id:f.get("product_id"),rack_id:f.get("rack_id"),shelf_code:f.get("shelf_code"),bin_code:f.get("bin_code"),location_note:f.get("location_note"),is_primary:f.get("is_primary")==="on"};try{const q=old?sb.from("ms_product_locations").update(d).eq("id",old.id).eq("pharmacy_id",pharmacyId()):sb.from("ms_product_locations").insert(d);const {error}=await q;if(error)throw error;closeModal();await renderRackSetup();notify("Medicine location saved.");}catch(err){notify(err.message);}};openModal();
 }
  
+function stockUnitFactor(p, selectedUnit=p?.unit){
+ const base=String(p?.stock_unit||p?.unit||"PCS").trim().toLowerCase(), chosen=String(selectedUnit||base).trim().toLowerCase();
+ const pack=Math.max(1,Number(p?.tablets_per_strip)||1);
+ if(base==="strip"&&chosen==="tablet")return 1/pack;
+ if(base==="tablet"&&chosen==="strip")return pack;
+ return 1;
+}
+function stockAvailableForUnit(p, selectedUnit=p?.unit){return Math.max(0,Number(p?.stock)||0)/stockUnitFactor(p,selectedUnit);}
+function cartRate(p){return Number(p?.mrp||0)*stockUnitFactor(p,p?.unit);}
+function cartPurchaseCost(p){return Number(p?.purchase_price||0)*stockUnitFactor(p,p?.unit);}
+function stockDisplay(p){
+ const n=Math.max(0,Number(p?.stock)||0),u=String(p?.unit||"PCS");
+ if(u.toLowerCase()==="strip"){
+  const pack=Math.max(1,Number(p?.tablets_per_strip)||1),whole=Math.floor(n+1e-8),remaining=Math.round((n-whole)*pack);
+  return `${Number(n.toFixed(3))} Strip${n===1?"":"s"} · ${Math.round(n*pack)} Tablets`;
+ }
+ if(u.toLowerCase()==="tablet")return `${Number(n.toFixed(3))} Tablets`;
+ return `${Number(n.toFixed(3))} ${u}`;
+}
 function fillProductRows(list){
  $("productRows").innerHTML=list.length?list.map(p=>`<tr>
  <td><b>${esc(p.name)}</b><br><small>${esc(p.barcode||"")}</small></td>
  <td>${esc(p.generic_name||"-")}</td><td>${esc(p.brand||"-")}</td><td>${esc(p.batch_number||"-")}</td>
  <td>${esc(p.expiry_date||"-")}</td><td>${money(p.mrp)}</td><td>${money(p.purchase_price)}</td>
- <td>${p.stock} ${esc(p.unit||"PCS")}</td><td>${esc(p.hsn_code||"-")}</td><td>${safeWebUrl(p.image_url)?`<a href="${esc(safeWebUrl(p.image_url))}" target="_blank" rel="noopener">View</a>`:"-"}</td>
+ <td>${esc(stockDisplay(p))}</td><td>${esc(p.hsn_code||"-")}</td><td>${safeWebUrl(p.image_url)?`<a href="${esc(safeWebUrl(p.image_url))}" target="_blank" rel="noopener">View</a>`:"-"}</td>
  <td>${canManage()?`<button class="btn light" onclick="editProduct('${p.id}')">Edit</button> <button class="btn danger" onclick="deleteProduct('${p.id}')">Delete</button>`:"-"}</td>
  </tr>`).join(""):`<tr><td colspan="11" class="empty">No medicines found.</td></tr>`;
 }
 function filterProducts(q){
  q=q.toLowerCase();
  fillProductRows(products.filter(p=>[p.name,p.generic_name,p.brand,p.barcode,p.batch_number].join(" ").toLowerCase().includes(q)));
+}
+function updateDrugScheduleSuggestion(){
+ const name=String($("name")?.value||"").trim().toLowerCase();
+ const generic=String($("generic_name")?.value||"").trim().toLowerCase();
+ const current=String($("drug_schedule")?.value||"").trim();
+ const host=$("drugScheduleSuggestion");if(!host)return;
+ const matches=(products||[]).filter(x=>String(x.drug_schedule||"").trim() && ((name && String(x.name||"").trim().toLowerCase()===name) || (generic && String(x.generic_name||"").trim().toLowerCase()===generic)));
+ const schedules=[...new Set(matches.map(x=>String(x.drug_schedule).trim()))];
+ if(current){host.textContent=`Selected: ${current}. Verify this classification against the manufacturer's pack and current regulations.`;return;}
+ if(schedules.length===1){host.textContent=`Possible match from your saved inventory: ${schedules[0]}. Select it only after verifying the medicine pack.`;}
+ else if(schedules.length>1){host.textContent=`Saved matches have different schedules (${schedules.join(", ")}). Check the pack and select the correct one.`;}
+ else{host.textContent="No verified saved match. Check the medicine pack / official classification and select the schedule manually.";}
 }
 function productModal(p=null){
  if(!canManage())return notify("You do not have permission.");
@@ -1818,9 +1849,10 @@ function productModal(p=null){
  <div class="form-grid">
  ${field("Medicine name","name",p?.name,"required")}
  ${field("Generic name","generic_name",p?.generic_name,"","text")}
- ${field("Brand / Manufacturer","brand",p?.brand)}
+ <div class="field"><label>Brand / Manufacturer</label><input id="brand" name="brand" list="manufacturerSuggestions" value="${esc(p?.brand||"")}" placeholder="Type or choose manufacturer"><datalist id="manufacturerSuggestions">${[...new Set(products.map(x=>String(x.brand||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b)).map(x=>`<option value="${esc(x)}"></option>`).join("")}</datalist><small>Choose an existing manufacturer or type a new name.</small></div>
  ${field("Barcode","barcode",p?.barcode)}
  ${field("Category","category",p?.category)}
+ <div class="field"><label>Drug Schedule</label><select id="drug_schedule" name="drug_schedule" class="feature-input" onchange="updateDrugScheduleSuggestion()"><option value="">Select schedule</option>${["Not Scheduled","Schedule G","Schedule H","Schedule H1","Schedule X"].map(v=>`<option value="${v}" ${String(p?.drug_schedule||"").toLowerCase()===v.toLowerCase()?"selected":""}>${v}</option>`).join("")}</select><small id="drugScheduleSuggestion" class="feature-note">${p?.drug_schedule?`Saved schedule: ${esc(p.drug_schedule)}. Verify against the medicine pack.`:"Suggestions use exact matches from your saved medicine list. Always verify the pack / prescription."}</small></div>
  ${field("HSN code","hsn_code",p?.hsn_code||"")}
  <div class="field image-upload-card"><label>Medicine photo · upload from phone</label><label class="grn-upload-button" for="productPhotoFile"><span class="grn-upload-icon">＋</span><span><b>Choose medicine photo</b><small>Gallery · Camera · JPG · PNG · WEBP · Up to 5 MB</small></span></label><input id="productPhotoFile" class="grn-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/avif" capture="environment" onchange="previewProductPhoto(this)"><input type="hidden" name="image_url" id="productImageUrl" value="${esc(p?.image_url||"")}"><div id="productPhotoPreview" class="grn-file-preview">${p?.image_url?`<img src="${esc(p.image_url)}" style="max-width:92px;max-height:92px;object-fit:contain;border-radius:10px"> Current photo`:'No photo selected'}</div></div>
  ${field("Batch number","batch_number",p?.batch_number)}
@@ -1828,10 +1860,12 @@ function productModal(p=null){
  ${field("MRP","mrp",p?.mrp??0,"required","number")}
  ${field("Purchase price","purchase_price",p?.purchase_price??0,"","number")}
   ${field("GST %","gst_percent",p?.gst_percent??0,"","number")}
- ${field("Stock","stock",p?.stock??0,"required","number")}
- ${field("Unit","unit",p?.unit||"PCS")}
- ${field("Tablets per strip","tablets_per_strip",p?.tablets_per_strip??1,"","number")}
+ ${field("Opening stock quantity","stock",p?.stock??0,"required","number")}
+ ${field("Stock unit (Strip / Tablet / PCS)","unit",p?.unit||"PCS")}
+ ${field("Tablets in 1 strip","tablets_per_strip",p?.tablets_per_strip??15,"","number")}
+ <div class="field" style="grid-column:1/-1;background:#eef6ff;border:1px solid #cfe3ff;border-radius:10px;padding:10px;font-size:12px;color:#245078"><b>Stock conversion:</b> If Unit is Strip and you enter 1, with 15 tablets per strip, inventory keeps 1 strip = 15 tablets. Selling 2 tablets leaves 13 tablets. MRP and purchase price are entered per stock unit.</div>
  </div><br><button class="btn full">Save medicine</button></form>`;
+ [$("name"),$("generic_name")].filter(Boolean).forEach(el=>el.addEventListener("input",updateDrugScheduleSuggestion));
  $("productForm").onsubmit=async e=>{
   e.preventDefault();
   const d=Object.fromEntries(new FormData(e.target));
@@ -1841,6 +1875,7 @@ function productModal(p=null){
   d.expiry_date = d.expiry_date ? d.expiry_date : null;
   ["mrp","purchase_price","gst_percent","stock","tablets_per_strip"].forEach(k=>d[k]=Number(d[k]||0));
   if(!Number.isFinite(d.stock) || d.stock < 0) throw new Error("Stock must be zero or a positive number.");
+  if(String(d.unit||"").trim().toLowerCase()==="strip" && (!Number.isFinite(d.tablets_per_strip)||d.tablets_per_strip<1)) throw new Error("Enter the correct tablets per strip (minimum 1).");
   try{
    if(p){
     const {error}=await sb.from("ms_products").update(d).eq("id",p.id).eq("pharmacy_id",pharmacyId());
@@ -1862,9 +1897,15 @@ function field(label,name,value="",required="",type="text"){
 }
 function editProduct(id){productModal(products.find(p=>p.id===id));}
 async function deleteProduct(id){
- if(!confirm("Delete this medicine?"))return;
+ const product=products.find(x=>x.id===id);
+ if(!product)return;
+ if(!confirm(`Delete ${product.name}? If this medicine is already used in bills, the system will protect its sales history and block permanent deletion.`))return;
  const {error}=await sb.from("ms_products").delete().eq("id",id).eq("pharmacy_id",pharmacyId());
- if(error)return notify(error.message);
+ if(error){
+  const msg=String(error.message||"");
+  if(/ms_sale_items_product_id_fkey|foreign key constraint|violates foreign key/i.test(msg))return notify("Cannot permanently delete this medicine because previous bills refer to it. Sales history is protected. Keep this medicine in the master; do not delete its bill records.");
+  return notify("Medicine could not be deleted: "+msg);
+ }
  await refreshData();renderProducts();notify("Medicine deleted.");
 }
  
@@ -2117,7 +2158,7 @@ function searchBill(q){
  q=String(q||"").trim();
  if(!q){$("billResults").innerHTML=`<div class="empty">⌕ Start typing a medicine name, brand, batch or barcode. Matching medicines will appear here.</div>`;return;}
  const list=products.filter(p=>(p.name+" "+(p.generic_name||"")+" "+(p.brand||"")+" "+(p.barcode||"")+" "+(p.batch_number||"")).toLowerCase().includes(String(q||"").toLowerCase())).slice(0,80);
- $("billResults").innerHTML=list.length?`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Stock</th><th>Unit</th><th>MRP</th><th>GST</th><th></th></tr></thead><tbody>${list.map(p=>`<tr><td><span class="medicine-name">${esc(p.name)}</span><span class="medicine-sub">${esc(p.generic_name||"Generic name not entered")} · ${esc(p.brand||"")} · Exp ${esc(p.expiry_date||"-")}</span></td><td><b>${esc(p.batch_number||"-")}</b></td><td>${esc(p.stock)}</td><td>${esc(p.unit||"PCS")}</td><td>${money(p.mrp)}</td><td>${esc(p.gst_percent||0)}%</td><td><button class="btn light" data-bill-product onclick="addToCart('${p.id}')">+ Add</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No matching medicine found in this pharmacy.</div>`;
+ $("billResults").innerHTML=list.length?`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Stock</th><th>Unit</th><th>MRP</th><th>GST</th><th></th></tr></thead><tbody>${list.map(p=>`<tr><td><span class="medicine-name">${esc(p.name)}</span><span class="medicine-sub">${esc(p.generic_name||"Generic name not entered")} · ${esc(p.brand||"")} · Exp ${esc(p.expiry_date||"-")}</span></td><td><b>${esc(p.batch_number||"-")}</b></td><td>${esc(stockDisplay(p))}</td><td>${esc(p.unit||"PCS")}</td><td>${money(p.mrp)}</td><td>${esc(p.gst_percent||0)}%</td><td><button class="btn light" data-bill-product onclick="addToCart('${p.id}')">+ Add</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No matching medicine found in this pharmacy.</div>`;
 }
 function staffNameOptions(){
  const names=(window.pharmacyStaff||[]).map(x=>x.full_name).filter(Boolean);
@@ -2142,8 +2183,8 @@ function addToCart(id){
  const sch=String(p.schedule||p.drug_schedule||"").toUpperCase().replace(/SCHEDULE/g,"").trim();if((sch==="H"||sch==="H1"||sch==="X") && !$("billPrescription")?.files?.[0])return notify("Prescription upload is required for this scheduled medicine.");
  if(Number(p.stock)<=0)return notify("This medicine is out of stock.");
  const item=cart.find(x=>x.id===id);
- if(item){if(item.qty+1>Number(p.stock))return notify("Insufficient stock.");item.qty++;}
- else cart.push({...p,qty:1});
+ if(item){if(item.qty+1>stockAvailableForUnit(p,item.unit))return notify("Insufficient stock.");item.qty++;}
+ else cart.push({...p,stock_unit:p.unit||"PCS",unit:p.unit||"PCS",qty:1});
  renderCart();
 }
 function changeQty(id,qty){
@@ -2151,44 +2192,43 @@ function changeQty(id,qty){
  const p=products.find(x=>x.id===id);
  qty=Number(qty);
  if(!Number.isFinite(qty)||qty<=0){cart=cart.filter(x=>x.id!==id);}
- else if(qty>Number(p.stock)){notify("Quantity exceeds available stock.");}
+ else if(qty>stockAvailableForUnit(p,item.unit)){notify("Quantity exceeds available stock.");}
  else item.qty=qty;
  renderCart();
 }
 function removeCart(id){cart=cart.filter(x=>x.id!==id);renderCart();}
 function calculateBill(){
  // MRP is the billing rate. A minimum 20% profit over purchase cost is mandatory.
- const subtotal=cart.reduce((a,p)=>a+p.qty*Number(p.mrp||0)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100),0);
- const gst=cart.reduce((a,p)=>{const net=p.qty*Number(p.mrp||0)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100);return a+(net*Number(p.gst_percent||0)/(100+Number(p.gst_percent||0)));},0);
- const maxDiscount=cart.reduce((a,p)=>a+Math.max(0,p.qty*(Number(p.mrp||0)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100)-Number(p.purchase_price||0)*1.20)),0);
+ const subtotal=cart.reduce((a,p)=>a+p.qty*cartRate(p)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100),0);
+ const gst=cart.reduce((a,p)=>{const net=p.qty*cartRate(p)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100);return a+(net*Number(p.gst_percent||0)/(100+Number(p.gst_percent||0)));},0);
+ const maxDiscount=cart.reduce((a,p)=>a+Math.max(0,p.qty*(cartRate(p)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100)-cartPurchaseCost(p)*1.20)),0);
  const requestedDiscount=Math.max(0,Number($("billDiscount")?.value||0));
  const discount=Math.min(requestedDiscount,maxDiscount);
  return {subtotal,gst,discount,maxDiscount,total:Math.max(0,subtotal-discount),discountRejected:requestedDiscount>maxDiscount+0.001};
 }
 function renderCart(){
  if(!$("cartItems"))return;
- const rows=cart.map(p=>`<tr><td><b>${esc(p.name)}</b><small class="medicine-sub">${esc(p.brand||"")} · ${esc(p.unit||"PCS")}</small></td><td><input aria-label="Batch number" value="${esc(p.batch_number||"")}" readonly title="Batch from inventory" style="min-width:90px;width:100%;background:#f7f8fb;border:1px solid var(--border);padding:7px;border-radius:6px"></td><td><select aria-label="Unit" onchange="changeCartUnit('${p.id}',this.value)"><option value="${esc(p.unit||"PCS")}">${esc(p.unit||"PCS")}</option><option value="Strip">Strip</option><option value="Tablet">Tablet</option><option value="Bottle">Bottle</option></select></td><td><input aria-label="Quantity" type="number" min="1" max="${p.stock}" value="${p.qty}" onchange="changeQty('${p.id}',this.value)"></td><td><input aria-label="Rate" type="number" min="0" step=".01" value="${Number(p.mrp||0)}" onchange="changeCartRate('${p.id}',this.value)"></td><td><input aria-label="Discount percent" type="number" min="0" max="100" step=".1" value="${Number(p.discount_pct||0)}" onchange="setCartDiscount('${p.id}',this.value)"></td><td><b>${money(p.qty*p.mrp*(1-Number(p.discount_pct||0)/100))}</b> <button class="close" onclick="removeCart('${p.id}')" aria-label="Remove">×</button></td></tr>`).join("");
- $("cartItems").innerHTML=`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Unit</th><th>Qty</th><th>Rate</th><th>Disc %</th><th>Amount</th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="empty">Add medicines to this bill.</td></tr>`}</tbody></table></div>`;
+ const rows=cart.map(p=>{const rate=cartRate(p),maxQty=stockAvailableForUnit(p,p.unit);const unitOptions=String(p.unit||"").toLowerCase()==="strip"?`<option value="Strip" ${String(p.unit).toLowerCase()==="strip"?"selected":""}>Strip</option><option value="Tablet">Tablet</option>`:String(p.unit||"PCS").toLowerCase()==="tablet"?`<option value="Tablet" selected>Tablet</option><option value="Strip">Strip</option>`:`<option value="${esc(p.unit||"PCS")}" selected>${esc(p.unit||"PCS")}</option>`;return `<tr><td><b>${esc(p.name)}</b><small class="medicine-sub">${esc(p.brand||"")} · ${esc(p.unit||"PCS")}</small></td><td><input aria-label="Batch number" value="${esc(p.batch_number||"")}" readonly title="Batch from inventory" style="min-width:90px;width:100%;background:#f7f8fb;border:1px solid var(--border);padding:7px;border-radius:6px"></td><td><select aria-label="Unit" onchange="changeCartUnit('${p.id}',this.value)">${unitOptions}</select></td><td><input aria-label="Quantity" type="number" min="1" max="${maxQty}" step="1" value="${p.qty}" onchange="changeQty('${p.id}',this.value)"></td><td><span title="Rate from saved inventory MRP; cannot be edited">${money(rate)}</span></td><td><input aria-label="Discount percent" type="number" min="0" max="100" step=".1" value="${Number(p.discount_pct||0)}" onchange="setCartDiscount('${p.id}',this.value)"></td><td><b>${money(p.qty*rate*(1-Number(p.discount_pct||0)/100))}</b> <button class="close" onclick="removeCart('${p.id}')" aria-label="Remove">×</button></td></tr>`;}).join("");
+ $("cartItems").innerHTML=`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Unit</th><th>Qty</th><th>MRP rate (fixed)</th><th>Disc %</th><th>Amount</th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="empty">Add medicines to this bill.</td></tr>`}</tbody></table></div>`;
  const t=calculateBill();const discountInput=$("billDiscount");
  if(discountInput && t.discountRejected){discountInput.value=t.maxDiscount.toFixed(2);notify("Discount reduced: minimum 20% profit on purchase cost must be maintained.");}
  if($("discountLimitNote"))$("discountLimitNote").textContent=`Maximum permitted discount: ${money(t.maxDiscount)}.`;
  if($("billSubtotal"))$("billSubtotal").textContent=money(t.subtotal);if($("billGst"))$("billGst").textContent=money(t.gst);if($("billTotal"))$("billTotal").textContent=money(t.total);
- if($("billItemCount"))$("billItemCount").textContent=`${cart.length} items · Edit quantity / rate / discount`;if($("billItemCountSide"))$("billItemCountSide").textContent=cart.length;
+ if($("billItemCount"))$("billItemCount").textContent=`${cart.length} items · Edit quantity / unit / discount`;if($("billItemCountSide"))$("billItemCountSide").textContent=cart.length;
  if($("splitPaymentToggle")?.checked)syncSplitPayment();else renderBillUpiPayment();
 }
-function changeCartUnit(id,unit){const item=cart.find(x=>x.id===id);if(item){item.unit=unit;renderCart();}}
-function changeCartRate(id,rate){const item=cart.find(x=>x.id===id);rate=Number(rate);if(!item||!Number.isFinite(rate)||rate<0)return notify("Enter a valid rate.");if(rate+0.001<Number(item.purchase_price||0)*1.2)return notify("Rate must preserve the minimum 20% purchase-cost margin.");item.mrp=rate;renderCart();}
-function setCartDiscount(id,pct){const item=cart.find(x=>x.id===id);pct=Math.max(0,Math.min(100,Number(pct)||0));if(!item)return;const proposed=Number(item.mrp||0)*(1-pct/100);const min=Number(item.purchase_price||0)*1.2;if(proposed<min)return notify("Discount exceeds the minimum profit protection.");item.discount_pct=pct;renderCart();}
+function changeCartUnit(id,unit){const item=cart.find(x=>x.id===id);if(!item)return;const max=stockAvailableForUnit(item,unit);if(max<1)return notify(`Not enough stock for 1 ${unit}. Choose tablets instead.`);item.unit=unit;if(item.qty>max)item.qty=Math.floor(max);renderCart();}
+function setCartDiscount(id,pct){const item=cart.find(x=>x.id===id);pct=Math.max(0,Math.min(100,Number(pct)||0));if(!item)return;const proposed=cartRate(item)*(1-pct/100);const min=cartPurchaseCost(item)*1.2;if(proposed<min)return notify("Discount exceeds the minimum profit protection.");item.discount_pct=pct;renderCart();}
  
 async function completeSale(){
  if(!cart.length)return notify("Add at least one medicine.");
  const t=calculateBill();
  if(t.total<=0)return notify("Bill total must be greater than zero.");
  if(t.discountRejected)return notify("Discount exceeds the allowed limit. Minimum 20% profit on purchase cost is required.");
- for(const item of cart){const minPrice=Number(item.purchase_price||0)*1.20;if(Number(item.mrp||0)+0.001<minPrice)return notify(`${item.name}: MRP is below purchase cost + 20% profit. Cannot bill this item.`);}
+ for(const item of cart){const minPrice=cartPurchaseCost(item)*1.20;if(cartRate(item)+0.001<minPrice)return notify(`${item.name}: saved MRP is below purchase cost + 20% profit. Cannot bill this item.`);}
  for(const item of cart){
   const p=products.find(x=>x.id===item.id);
-  if(!p||item.qty>Number(p.stock))return notify("Stock changed. Refresh and try again.");
+  if(!p||item.qty>stockAvailableForUnit(p,item.unit))return notify("Stock changed. Refresh and try again.");
  }
  const invoice="SM-"+Date.now();
  let paymentInfo;
@@ -2225,9 +2265,9 @@ async function completeSale(){
   const lines=cart.map(p=>({
    pharmacy_id:pharmacyId(),sale_id:created.id,product_id:p.id,
    product_name:p.name,batch_number:p.batch_number,
-   quantity:p.qty,unit_price:p.mrp,
+   quantity:p.qty,unit_price:cartRate(p),
    gst_percent:p.gst_percent,
-   line_total:p.qty*p.mrp*(1-Number(p.discount_pct||0)/100)
+   line_total:p.qty*cartRate(p)*(1-Number(p.discount_pct||0)/100)
   }));
   const {error:itemError}=await sb.from("ms_sale_items").insert(lines);
   if(itemError)throw itemError;
@@ -2235,7 +2275,7 @@ async function completeSale(){
   // Stock update is performed for each item after saving the bill.
   for(const p of cart){
    const {error:stockError}=await sb.from("ms_products")
-    .update({stock:Number(p.stock)-p.qty})
+    .update({stock:Number(p.stock)-p.qty*stockUnitFactor(p,p.unit)})
     .eq("id",p.id).eq("pharmacy_id",pharmacyId());
    if(stockError)throw stockError;
   }
@@ -2271,7 +2311,7 @@ function buildBillPdf(bill,copyLabel="ORIGINAL"){
  [pharmacySettings.bill_print_address||currentPharmacy?.address, currentPharmacy?.phone, pharmacySettings.gst_number&&("GSTIN: "+pharmacySettings.gst_number),pharmacySettings.drug_license&&("Drug Licence: "+pharmacySettings.drug_license),pharmacySettings.bill_email].filter(Boolean).forEach(v=>{doc.text(String(v),pageW/2,y,{align:"center",maxWidth:pageW-2*margin});y+=4;});
  doc.line(margin,y,pageW-margin,y);y+=5;
  addLine("Invoice",sale.invoice_number);addLine("Copy",copyLabel);addLine("Date",new Date(sale.created_at||Date.now()).toLocaleString());addLine("Customer",bill.customerName||sale.customer_name||"Walk-in");addLine("Mobile",bill.customerPhone||sale.customer_phone||"-");addLine("Pharmacist",sale.pharmacist_name||"-");addLine("Billing staff",sale.billing_staff_name||"-");
- const body=items.map(p=>[String(p.name),String(p.batch_number||"-"),String(p.qty),Number(p.mrp||0).toFixed(2),(Number(p.qty||0)*Number(p.mrp||0)*(1-Number(p.discount_pct||0)/100)).toFixed(2)]);
+ const body=items.map(p=>[String(p.name),String(p.batch_number||"-"),String(p.qty)+" "+String(p.unit||""),cartRate(p).toFixed(2),(Number(p.qty||0)*cartRate(p)*(1-Number(p.discount_pct||0)/100)).toFixed(2)]);
  if(doc.autoTable){doc.autoTable({startY:y,head:[["Medicine","Batch","Qty","Rate","Amount"]],body,theme:"grid",styles:{fontSize:size==="A4"?8:6,cellPadding:1.4},headStyles:{fontSize:size==="A4"?8:6},margin:{left:margin,right:margin}});y=doc.lastAutoTable.finalY+5;}else{body.forEach(r=>{doc.setFontSize(6);doc.text(r.join(" | "),margin,y,{maxWidth:pageW-2*margin});y+=5;});}
  const taxSplit=billGstSplit(totals);addLine("Subtotal (incl. GST)",money(totals.subtotal));addLine("Taxable value",money(taxSplit.taxable));addLine("CGST",money(taxSplit.cgst));addLine("SGST",money(taxSplit.sgst));addLine("Discount",money(totals.discount));doc.setFont("helvetica","bold");addLine("NET PAYABLE",money(totals.total));doc.setFont("helvetica","normal");addLine("Payment",sale.payment_method||"-");addLine("Status",sale.payment_status||"-");
  if(sale.payment_reference_number)addLine("UPI Ref",sale.payment_reference_number);
@@ -2303,7 +2343,7 @@ function printInvoice(sale,items,t,copyLabel="ORIGINAL"){
  </head><body>${logo}<h1>${esc(header)}</h1><p>${esc(pharmacySettings.bill_print_address||currentPharmacy?.address||"")}</p><p>${esc(currentPharmacy?.phone||"")}</p>
  <p>${esc(pharmacySettings.gst_number?"GSTIN: "+pharmacySettings.gst_number:"")} ${esc(pharmacySettings.drug_license?" · DL: "+pharmacySettings.drug_license:"")}</p><hr><p>Invoice: ${esc(sale.invoice_number)}<br>${new Date(sale.created_at).toLocaleString()}<br><b style="letter-spacing:1px;border:1px solid #333;padding:3px 9px;display:inline-block;margin-top:5px">${esc(copyLabel)}</b></p><p style="text-align:left">Customer: ${esc(sale.customer_name||$("billCustomerName")?.value||"Walk-in")} · Phone: ${esc(sale.customer_phone||$("billPhone")?.value||"-")}<br>Address: ${esc(sale.customer_address||$("billCustomerAddress")?.value||"-")}<br>Doctor: ${esc(sale.doctor_name||$("billDoctor")?.value||"-")}<br>Pharmacist: ${esc(sale.pharmacist_name||$("billPharmacist")?.value||"-")}<br>Entered by: ${esc(sale.billing_staff_name||currentMember?.full_name||currentUser.email)}</p>
  <table><tr><th>Medicine</th><th>Batch</th><th>Qty</th><th>Rate</th><th class="right">Amount</th></tr>
- ${items.map(p=>`<tr><td>${esc(p.name)}${pharmacySettings.show_batch_expiry===false||pharmacySettings.show_batch_expiry==="no"?"":`<br><small>Exp: ${esc(p.expiry_date||"-")}</small>`}${Number(p.discount_pct||0)>0?`<br><small>Discount ${Number(p.discount_pct).toFixed(1)}%</small>`:""}</td><td>${esc(p.batch_number||"-")}</td><td>${p.qty}</td><td>${money(p.mrp)}</td><td class="right">${money(p.qty*p.mrp*(1-Number(p.discount_pct||0)/100))}</td></tr>`).join("")}
+ ${items.map(p=>`<tr><td>${esc(p.name)}${pharmacySettings.show_batch_expiry===false||pharmacySettings.show_batch_expiry==="no"?"":`<br><small>Exp: ${esc(p.expiry_date||"-")}</small>`}${Number(p.discount_pct||0)>0?`<br><small>Discount ${Number(p.discount_pct).toFixed(1)}%</small>`:""}</td><td>${esc(p.batch_number||"-")}</td><td>${p.qty} ${esc(p.unit||"")}</td><td>${money(cartRate(p))}</td><td class="right">${money(p.qty*cartRate(p)*(1-Number(p.discount_pct||0)/100))}</td></tr>`).join("")}
  </table><p class="right">Subtotal (incl. GST): ${money(t.subtotal)}<br>Taxable value: ${money(taxSplit.taxable)}<br>CGST: ${money(taxSplit.cgst)}<br>SGST: ${money(taxSplit.sgst)}<br>Discount: ${money(t.discount)}</p>
  <p class="right total">Net Payable: ${money(t.total)}</p><p style="text-align:left;font-size:11px">Payment: ${esc(sale.payment_method||"-")}<br>Status: ${esc(sale.payment_status||"-")}${sale.payment_reference_number?`<br>UPI reference: ${esc(sale.payment_reference_number)}`:""}</p>${pharmacySettings.bill_terms?`<hr><p style="text-align:left;font-size:10px">${esc(pharmacySettings.bill_terms)}</p>`:""}<hr><p>${esc(footer)}</p>
  <script>window.onload=()=>window.print();<\/script></body></html>`);
@@ -2474,11 +2514,13 @@ function filterAuditRows(q){fillAuditRows(products.filter(p=>(p.name+" "+(p.bran
 async function saveStockAudit(){if(!pharmacyId())return notify("Pharmacy context is missing.");const items=auditProducts.map(p=>{const el=document.querySelector(`[data-count-id="${p.id}"]`);return el?{product_id:p.id,name:p.name,system_stock:Number(p.stock||0),counted_stock:Number(el.value),difference:Number(el.value)-Number(p.stock||0)}:null;}).filter(Boolean);if(!items.length)return notify("No counted products found.");try{const {error}=await sb.from("ms_audit_logs").insert({pharmacy_id:pharmacyId(),user_id:currentUser.id,action:"stock_audit",details:{items,recorded_at:new Date().toISOString()}});if(error)throw error;notify("Stock audit report saved.");loadAuditHistory();}catch(e){notify("Could not save audit: "+e.message);}}
 async function loadAuditHistory(){const host=$("auditHistory");if(!host)return;host.textContent="Loading audit history...";try{const {data,error}=await sb.from("ms_audit_logs").select("id,action,details,created_at").eq("pharmacy_id",pharmacyId()).eq("action","stock_audit").order("created_at",{ascending:false}).limit(15);if(error)throw error;host.innerHTML=data?.length?`<h3 style="margin:12px 0">Recent audits</h3>`+data.map(a=>{const it=a.details?.items||[];const changed=it.filter(x=>Number(x.difference)!==0).length;return `<div class="total-row"><span>${new Date(a.created_at).toLocaleString()}<br><small>${it.length} products · ${changed} differences</small></span><b>${changed?changed+" differences":"Matched"}</b></div>`;}).join(""):`No saved audits yet.`;}catch(e){host.textContent="Audit history unavailable: "+e.message;}}
 function renderItemMaster(){$("pageContent").innerHTML=`${pageHead("Item Master","Quick product master search across your pharmacy inventory")}<div class="panel"><div class="panel-head"><h3>Medicine master (${products.length})</h3><input class="search" placeholder="Name, generic name, brand, category, batch or barcode" oninput="filterItemMaster(this.value)"></div><div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Generic name</th><th>Brand</th><th>Category</th><th>Barcode</th><th>Batch / Expiry</th><th>GST</th><th>Price</th><th>Stock</th></tr></thead><tbody id="itemMasterRows"></tbody></table></div></div>`;fillItemMaster(products);}
-function fillItemMaster(list){const el=$("itemMasterRows");if(!el)return;el.innerHTML=list.length?list.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${esc(p.generic_name||"-")}</td><td>${esc(p.brand||"-")}</td><td>${esc(p.category||"-")}</td><td>${esc(p.barcode||"-")}</td><td>${esc(p.batch_number||"-")}<br><small>${esc(p.expiry_date||"No expiry")}</small></td><td>${esc(p.gst_percent||0)}%</td><td>${money(p.mrp)}</td><td>${esc(p.stock)} ${esc(p.unit||"PCS")}</td></tr>`).join(""):`<tr><td colspan="11" class="empty">No medicines found.</td></tr>`;}
+function fillItemMaster(list){const el=$("itemMasterRows");if(!el)return;el.innerHTML=list.length?list.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${esc(p.generic_name||"-")}</td><td>${esc(p.brand||"-")}</td><td>${esc(p.category||"-")}</td><td>${esc(p.barcode||"-")}</td><td>${esc(p.batch_number||"-")}<br><small>${esc(p.expiry_date||"No expiry")}</small></td><td>${esc(p.gst_percent||0)}%</td><td>${money(p.mrp)}</td><td>${esc(stockDisplay(p))}</td></tr>`).join(""):`<tr><td colspan="11" class="empty">No medicines found.</td></tr>`;}
 function filterItemMaster(q){q=String(q||"").toLowerCase();fillItemMaster(products.filter(p=>[p.name,p.generic_name,p.brand,p.category,p.barcode,p.batch_number].join(" ").toLowerCase().includes(q)));}
-function renderManufacturers(){const brands=[...new Set(products.map(p=>String(p.brand||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));$("pageContent").innerHTML=`${pageHead("Manufacturers","Manufacturer / brand directory from your existing medicine master")}<div class="panel"><div class="panel-head"><h3>Brands (${brands.length})</h3><input class="search" placeholder="Search brand" oninput="filterManufacturerRows(this.value)"></div><div class="table-wrap"><table><thead><tr><th>Brand / Manufacturer</th><th>Products</th><th>Categories</th></tr></thead><tbody id="manufacturerRows"></tbody></table></div></div><p class="feature-note">This directory reads existing product brand/category values; it does not create a second manufacturer database.</p>`;fillManufacturerRows(brands);}
-function fillManufacturerRows(brands){const el=$("manufacturerRows");if(!el)return;el.innerHTML=brands.length?brands.map(b=>{const ps=products.filter(p=>String(p.brand||"").trim()===b);const cats=[...new Set(ps.map(p=>p.category).filter(Boolean))];return `<tr><td><b>${esc(b)}</b></td><td>${ps.length}</td><td>${esc(cats.join(", ")||"-")}</td></tr>`;}).join(""):`<tr><td colspan="3" class="empty">No brand names are saved in inventory yet.</td></tr>`;}
+function renderManufacturers(){const brands=[...new Set(products.map(p=>String(p.brand||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));$("pageContent").innerHTML=`${pageHead("Manufacturers","Edit manufacturer names, reuse suggestions and remove unused names")}<div class="panel"><div class="panel-head"><h3>Manufacturers (${brands.length})</h3><input class="search" placeholder="Search manufacturer" oninput="filterManufacturerRows(this.value)"></div><div class="table-wrap"><table><thead><tr><th>Brand / Manufacturer</th><th>Products</th><th>Categories</th><th>Actions</th></tr></thead><tbody id="manufacturerRows"></tbody></table></div></div><p class="feature-note">Rename updates the manufacturer name on all linked medicines. Delete removes only the manufacturer name from linked medicines; it does not delete medicine or bill records.</p>`;fillManufacturerRows(brands);}
+function fillManufacturerRows(brands){const el=$("manufacturerRows");if(!el)return;el.innerHTML=brands.length?brands.map(b=>{const ps=products.filter(p=>String(p.brand||"").trim()===b);const cats=[...new Set(ps.map(p=>p.category).filter(Boolean))];return `<tr><td><b>${esc(b)}</b></td><td>${ps.length}</td><td>${esc(cats.join(", ")||"-")}</td><td>${canManage()?`<button class="btn light" onclick="renameManufacturer(${JSON.stringify(b).replace(/'/g,"&#39;")})">Edit</button> <button class="btn danger" onclick="deleteManufacturer(${JSON.stringify(b).replace(/'/g,"&#39;")})">Delete</button>`:"-"}</td></tr>`;}).join(""):`<tr><td colspan="4" class="empty">No manufacturer names are saved in inventory yet.</td></tr>`;}
 function filterManufacturerRows(q){const brands=[...new Set(products.map(p=>String(p.brand||"").trim()).filter(b=>b&&b.toLowerCase().includes(String(q||"").toLowerCase())))].sort();fillManufacturerRows(brands);}
+async function renameManufacturer(oldName){if(!canManage())return notify("Owner/Admin access required.");const next=prompt(`Rename manufacturer: ${oldName}`,oldName);if(next===null)return;const name=next.trim();if(!name)return notify("Manufacturer name cannot be empty.");if(name===oldName)return;try{const {error}=await sb.from("ms_products").update({brand:name}).eq("brand",oldName).eq("pharmacy_id",pharmacyId());if(error)throw error;await refreshData();renderManufacturers();notify("Manufacturer name updated for linked medicines.");}catch(e){notify("Could not update manufacturer: "+e.message);}}
+async function deleteManufacturer(name){if(!canManage())return notify("Owner/Admin access required.");const count=products.filter(p=>String(p.brand||"").trim()===name).length;if(!confirm(`Remove manufacturer name “${name}” from ${count} linked medicine(s)? The medicines, stock and bill history will remain.`))return;try{const {error}=await sb.from("ms_products").update({brand:null}).eq("brand",name).eq("pharmacy_id",pharmacyId());if(error)throw error;await refreshData();renderManufacturers();notify("Manufacturer name removed. Medicine records were kept.");}catch(e){notify("Could not remove manufacturer: "+e.message);}}
 let ocrPurchaseRows=[];
 function renderBillOCR(){
  $("pageContent").innerHTML=`${pageHead("Invoice Reader / Purchase Inward","Read supplier invoice, verify every item, then post verified quantities into stock")}
@@ -2638,6 +2680,7 @@ async function loadPurchasesHistory(){const host=$("purchasesHistory");if(!host|
  
 let activeReportRows=[];
 let activeReportTitle="Sales register";
+let activeReportHeaders=[];
 async function loadScheduledDrugReport(){
  const host=$("scheduledDrugReport");if(!host)return;host.innerHTML="Loading scheduled drug register…";
  try{const {data,error}=await sb.from("ms_scheduled_drug_sales_report").select("*").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(1000);if(error)throw error;
@@ -2692,9 +2735,39 @@ function reportDateOk(dateValue){
  return (!from||d>=from)&&(!to||d<=to);
 }
 function setReport(title,headers,rows){
- activeReportTitle=title;activeReportRows=rows||[];
- $("reportTitle").textContent=title;$("reportCount").textContent=activeReportRows.length+" rows";
- $("reportOutput").innerHTML=activeReportRows.length?`<table style="min-width:680px"><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${activeReportRows.map(r=>`<tr>${r.map(v=>`<td>${esc(v??"-")}</td>`).join("")}</tr>`).join("")}</tbody></table>`:`<div class="empty">No records found for this report and date range.</div>`;
+ activeReportTitle=title;activeReportRows=rows||[];activeReportHeaders=headers||[];
+ $("reportTitle").textContent=title;$("reportCount").textContent=activeReportRows.length+" records";
+ const isAudit=/audit/i.test(title);
+ const tools=isAudit?`<div class="feature-tools no-print" style="margin:0 0 12px"><button class="btn" onclick="downloadAuditProofPDF()">⬇ Download Audit PDF</button><button class="btn light" onclick="printAuditProofPDF()">Print Audit Proof</button></div>`:"";
+ $("reportOutput").innerHTML=tools+(activeReportRows.length?`<table style="min-width:680px"><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${activeReportRows.map(r=>`<tr>${r.map(v=>`<td>${esc(v??"-").replace(/\n/g,"<br>")}</td>`).join("")}</tr>`).join("")}</tbody></table>`:`<div class="empty">No records found for this report and date range.</div>`);
+}
+function buildAuditProofPDF(){
+ const lib=window.jspdf;if(!lib?.jsPDF)throw new Error("PDF library did not load. Check internet connection and retry.");
+ const doc=new lib.jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
+ const pharmacyName=String(currentPharmacy?.pharmacy_name||pharmacySettings.print_header||"Subha Medical");
+ doc.setFontSize(16);doc.text(pharmacyName,14,15);doc.setFontSize(12);doc.text(activeReportTitle||"Audit Proof Report",14,23);
+ doc.setFontSize(9);doc.text("Generated: "+new Date().toLocaleString(),14,29);
+ if(typeof doc.autoTable!=="function")throw new Error("PDF table component did not load. Refresh and retry.");
+ doc.autoTable({head:[activeReportHeaders],body:activeReportRows.map(r=>r.map(v=>String(v??"-"))),startY:34,theme:"grid",styles:{fontSize:8,cellPadding:2,overflow:"linebreak"},headStyles:{fillColor:[31,78,121]},margin:{left:14,right:14}});
+ const safe=(activeReportTitle||"audit").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+ return {doc,filename:`Subha-Medical-${safe}-${new Date().toISOString().slice(0,10)}.pdf`};
+}
+function downloadAuditProofPDF(){try{const {doc,filename}=buildAuditProofPDF();doc.save(filename);notify("Audit proof PDF downloaded.");}catch(e){notify("Could not create audit PDF: "+e.message);}}
+function printAuditProofPDF(){try{const {doc}=buildAuditProofPDF();doc.autoPrint();const url=doc.output("bloburl");const win=window.open(url,"_blank");if(!win)notify("Allow pop-ups to print the audit PDF.");}catch(e){notify("Could not prepare audit PDF: "+e.message);}}
+function auditDetailsText(action,details){
+ const d=details||{};
+ if(action==="stock_audit"){
+  const items=Array.isArray(d.items)?d.items:[];const changed=items.filter(x=>Number(x.difference)!==0).length;
+  const lines=items.map((x,i)=>`${i+1}. ${x.name||"Medicine"} — System: ${x.system_stock??0}, Physical: ${x.counted_stock??0}, Difference: ${Number(x.difference)>0?"+":""}${x.difference??0}`);
+  return `${items.length} product${items.length===1?"":"s"} audited · ${changed} difference${changed===1?"":"s"}\n${lines.join("\n")}`;
+ }
+ if(action==="daily_audit"){
+  const checks=Array.isArray(d.checklist)?d.checklist:[];const done=checks.filter(x=>x.completed).length;
+  const lines=checks.map(x=>`${x.completed?"✓":"○"} ${x.label||"Checklist item"}`);
+  return `${done}/${d.total_count??checks.length} daily checks completed\nResponsible: ${d.responsible_name||"Staff"}${d.notes?"\nNotes: "+d.notes:""}${lines.length?"\n"+lines.join("\n"):""}`;
+ }
+ if(action==="daily_audit_checklist")return Object.entries(d).map(([k,v])=>`${k.replace(/_/g," ")}: ${typeof v==="object"?JSON.stringify(v):v}`).join("\n");
+ return Object.entries(d).map(([k,v])=>`${k.replace(/_/g," ")}: ${typeof v==="object"?JSON.stringify(v):String(v)}`).join("\n")||"No additional details";
 }
 async function getPharmacyStaffNameMap(){
  const {data,error}=await sb.from("ms_members").select("user_id,full_name").eq("pharmacy_id",pharmacyId());
@@ -2792,12 +2865,22 @@ async function runReport(type){
    return setReport("Purchase history",["Supplier ID","Invoice","Date","Total"],(data||[]).filter(x=>reportDateOk(x.created_at)).map(x=>[x.supplier_id,x.invoice_number,new Date(x.created_at).toLocaleString(),money(x.total)]));
   }
   if(type==="audit"){
-   const {data,error}=await sb.from("ms_audit_logs").select("action,details,created_at,user_id").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(500);if(error)throw error;
-   return setReport("Stock audit / activity history",["Date","Action","User","Details"],(data||[]).filter(x=>reportDateOk(x.created_at)).map(x=>[new Date(x.created_at).toLocaleString(),x.action,x.user_id,JSON.stringify(x.details||{})]));
+   const [{data,error},staffNames]=await Promise.all([
+    sb.from("ms_audit_logs").select("action,details,created_at,user_id").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(500),
+    getPharmacyStaffNameMap()
+   ]);if(error)throw error;
+   const rows=(data||[]).filter(x=>reportDateOk(x.created_at)).map(x=>{
+    const action=String(x.action||"Activity").replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
+    return [new Date(x.created_at).toLocaleString(),action,staffNames[String(x.user_id)]||(String(x.user_id)===String(currentUser?.id)?(currentMember?.full_name||"Staff"):"Staff"),auditDetailsText(x.action,x.details)];
+   });
+   return setReport("Stock audit / activity history",["Date & time","Activity","Staff member","Clear audit details"],rows);
   }
   if(type==="daily_audit"){
-   const {data,error}=await sb.from("ms_audit_logs").select("details,created_at,user_id").eq("pharmacy_id",pharmacyId()).eq("action","daily_audit").order("created_at",{ascending:false}).limit(500);if(error)throw error;
-   return setReport("Daily pharmacy audit",["Audit date","Time","Responsible staff","Completed","Checklist","Notes"],(data||[]).filter(x=>reportDateOk(x.details?.audit_date||x.created_at)).map(x=>{const d=x.details||{};return [d.audit_date||new Date(x.created_at).toLocaleDateString(),d.audit_time||"",d.responsible_name||x.user_id,(d.completed_count||0)+"/"+(d.total_count||7),(d.checklist||[]).filter(c=>c.completed).map(c=>c.label).join("; "),d.notes||""];}));
+   const [{data,error},staffNames]=await Promise.all([
+    sb.from("ms_audit_logs").select("details,created_at,user_id").eq("pharmacy_id",pharmacyId()).eq("action","daily_audit").order("created_at",{ascending:false}).limit(500),
+    getPharmacyStaffNameMap()
+   ]);if(error)throw error;
+   return setReport("Daily pharmacy audit",["Audit date & time","Responsible staff","Checks completed","Daily checklist and notes"],(data||[]).filter(x=>reportDateOk(x.details?.audit_date||x.created_at)).map(x=>{const d=x.details||{};return [`${d.audit_date||new Date(x.created_at).toLocaleDateString()} ${d.audit_time||new Date(x.created_at).toLocaleTimeString()}`,d.responsible_name||staffNames[String(d.responsible_user_id||x.user_id)]||"Staff",(d.completed_count||0)+"/"+(d.total_count||7),auditDetailsText("daily_audit",d)];}));
   }
  }catch(e){$("reportOutput").innerHTML=`<div class="notice">Could not load report: ${esc(e.message)}</div>`;}
 }
