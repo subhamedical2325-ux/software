@@ -1745,7 +1745,7 @@ function numImport(v){if(v===""||v==null)return 0;const n=Number(String(v).repla
 function normalizeImportDate(v){if(!v)return null;const d=new Date(v);if(!Number.isNaN(d.getTime()))return d.toISOString().slice(0,10);const m=String(v).match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);return m?`${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`:null;}
 async function readProductImportFile(){if(!canManage())return notify("Permission denied.");const file=$("productImportFile")?.files?.[0];if(!file)return notify("Choose a CSV or Excel file.");try{let rows;if(file.name.toLowerCase().endsWith(".csv")){const text=await file.text();rows=parseSimpleCSV(text);}else{if(!window.XLSX)throw new Error("Excel library did not load. Try CSV format.");const wb=XLSX.read(await file.arrayBuffer(),{type:"array"});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""});}productImportRows=rows.map(normalizeImportedProduct).filter(x=>x.name);renderProductImportPreview();notify(`${productImportRows.length} products ready for review.`);}catch(e){notify("File read failed: "+e.message);}}
 function parseSimpleCSV(text){const lines=text.replace(/^\uFEFF/,"").split(/\r?\n/).filter(x=>x.trim());if(!lines.length)return [];const parse=line=>{let a=[],v="",q=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'&&line[i+1]==='"'&&q){v+='"';i++;}else if(c==='"')q=!q;else if(c===','&&!q){a.push(v);v="";}else v+=c;}a.push(v);return a;};const h=parse(lines.shift()).map(x=>x.trim().toLowerCase().replace(/[\s-]+/g,"_"));return lines.map(line=>{const a=parse(line),o={};h.forEach((k,i)=>o[k]=a[i]??"");return o;});}
-function renderProductImportPreview(){const host=$("productImportRows");if(!host)return;$("impCount").textContent=productImportRows.length+" rows";host.innerHTML=productImportRows.length?productImportRows.map((p,i)=>{const match=products.find(x=>(p.barcode&&String(x.barcode||"").toLowerCase()===String(p.barcode).toLowerCase())||(String(x.name||"").trim().toLowerCase()===p.name.toLowerCase()&&String(x.batch_number||"").toLowerCase()===String(p.batch_number||"").toLowerCase()));return `<tr><td><input type="checkbox" class="imp-pick" data-i="${i}" checked></td><td><b>${esc(p.name)}</b></td><td>${esc(p.generic_name||"-")}</td><td>${esc(p.brand||"-")}</td><td>${esc(p.batch_number||"-")}</td><td>${money(p.mrp)}</td><td>${money(p.purchase_price)}</td><td>${p.stock}</td><td>${esc(p.hsn_code||"-")}</td><td>${safeWebUrl(p.image_url)?`<a href="${esc(safeWebUrl(p.image_url))}" target="_blank" rel="noopener">View</a>`:"-"}</td><td>${match?`<span class="badge">Match found</span>`:`<span class="badge green">New</span>`}</td></tr>`;}).join(""):`<tr><td colspan="11" class="empty">No valid product rows found.</td></tr>`;}
+function renderProductImportPreview(){const host=$("productImportRows");if(!host)return;$("impCount").textContent=productImportRows.length+" rows";host.innerHTML=productImportRows.length?productImportRows.map((p,i)=>{const match=products.find(x=>(p.barcode&&String(x.barcode||"").toLowerCase()===String(p.barcode).toLowerCase())||(String(x.name||"").trim().toLowerCase()===p.name.toLowerCase()&&String(x.batch_number||"").toLowerCase()===String(p.batch_number||"").toLowerCase()));return `<tr><td><input type="checkbox" class="imp-pick" data-i="${i}" checked></td><td><b>${esc(p.name)}</b></td><td>${esc(p.generic_name||"-")}</td><td>${esc(p.brand||"-")}</td><td>${esc(p.batch_number||"-")}</td><td>${money(p.mrp)}<small class="medicine-sub">${String(p.unit||"").toLowerCase()==="strip"?`Per strip · 1 tablet ₹${(Number(p.mrp||0)/Math.max(1,Number(p.tablets_per_strip)||1)).toFixed(4)}`:`Per ${esc(p.unit||"unit")}`}</small></td><td>${money(p.purchase_price)}</td><td>${p.stock}</td><td>${esc(p.hsn_code||"-")}</td><td>${safeWebUrl(p.image_url)?`<a href="${esc(safeWebUrl(p.image_url))}" target="_blank" rel="noopener">View</a>`:"-"}</td><td>${match?`<span class="badge">Match found</span>`:`<span class="badge green">New</span>`}</td></tr>`;}).join(""):`<tr><td colspan="11" class="empty">No valid product rows found.</td></tr>`;}
 function downloadProductImportTemplate(){const csv="name,generic_name,brand,barcode,category,hsn_code,batch_number,expiry_date,mrp,purchase_price,gst_percent,stock,unit,image_url\nParacetamol 500mg,Paracetamol,ABC,890000000001,Tablet,30049099,B001,2027-12-31,20,12,12,100,PCS,https://example.com/image.jpg\n";const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="Subha_Medical_Product_Import_Template.csv";a.click();URL.revokeObjectURL(a.href);}
 async function saveProductImport(){if(!canManage())return notify("Permission denied.");const picks=[...document.querySelectorAll(".imp-pick:checked")].map(x=>Number(x.dataset.i));if(!picks.length)return notify("Select at least one row.");const updateExisting=$("impUpdateExisting")?.checked;let added=0,updated=0,skipped=0,failed=[];const source="CSV/Excel";
  for(const i of picks){const p=productImportRows[i];const match=products.find(x=>(p.barcode&&String(x.barcode||"").toLowerCase()===String(p.barcode).toLowerCase())||(String(x.name||"").trim().toLowerCase()===p.name.toLowerCase()&&String(x.batch_number||"").toLowerCase()===String(p.batch_number||"").toLowerCase()));if(match&&!updateExisting){skipped++;continue;}const d={name:p.name,generic_name:p.generic_name||null,brand:p.brand||null,barcode:p.barcode||null,category:p.category||null,hsn_code:p.hsn_code||null,batch_number:p.batch_number||null,expiry_date:p.expiry_date||null,mrp:p.mrp,purchase_price:p.purchase_price,gst_percent:p.gst_percent,stock:p.stock,unit:p.unit||"PCS",image_url:p.image_url||null};try{let q;if(match){q=await sb.from("ms_products").update(d).eq("id",match.id).eq("pharmacy_id",pharmacyId());if(q.error)throw q.error;updated++;}else{q=await sb.from("ms_products").insert({...d,pharmacy_id:pharmacyId()});if(q.error)throw q.error;added++;}}catch(e){failed.push(`${p.name}: ${e.message}`);}}
@@ -1798,8 +1798,8 @@ function rackLocationModal(id=null){
 }
  
 function stockUnitFactor(p, selectedUnit=p?.unit){
- // Inventory stock and saved MRP are stored in the medicine's original stock unit.
- // Example: 1 Strip × 15 tablets; Tablet sale uses 1/15 of a strip per tablet.
+ // Inventory stock and saved MRP are stored in the medicine's original unit.
+ // For a strip-based medicine, one tablet consumes exactly 1 / pack strip.
  const base=String(p?.stock_unit||p?.unit||"PCS").trim().toLowerCase();
  const chosen=String(selectedUnit||base).trim().toLowerCase();
  const pack=Math.max(1,Number(p?.tablets_per_strip)||1);
@@ -1807,16 +1807,35 @@ function stockUnitFactor(p, selectedUnit=p?.unit){
  if(base==="tablet"&&chosen==="strip")return pack;
  return 1;
 }
-function stockAvailableForUnit(p, selectedUnit=p?.unit){return Math.max(0,Number(p?.stock)||0)/stockUnitFactor(p,selectedUnit);}
-function cartRate(p){return Number((Number(p?.mrp||0)*stockUnitFactor(p,p?.unit)).toFixed(2));}
-function cartPurchaseCost(p){return Number((Number(p?.purchase_price||0)*stockUnitFactor(p,p?.unit)).toFixed(4));}
+function stockAvailableForUnit(p, selectedUnit=p?.unit){
+ const factor=stockUnitFactor(p,selectedUnit);
+ return factor>0?Math.max(0,Number(p?.stock)||0)/factor:0;
+}
+// Keep full precision internally; round only when displaying currency / saving bill totals.
+function cartRate(p){return Math.max(0,Number(p?.mrp)||0)*stockUnitFactor(p,p?.unit);}
+function cartPurchaseCost(p){return Math.max(0,Number(p?.purchase_price)||0)*stockUnitFactor(p,p?.unit);}
+function cartUnitOptions(p){
+ const base=String(p?.stock_unit||p?.unit||"PCS").trim().toLowerCase();
+ if(base!=="strip"&&base!=="tablet")return `<option value="${esc(p?.unit||"PCS")}" selected>${esc(p?.unit||"PCS")}</option>`;
+ const pack=Math.max(1,Number(p?.tablets_per_strip)||1),selected=String(p?.unit||base).toLowerCase();
+ const stripRate=base==="strip"?Number(p?.mrp||0):Number(p?.mrp||0)*pack;
+ const tabletRate=base==="strip"?Number(p?.mrp||0)/pack:Number(p?.mrp||0);
+ return `<option value="Strip" ${selected==="strip"?"selected":""}>Strip · ${money(stripRate)}</option><option value="Tablet" ${selected==="tablet"?"selected":""}>Tablet · ${money(tabletRate)}</option>`;
+}
 function updateStripPricePreview(){
  const unit=String($("unit")?.value||"PCS").trim().toLowerCase();
  const mrp=Number($("mrp")?.value||0),pack=Math.max(1,Number($("tablets_per_strip")?.value)||1);
  const host=$("stripPricePreview");if(!host)return;
- if(unit==="strip")host.textContent=`1 Strip = ${pack} Tablets · 1 Tablet MRP = ₹${(mrp/pack).toFixed(2)} · 2 Tablets = ₹${(mrp*2/pack).toFixed(2)} (before discount)`;
+ if(unit==="strip")host.textContent=`Saved MRP is for 1 full Strip: ₹${mrp.toFixed(2)} · 1 Strip = ${pack} Tablets · 1 Tablet MRP = ₹${(mrp/pack).toFixed(4)} · 2 Tablets = ₹${(mrp*2/pack).toFixed(2)} (before discount)`;
  else if(unit==="tablet")host.textContent=`MRP is entered per Tablet. 1 Strip equivalent (${pack} Tablets) = ₹${(mrp*pack).toFixed(2)}.`;
  else host.textContent=`MRP is entered per ${$("unit")?.value||"unit"}.`;
+}
+function updateInventoryRestockPreview(){
+ const stock=Number($("stock")?.value||0),minimum=Number($("reorder_level")?.value||0),target=Number($("target_stock")?.value||0),host=$("restockPreview");if(!host)return;
+ if(minimum<=0||target<=0){host.textContent="Set a minimum stock and target stock to activate automatic reorder suggestions.";return;}
+ if(target<minimum){host.textContent="Target stock should be equal to or greater than the minimum stock level.";return;}
+ if(stock<=minimum){host.textContent=`REORDER NOW · Current stock ${stock} · Suggested addition ${Math.max(0,target-stock)} units to reach target ${target}.`;}
+ else{host.textContent=`Stock is above reorder level · ${Math.max(0,stock-minimum)} units before reorder alert · Suggested addition when alert triggers: ${Math.max(0,target-minimum)} units.`;}
 }
 function stockDisplay(p){
  const n=Math.max(0,Number(p?.stock)||0),u=String(p?.unit||"PCS");
@@ -1831,7 +1850,7 @@ function fillProductRows(list){
  $("productRows").innerHTML=list.length?list.map(p=>`<tr>
  <td><b>${esc(p.name)}</b><br><small>${esc(p.barcode||"")}</small></td>
  <td>${esc(p.generic_name||"-")}</td><td>${esc(p.brand||"-")}</td><td>${esc(p.batch_number||"-")}</td>
- <td>${esc(p.expiry_date||"-")}</td><td>${money(p.mrp)}</td><td>${money(p.purchase_price)}</td>
+ <td>${esc(p.expiry_date||"-")}</td><td>${money(p.mrp)}<small class="medicine-sub">${String(p.unit||"").toLowerCase()==="strip"?`Per strip · 1 tablet ₹${(Number(p.mrp||0)/Math.max(1,Number(p.tablets_per_strip)||1)).toFixed(4)}`:`Per ${esc(p.unit||"unit")}`}</small></td><td>${money(p.purchase_price)}</td>
  <td>${esc(stockDisplay(p))}</td><td>${esc(p.hsn_code||"-")}</td><td>${safeWebUrl(p.image_url)?`<a href="${esc(safeWebUrl(p.image_url))}" target="_blank" rel="noopener">View</a>`:"-"}</td>
  <td>${canManage()?`<button class="btn light" onclick="editProduct('${p.id}')">Edit</button> <button class="btn danger" onclick="deleteProduct('${p.id}')">Delete</button>`:"-"}</td>
  </tr>`).join(""):`<tr><td colspan="11" class="empty">No medicines found.</td></tr>`;
@@ -1868,17 +1887,21 @@ function productModal(p=null){
  <div class="field image-upload-card"><label>Medicine photo · upload from phone</label><label class="grn-upload-button" for="productPhotoFile"><span class="grn-upload-icon">＋</span><span><b>Choose medicine photo</b><small>Gallery · Camera · JPG · PNG · WEBP · Up to 5 MB</small></span></label><input id="productPhotoFile" class="grn-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/avif" capture="environment" onchange="previewProductPhoto(this)"><input type="hidden" name="image_url" id="productImageUrl" value="${esc(p?.image_url||"")}"><div id="productPhotoPreview" class="grn-file-preview">${p?.image_url?`<img src="${esc(p.image_url)}" style="max-width:92px;max-height:92px;object-fit:contain;border-radius:10px"> Current photo`:'No photo selected'}</div></div>
  ${field("Batch number","batch_number",p?.batch_number)}
  ${field("Expiry date","expiry_date",p?.expiry_date,"","date")}
- <div class="field"><label id="mrpUnitLabel">MRP (₹ per ${esc(p?.unit||"unit")})</label><input id="mrp" name="mrp" type="number" min="0" step="0.01" value="${esc(p?.mrp??0)}" required><small>Enter the printed MRP for the selected stock unit. For Strip, enter the full strip MRP.</small></div>
+ <div class="field"><label id="mrpUnitLabel">MRP (₹ per ${esc(p?.unit||"unit")})</label><input id="mrp" name="mrp" type="number" min="0" step="0.01" value="${esc(p?.mrp??0)}" required><small>Enter the printed MRP. If stock unit is Strip, enter the full strip MRP; the software divides it by tablets per strip for single-tablet billing.</small></div>
  ${field("Purchase price","purchase_price",p?.purchase_price??0,"","number")}
   ${field("GST %","gst_percent",p?.gst_percent??0,"","number")}
  ${field("Opening stock quantity","stock",p?.stock??0,"required","number")}
  ${field("Stock unit (Strip / Tablet / PCS)","unit",p?.unit||"PCS")}
  ${field("Tablets in 1 strip","tablets_per_strip",p?.tablets_per_strip??15,"","number")}
+ ${field("Minimum / Reorder stock","reorder_level",p?.reorder_level??0,"","number")}
+ ${field("Target stock after purchase","target_stock",p?.target_stock??0,"","number")}
+ <div class="field" style="grid-column:1/-1;background:#f0faf5;border:1px solid #ccebd8;border-radius:10px;padding:10px;font-size:12px;color:#245b3d"><b>Automatic stock-addition suggestion</b><div id="restockPreview" style="margin-top:6px;font-weight:700">Enter current stock, minimum stock and target stock.</div><small>When current stock reaches the minimum level, the suggested purchase quantity is target stock minus current stock.</small></div>
  <div class="field" style="grid-column:1/-1;background:#eef6ff;border:1px solid #cfe3ff;border-radius:10px;padding:10px;font-size:12px;color:#245078"><b>Stock & price calculator</b><div id="stripPricePreview" style="margin-top:6px;font-weight:700">Enter unit, MRP and tablets per strip to see the calculation.</div><small style="display:block;margin-top:5px">Example: Strip MRP ₹150 ÷ 15 tablets = ₹10.00 per tablet. Selling 2 tablets = ₹20.00; stock reduces by 2 tablets. Inventory quantity remains tracked in the original stock unit.</small></div>
  </div><br><button class="btn full">Save medicine</button></form>`;
  [$("name"),$("generic_name")].filter(Boolean).forEach(el=>el.addEventListener("input",updateDrugScheduleSuggestion));
  [$("unit"),$("mrp"),$("tablets_per_strip")].filter(Boolean).forEach(el=>el.addEventListener("input",updateStripPricePreview));
- updateStripPricePreview();
+ [$("stock"),$("reorder_level"),$("target_stock")].filter(Boolean).forEach(el=>el.addEventListener("input",updateInventoryRestockPreview));
+ updateStripPricePreview();updateInventoryRestockPreview();
  $("productForm").onsubmit=async e=>{
   e.preventDefault();
   const d=Object.fromEntries(new FormData(e.target));
@@ -1886,10 +1909,12 @@ function productModal(p=null){
   if(photoFile){try{d.image_url=await uploadProductPhoto(photoFile,p?.id||crypto.randomUUID());}catch(uploadErr){return notify("Photo upload failed: "+uploadErr.message);}}
   // HTML date inputs return an empty string when no expiry is entered; Postgres DATE requires NULL instead.
   d.expiry_date = d.expiry_date ? d.expiry_date : null;
-  ["mrp","purchase_price","gst_percent","stock","tablets_per_strip"].forEach(k=>d[k]=Number(d[k]||0));
-  if(!Number.isFinite(d.stock) || d.stock < 0) throw new Error("Stock must be zero or a positive number.");
-  if(String(d.unit||"").trim().toLowerCase()==="strip" && (!Number.isFinite(d.tablets_per_strip)||d.tablets_per_strip<1)) throw new Error("Enter the correct tablets per strip (minimum 1).");
   try{
+   ["mrp","purchase_price","gst_percent","stock","tablets_per_strip","reorder_level","target_stock"].forEach(k=>d[k]=Number(d[k]||0));
+   if(!Number.isFinite(d.stock) || d.stock < 0) throw new Error("Stock must be zero or a positive number.");
+   if(!Number.isFinite(d.mrp) || d.mrp < 0) throw new Error("Enter a valid MRP amount.");
+   if(String(d.unit||"").trim().toLowerCase()==="strip" && (!Number.isFinite(d.tablets_per_strip)||d.tablets_per_strip<1)) throw new Error("Enter the correct tablets per strip (minimum 1).");
+   if(d.reorder_level<0||d.target_stock<0) throw new Error("Reorder level and target stock cannot be negative.");
    if(p){
     const {error}=await sb.from("ms_products").update(d).eq("id",p.id).eq("pharmacy_id",pharmacyId());
     if(error)throw error;
@@ -2222,8 +2247,8 @@ function calculateBill(){
 }
 function renderCart(){
  if(!$("cartItems"))return;
- const rows=cart.map(p=>{const rate=cartRate(p),maxQty=stockAvailableForUnit(p,p.unit);const unitOptions=String(p.unit||"").toLowerCase()==="strip"?`<option value="Strip" ${String(p.unit).toLowerCase()==="strip"?"selected":""}>Strip</option><option value="Tablet">Tablet</option>`:String(p.unit||"PCS").toLowerCase()==="tablet"?`<option value="Tablet" selected>Tablet</option><option value="Strip">Strip</option>`:`<option value="${esc(p.unit||"PCS")}" selected>${esc(p.unit||"PCS")}</option>`;return `<tr><td><b>${esc(p.name)}</b><small class="medicine-sub">${esc(p.brand||"")} · ${esc(p.unit||"PCS")}</small></td><td><input aria-label="Batch number" value="${esc(p.batch_number||"")}" readonly title="Batch from inventory" style="min-width:90px;width:100%;background:#f7f8fb;border:1px solid var(--border);padding:7px;border-radius:6px"></td><td><select aria-label="Unit" onchange="changeCartUnit('${p.id}',this.value)">${unitOptions}</select></td><td><input aria-label="Quantity" type="number" min="1" max="${maxQty}" step="1" value="${p.qty}" onchange="changeQty('${p.id}',this.value)"></td><td><span title="Rate from saved inventory MRP; cannot be edited">${money(rate)}</span></td><td><input aria-label="Discount percent" type="number" min="0" max="100" step=".1" value="${Number(p.discount_pct||0)}" onchange="setCartDiscount('${p.id}',this.value)"></td><td><b>${money(p.qty*rate*(1-Number(p.discount_pct||0)/100))}</b> <button class="close" onclick="removeCart('${p.id}')" aria-label="Remove">×</button></td></tr>`;}).join("");
- $("cartItems").innerHTML=`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Unit</th><th>Qty</th><th>MRP rate (fixed)</th><th>Disc %</th><th>Amount</th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="empty">Add medicines to this bill.</td></tr>`}</tbody></table></div>`;
+ const rows=cart.map(p=>{const rate=cartRate(p),maxQty=stockAvailableForUnit(p,p.unit),unitOptions=cartUnitOptions(p);return `<tr><td><b>${esc(p.name)}</b><small class="medicine-sub">${esc(p.brand||"")} · Inventory unit: ${esc(p.stock_unit||p.unit||"PCS")}</small></td><td><input aria-label="Batch number" value="${esc(p.batch_number||"")}" readonly title="Batch from inventory" style="min-width:90px;width:100%;background:#f7f8fb;border:1px solid var(--border);padding:7px;border-radius:6px"></td><td><select aria-label="Selling unit" title="Choose whether this medicine is sold as a full strip or as individual tablets" onchange="changeCartUnit('${p.id}',this.value)">${unitOptions}</select></td><td><input aria-label="Quantity" type="number" min="1" max="${Math.floor(maxQty+1e-8)}" step="1" value="${p.qty}" onchange="changeQty('${p.id}',this.value)"></td><td><span title="Automatically calculated from saved inventory MRP; cannot be edited">${money(rate)}</span></td><td><input aria-label="Discount percent" type="number" min="0" max="100" step=".1" value="${Number(p.discount_pct||0)}" onchange="setCartDiscount('${p.id}',this.value)"></td><td><b>${money(p.qty*rate*(1-Number(p.discount_pct||0)/100))}</b> <button class="close" onclick="removeCart('${p.id}')" aria-label="Remove">×</button></td></tr>`;}).join("");
+ $("cartItems").innerHTML=`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Selling unit</th><th>Qty</th><th>MRP rate (fixed)</th><th>Disc %</th><th>Amount</th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="empty">Add medicines to this bill.</td></tr>`}</tbody></table></div><small class="feature-note" style="display:block;margin-top:8px">For strip medicines, choose <b>Strip</b> to sell a full strip or <b>Tablet</b> to sell individual tablets. The unit rate and stock deduction are calculated automatically from Inventory MRP and tablets per strip. POS rate cannot be edited.</small>`;
  const t=calculateBill();const discountInput=$("billDiscount");
  if(discountInput && t.discountRejected){discountInput.value=t.maxDiscount.toFixed(2);notify("Discount reduced: minimum 20% profit on purchase cost must be maintained.");}
  if($("discountLimitNote"))$("discountLimitNote").textContent=`Maximum permitted discount: ${money(t.maxDiscount)}.`;
