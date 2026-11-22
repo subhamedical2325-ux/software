@@ -1193,7 +1193,41 @@ body.auth-mode .auth-card{background:#fff!important;box-shadow:-18px 0 55px #173
 }
 @media(prefers-reduced-motion:reduce){.transfer-hero,.transfer-create-panel,.transfer-list-panel,.transfer-illustration span{animation:none!important}}
 
+
+/* Customer reminder visual refresh: lightweight animated healthcare graphics */
+.reminder-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:190px;padding:26px 30px;border-radius:20px;background:linear-gradient(115deg,#24234d 0%,#5144a1 55%,#2d9e9b 120%);color:#fff;box-shadow:0 16px 34px #30276a24}
+.reminder-hero-copy{position:relative;z-index:2;max-width:590px}.reminder-kicker{font-size:10px;font-weight:800;letter-spacing:2px;color:#b9f1e7}.reminder-hero h2{font-size:clamp(22px,3vw,31px);margin:9px 0 8px;line-height:1.15}.reminder-hero p{font-size:13px;line-height:1.65;color:#e4e4ff;margin:0;max-width:520px}
+.reminder-hero-art{position:relative;width:190px;height:140px;flex:0 0 190px;z-index:1}.reminder-art-circle{position:absolute;right:35px;top:8px;width:112px;height:112px;border-radius:36px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#d9f5ef);color:#328d8b;font-size:57px;box-shadow:0 16px 35px #14153e55;transform:rotate(-9deg);animation:reminderFloat 4s ease-in-out infinite}.reminder-art-pill{position:absolute;width:56px;height:19px;border-radius:20px;background:#f4bd68;border:4px solid #fff;transform:rotate(-36deg);box-shadow:0 6px 12px #15123b44}.pill-a{top:4px;right:2px;animation:reminderDrift 5s ease-in-out infinite}.pill-b{bottom:8px;left:3px;background:#83d7cb;transform:rotate(28deg);animation:reminderDrift 4s ease-in-out infinite reverse}.reminder-art-spark{position:absolute;right:2px;bottom:5px;font-size:27px;color:#ffe5a7;animation:reminderSpark 2.5s ease-in-out infinite}.reminder-orbit{position:absolute;border:1px solid #ffffff22;border-radius:50%;pointer-events:none}.orbit-one{width:260px;height:260px;right:60px;top:-120px}.orbit-two{width:190px;height:190px;right:-40px;bottom:-130px}
+@keyframes reminderFloat{0%,100%{transform:translateY(0) rotate(-9deg)}50%{transform:translateY(-9px) rotate(-4deg)}}@keyframes reminderDrift{0%,100%{translate:0 0}50%{translate:0 -9px}}@keyframes reminderSpark{0%,100%{opacity:.55;transform:scale(.85) rotate(0)}50%{opacity:1;transform:scale(1.15) rotate(18deg)}}
+.reminder-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.reminder-stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:34px 1fr;align-items:center;column-gap:10px;box-shadow:0 5px 18px #30305a08}.reminder-stat span{grid-row:span 2;width:34px;height:34px;border-radius:11px;background:#f0eefb;display:grid;place-items:center}.reminder-stat small{color:var(--muted);font-size:11px}.reminder-stat strong{font-size:21px;color:var(--text)}.reminder-panel{margin-top:16px}.customer-reminder-card{background:#fff;border:1px solid var(--border);border-radius:16px;margin:14px 0;overflow:hidden;box-shadow:0 5px 20px #26234b08;animation:reminderAppear .35s ease both}.customer-reminder-head{display:flex;align-items:center;gap:12px;padding:16px 18px;background:linear-gradient(100deg,#fbfaff,#f5fbfb);flex-wrap:wrap}.customer-avatar{width:43px;height:43px;border-radius:14px;background:linear-gradient(140deg,#6654b4,#31a69c);display:grid;place-items:center;color:#fff;font-size:18px;font-weight:800;box-shadow:0 5px 12px #51447735}.customer-reminder-info{flex:1;min-width:150px}.customer-reminder-info h4{margin:0 0 5px;font-size:14px}.customer-reminder-info p{margin:0;color:var(--muted);font-size:11px}.customer-reminder-info p span{padding:0 5px}.customer-reminder-actions{display:flex;gap:7px;flex-wrap:wrap}.customer-reminder-actions .btn,.customer-medicine-table .btn{font-size:10px;padding:7px 9px}.customer-medicine-table{padding:14px 17px 8px}.customer-medicine-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:0 0 8px}.customer-medicine-title strong{font-size:12px}.customer-medicine-title span{font-size:10px;color:var(--muted)}.customer-medicine-table table{min-width:690px}.customer-medicine-table th{background:#f7f8fc}.reminder-status{display:inline-block;padding:5px 9px;border-radius:20px;background:#fff4dd;color:#9a6b17;font-size:10px;font-weight:800}.reminder-status.done{background:#e4f8ee;color:#168257}.reminder-status.called{background:#eaf2ff;color:#3768ad}.rem-medicine-heading{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px;gap:10px}.rem-medicine-heading strong{font-size:13px}.rem-medicine-input-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(100px,.8fr) minmax(130px,.9fr) 32px;gap:9px;align-items:end;padding:12px;margin:9px 0;border:1px solid #e7e4f3;border-radius:12px;background:#fbfaff}.rem-medicine-input-row .field{margin:0}.rem-remove{height:36px;border:0;border-radius:9px;background:#fff0f0;color:#c53d4b;font-size:22px}.rem-form-intro{display:flex;align-items:center;gap:12px;padding:13px;border-radius:12px;background:linear-gradient(100deg,#f0edfb,#e9f8f5);margin-bottom:16px}.rem-form-intro>span{font-size:25px}.rem-form-intro strong,.rem-form-intro small{display:block}.rem-form-intro strong{font-size:13px}.rem-form-intro small{font-size:11px;color:var(--muted);margin-top:4px}
+@keyframes reminderAppear{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:650px){.reminder-hero{padding:20px;min-height:170px}.reminder-hero-art{width:100px;flex-basis:100px;transform:scale(.78);transform-origin:center right;margin-left:-20px}.reminder-stats{gap:7px}.reminder-stat{padding:10px 8px;grid-template-columns:28px 1fr;column-gap:6px}.reminder-stat span{width:28px;height:28px;font-size:13px}.reminder-stat strong{font-size:17px}.customer-reminder-head{padding:13px}.customer-reminder-actions{width:100%;padding-left:55px}.customer-medicine-table{padding:12px}.rem-medicine-input-row{grid-template-columns:1fr 1fr 32px}.rem-medicine-input-row .field:first-child{grid-column:1/-1}.rem-medicine-input-row .field:nth-child(3){grid-column:2}.rem-remove{grid-column:3;grid-row:2}.customer-medicine-title{align-items:flex-start;flex-direction:column;gap:4px}}
+
 </style>
+
+<style id="subha-motion-polish">
+:root{--sm-glow:rgba(46,128,255,.16)}
+body.app-mode{background:radial-gradient(ellipse at 8% 0%,rgba(48,135,255,.10),transparent 34%),radial-gradient(ellipse at 95% 10%,rgba(18,184,134,.08),transparent 30%),var(--bg,#f4f7fb)}
+.topbar{backdrop-filter:blur(14px);box-shadow:0 8px 28px rgba(18,38,63,.07)}
+.panel,.stat,.dash-stat,.dash-lower-card,.page-head{animation:smRise .48s cubic-bezier(.2,.7,.2,1) both}
+.panel:hover,.stat:hover,.dash-stat:hover,.dash-tool:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(25,55,95,.10);transition:transform .22s ease,box-shadow .22s ease}
+.btn,.dash-tool,.nav{transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.btn:active,.dash-tool:active{transform:scale(.975)}
+.staff-switch-btn.hidden{display:none!important}.staff-switch-btn{white-space:nowrap;border-radius:999px;font-weight:700}
+#sidebar .role-hidden{display:none!important}
+#sidebar .nav-group.role-hidden{display:none!important}
+.dash-welcome{position:relative;overflow:hidden;border-radius:22px;background:linear-gradient(120deg,#102b52,#1765a8 62%,#20a78a);color:white;padding:24px;box-shadow:0 18px 40px rgba(16,62,112,.18)}
+.dash-welcome:after{content:"";position:absolute;width:190px;height:190px;border:1px solid rgba(255,255,255,.22);border-radius:50%;right:-45px;top:-72px;box-shadow:0 0 0 22px rgba(255,255,255,.05),0 0 0 48px rgba(255,255,255,.035);animation:smFloat 7s ease-in-out infinite}
+.dash-eyebrow{letter-spacing:.14em;font-size:10px;font-weight:800;opacity:.78}
+.dash-welcome h2{color:white;margin:7px 0;font-size:clamp(22px,3vw,30px)}
+.dash-welcome p{color:rgba(255,255,255,.82)}
+.dash-stat-icon{filter:drop-shadow(0 5px 8px rgba(0,0,0,.12))}
+@keyframes smRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes smFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(12px) rotate(8deg)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+@media(max-width:600px){.staff-switch-btn{font-size:11px;padding:8px 10px}.top-actions{gap:7px}.top-actions #userLabel{max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+</style>
+
 </head>
 <body>
 <!-- LOGIN / REGISTRATION -->
@@ -1229,10 +1263,10 @@ body.auth-mode .auth-card{background:#fff!important;box-shadow:-18px 0 55px #173
 </div>
 <form id="loginForm">
 <div class="field">
-<label>Customer ID <span style="color:#d84c59">*</span></label><input autocomplete="organization" id="loginCustomerId" placeholder="Enter pharmacy code (Super Admin leave blank)"/>
+<label>Pharmacy ID / Pharmacy Code</label><input autocomplete="organization" id="loginCustomerId" placeholder="Enter your pharmacy code (required for staff)"/>
 </div>
 <div class="field">
-<label>Username <span style="color:#d84c59">*</span></label><input autocomplete="off" id="loginEmail" placeholder="Your registered email address" required="" type="email"/>
+<label>Email ID or Staff ID <span style="color:#d84c59">*</span></label><input autocomplete="username" id="loginEmail" placeholder="Registered email or generated Staff ID" required="" type="text"/>
 </div>
 <div class="field">
 <label>Password <span style="color:#d84c59">*</span></label><input autocomplete="new-password" id="loginPassword" placeholder="Enter password" required="" type="password"/>
@@ -1401,7 +1435,11 @@ const SUPABASE_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co";
 const STAFF_ADMIN_FUNCTION_URL = "https://adrndxmckbcaxhfxmhbd.supabase.co/functions/v1/medical-staff-admin";
 const SUPABASE_ANON_KEY = "sb_publishable_yjg6DKw0JTfU3eYayTfo_g_dyocz5kt";
  
-const sb = window.supabase?.createClient ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+// Each browser tab keeps its own authenticated session. This prevents one staff login
+// from replacing another staff member's session in a different tab on the same computer.
+const sb = window.supabase?.createClient ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { storage: window.sessionStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+}) : null;
  
 let currentUser = null;
 let currentMember = null;
@@ -1454,25 +1492,30 @@ $("loginForm").addEventListener("submit",async e=>{
  e.preventDefault();clearAuthMessage();
  const btn=$("loginButton");btn.disabled=true;btn.textContent="Signing in...";
  try{
-  const customerId=$("loginCustomerId").value.trim();
-  let requestedPharmacyId=null;
-  if(customerId){
-   const {data:pharmacy,error:pharmacyError}=await sb.from("ms_pharmacies").select("id,approval_status").eq("pharmacy_code",customerId).maybeSingle();
-   if(pharmacyError)throw pharmacyError;
-   if(!pharmacy)throw new Error("Customer ID / Pharmacy Code was not found.");
-   requestedPharmacyId=pharmacy.id;
+  const pharmacyCode=$("loginCustomerId").value.trim();
+  const loginIdentity=$("loginEmail").value.trim();
+  const isEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginIdentity);
+  let authEmail=loginIdentity;
+  if(!isEmail){
+   if(!pharmacyCode)throw new Error("Enter your Pharmacy ID and Staff ID.");
+   const {data:resolvedEmail,error:resolveError}=await sb.rpc("ms_resolve_staff_login_email",{p_staff_id:loginIdentity,p_pharmacy_code:pharmacyCode});
+   if(resolveError)throw resolveError;
+   if(!resolvedEmail)throw new Error("Staff ID was not found or is inactive for this pharmacy.");
+   authEmail=resolvedEmail;
   }
-  const {data,error}=await sb.auth.signInWithPassword({
-   email:$("loginEmail").value.trim(),
-   password:$("loginPassword").value
-  });
+  // Authenticate before querying pharmacy records; anonymous access is not required.
+  const {data,error}=await sb.auth.signInWithPassword({email:authEmail,password:$("loginPassword").value});
   if(error)throw error;
-  await loadApplication(data.user,requestedPharmacyId);
- }catch(err){document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");$("appScreen").classList.add("hidden");$("authScreen").classList.remove("hidden");authMessage(err.message||"Login failed");}
- finally{btn.disabled=false;btn.textContent="Log In";}
+  await loadApplication(data.user,pharmacyCode||null);
+ }catch(err){
+  document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");
+  $("appScreen").classList.add("hidden");$("authScreen").classList.remove("hidden");
+  authMessage(err.message||"Login failed");
+  try{await sb.auth.signOut();}catch(_){}
+ }finally{btn.disabled=false;btn.textContent="Log In";}
 });
- 
- 
+
+
 let pendingRegistrationEmail = "";
 let pendingRegistrationData = null;
 let pendingRegistrationVerified = false;
@@ -1568,37 +1611,54 @@ async function verifyForgotPasswordOtp(){
  }catch(e){authMessage("Password reset failed: "+(e.message||"Check OTP and recovery email template."));}
 }
  
+function switchStaffAccount(){
+  // Sign out only this tab (sessionStorage-backed Supabase auth), then return to login.
+  if(!confirm('Switch staff account in this window? Unsaved work on this screen may be lost.')) return;
+  logout();
+}
+
 async function logout(){
  document.body.classList.remove("app-mode");document.body.classList.add("auth-mode");
  await sb.auth.signOut();
- currentUser=null;currentMember=null;currentPharmacy=null;
+ currentUser=null;currentMember=null;currentPharmacy=null;$("userLabel").textContent="";
  $("appScreen").classList.add("hidden");
  $("authScreen").classList.remove("hidden");
  showAuth("login");
 }
  
-async function loadApplication(user,requestedPharmacyId=null){
+async function loadApplication(user,requestedPharmacyCode=null){
  currentUser=user;
  document.body.classList.remove("auth-mode");document.body.classList.add("app-mode");
  $("authScreen").classList.add("hidden");$("appScreen").classList.remove("hidden");
- $("userLabel").textContent=user.email||"Account";
+ $("userLabel").textContent=(user.email||"Account")+(currentMember?.role?" · "+String(currentMember.role).toUpperCase():"");
  const {data:members,error}=await sb.from("ms_members").select("*").eq("user_id",user.id).eq("is_active",true).limit(20);
  if(error)throw error;
  if(!members?.length)throw new Error("No active pharmacy account was found. Register a pharmacy or ask your Super Admin to create your staff account.");
+ 
  const globalSuper=members.find(m=>m.role==="super_admin"&&!m.pharmacy_id);
  if(globalSuper){
-  currentMember=globalSuper;
+  currentMember=globalSuper;applyRoleNavigation();
   const {data:pharmacies,error:phError}=await sb.from("ms_pharmacies").select("*").order("created_at",{ascending:false});
   if(phError)throw phError;
   adminPharmacyOptions=pharmacies||[];
-  selectedAdminPharmacyId=requestedPharmacyId&&adminPharmacyOptions.some(p=>p.id===requestedPharmacyId)?requestedPharmacyId:null;
+  selectedAdminPharmacyId=requestedPharmacyCode?(adminPharmacyOptions.find(p=>String(p.pharmacy_code||"").toUpperCase()===String(requestedPharmacyCode).toUpperCase())?.id||null):null;
   currentPharmacy=adminPharmacyOptions.find(p=>p.id===selectedAdminPharmacyId)||null;
   $("pharmacyNav").classList.remove("hidden");
   updateSuperPharmacySelector();
   await refreshData();navigate("dashboard");return;
  }
- currentMember=requestedPharmacyId?members.find(m=>m.pharmacy_id===requestedPharmacyId):members[0];
- if(!currentMember)throw new Error("This username does not belong to the entered Customer ID / Pharmacy Code.");
+ currentMember=members[0];
+ if(requestedPharmacyCode){
+  const matching=[];
+  for(const member of members){
+   const {data:pharmacy,error:lookupError}=await sb.from("ms_pharmacies").select("id,pharmacy_code").eq("id",member.pharmacy_id).maybeSingle();
+   if(lookupError)throw lookupError;
+   if(pharmacy && String(pharmacy.pharmacy_code||"").toUpperCase()===String(requestedPharmacyCode).toUpperCase())matching.push(member);
+  }
+  if(!matching.length)throw new Error("This Staff ID / Email does not belong to the entered Pharmacy ID.");
+  currentMember=matching[0];
+ }
+ applyRoleNavigation();
  selectedAdminPharmacyId=null;adminPharmacyOptions=[];
  const selector=$("superPharmacySelect");if(selector)selector.classList.add("hidden");
  const {data:ph,error:phError}=await sb.from("ms_pharmacies").select("*").eq("id",currentMember.pharmacy_id).maybeSingle();
@@ -1699,7 +1759,34 @@ function expandNavGroupForPage(page){
  });
 }
 
+function applyRoleNavigation(){
+ const role=currentMember?.role;
+ const cashier=role==="cashier";
+ const allowed=new Set(["dashboard","cashierdesk","cashierreport","cashbook"]);
+ document.querySelectorAll("#sidebar .nav, #sidebar .nav-group").forEach(el=>el.classList.remove("role-hidden"));
+ if(cashier){
+  const submenu=document.querySelector("#sidebar [data-nav-group=admin] .nav-submenu");
+  if(submenu){[{page:"cashierdesk",icon:"🧾",label:"Pending Bill Collection"},{page:"cashierreport",icon:"📊",label:"Daily Collection Report"}].forEach(item=>{if(!submenu.querySelector(`[data-page="${item.page}"]`)){const b=document.createElement("button");b.className="nav nav-sub";b.dataset.page=item.page;b.innerHTML=`<span>${item.icon}</span>${item.label}`;b.onclick=()=>navigate(item.page);submenu.prepend(b);}});}
+  document.querySelectorAll("#sidebar .nav[data-page]").forEach(el=>{
+   if(!allowed.has(el.dataset.page)) el.classList.add("role-hidden");
+  });
+  document.querySelectorAll("#sidebar .nav-group").forEach(group=>{
+   const visible=[...group.querySelectorAll(".nav[data-page]")].some(el=>allowed.has(el.dataset.page));
+   if(!visible) group.classList.add("role-hidden");
+  });
+  const mainLabel=document.querySelector("#sidebar .nav-main-label");
+  if(mainLabel) mainLabel.textContent="CASHIER MENU";
+ }else{
+  const mainLabel=document.querySelector("#sidebar .nav-main-label");
+  if(mainLabel) mainLabel.textContent="MAIN MENU";
+ }
+ const switchBtn=$("switchStaffButton");
+ if(switchBtn) switchBtn.classList.toggle("hidden",!currentUser);
+}
+function cashierPageAllowed(page){return currentMember?.role!=="cashier"||["dashboard","cashierdesk","cashierreport","cashbook"].includes(page);}
+
 function navigate(page){
+ if(!cashierPageAllowed(page)){notify("Cashier access is limited to money and cashbook functions.");return;}
  if(currentPage==="scanner" && page!=="scanner")stopCameraScanner();
  const tenantPages=["billing","emergency","products","stocktransfer","productimport","rack","customers","suppliers","purchases","reports","scanner","audit","itemmaster","manufacturers","billocr","purchaseorders","prescriptions","reminders","returns","cashbook","staff","settings"];
  if(isSuper()&&tenantPages.includes(page)&&!pharmacyId()){notify("Select a pharmacy workspace from the top bar first.");page="dashboard";}
@@ -1712,12 +1799,12 @@ function navigate(page){
   customers:"Customers",suppliers:"Suppliers",purchases:"Purchases",
   reports:"Reports",scanner:"Barcode Scanner",audit:"Stock Audit",itemmaster:"Item Master",
   manufacturers:"Manufacturers",billocr:"Bill OCR / Inward",purchaseorders:"Purchase Orders / GRN",prescriptions:"Prescription Desk",
-  reminders:"Refill Reminders",returns:"Returns",cashbook:"Cashbook & Expenses",
+  reminders:"Refill Reminders",returns:"Returns",cashbook:"Cashbook & Expenses",cashierdesk:"Pending Bill Collection",cashierreport:"Cashier Daily Report",
   staff:"Staff & Roles",pharmacies:"Pharmacy Approval",settings:"Settings"
  };
  $("topTitle").textContent=titles[page]||page;
  $("topSubtitle").textContent=isSuper()?"Super Admin":(currentPharmacy?.pharmacy_name||"Pharmacy management");
- if(page==="dashboard")renderDashboard();
+ if(page==="dashboard"){if(currentMember?.role==="cashier")renderCashierDashboard();else renderDashboard();}
  else if(page==="products")renderProducts();
  else if(page==="stocktransfer")renderStockTransfer();
  else if(page==="productimport")renderProductImport();
@@ -1738,6 +1825,8 @@ function navigate(page){
  else if(page==="reminders")renderReminders();
  else if(page==="returns")renderReturns();
  else if(page==="cashbook")renderCashbook();
+ else if(page==="cashierdesk")renderCashierDesk();
+ else if(page==="cashierreport")renderCashierReport();
  else if(page==="staff")renderStaff();
  else if(page==="pharmacies")renderPharmacies();
  else if(page==="settings")renderSettings();
@@ -1746,6 +1835,36 @@ function navigate(page){
 function pageHead(title,subtitle,button=""){
  return `<div class="page-head"><div><h2>${title}</h2><p>${subtitle}</p></div>${button}</div>`;
 }
+async function renderCashierDesk(){
+ const pid=pharmacyId();
+ $("pageContent").innerHTML=`${pageHead("Cashier Collection Desk","Collect pending bills, record refunds and manage your own cash session")}<div id="cashierSessionPanel" class="panel">Loading your cash session...</div><div class="panel"><div class="panel-head"><h3>🧾 Bills waiting for collection</h3><button class="btn light" onclick="renderCashierDesk()">Refresh</button></div><div id="cashierPendingBills">Loading...</div></div><div class="panel"><h3>↩ Customer sales return refund</h3><form id="cashierRefundForm" class="form-grid"><div class="field"><label>Approved return reference / return ID</label><input name="return_ref" required class="feature-input" placeholder="Return reference"></div><div class="field"><label>Refund amount (₹)</label><input name="amount" type="number" min="0.01" step="0.01" required class="feature-input"></div><div class="field"><label>Refund method</label><select name="payment_method" class="feature-input"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option></select></div><div class="field"><label>UPI / transaction reference</label><input name="reference" class="feature-input"></div><div class="field"><label>Notes</label><input name="note" class="feature-input"></div><button class="btn">Record Refund</button></form><small class="feature-note">Only record refunds already approved by the pharmacist / owner.</small></div>`;
+ await loadCashierSession(); await loadCashierPendingBills();
+ $("cashierRefundForm").onsubmit=recordCashierRefund;
+}
+async function loadCashierSession(){
+ const h=$("cashierSessionPanel");if(!h)return;
+ const {data,error}=await sb.from("ms_cashier_sessions").select("*").eq("pharmacy_id",pharmacyId()).eq("staff_user_id",currentUser.id).eq("status","open").order("opened_at",{ascending:false}).limit(1).maybeSingle();
+ if(error){h.innerHTML=`<div class="notice">Cash session setup required: ${esc(error.message)}</div>`;return;}
+ window.activeCashierSession=data||null;
+ h.innerHTML=data?`<div class="panel-head"><div><h3>🟢 Cash session open</h3><small>Opened ${new Date(data.opened_at).toLocaleString()}</small></div><b>Opening cash: ${money(data.opening_cash)}</b></div><div class="actions"><button class="btn" onclick="cashierCashMovement('cash_in')">+ Cash In</button><button class="btn light" onclick="cashierCashMovement('cash_out')">− Cash Out</button><button class="btn danger" onclick="closeCashierSession()">Close My Cash Session</button></div>`:`<h3>🔒 No open cash session</h3><p>Open your own cash drawer before collecting payments.</p><div class="form-grid"><div class="field"><label>Opening cash (₹)</label><input id="cashierOpeningAmount" type="number" min="0" step="0.01" class="feature-input" value="0"></div><button class="btn" onclick="openCashierSession()">Open My Cash Session</button></div>`;
+}
+async function openCashierSession(){const amount=Math.max(0,Number($("cashierOpeningAmount")?.value||0));const {error}=await sb.from("ms_cashier_sessions").insert({pharmacy_id:pharmacyId(),staff_user_id:currentUser.id,staff_name:currentMember?.full_name||currentUser.email,opening_cash:amount,status:"open"});if(error)return notify(error.message);notify("Your cash session is open.");await loadCashierSession();}
+async function cashierCashMovement(type){if(!window.activeCashierSession)return notify("Open your cash session first.");const raw=prompt(type==="cash_in"?"Cash received amount (₹)":"Cash paid out amount (₹)");if(raw===null)return;const amount=Number(raw);if(!Number.isFinite(amount)||amount<=0)return notify("Enter a valid amount.");const note=prompt("Reason / description:")||"";const {error}=await sb.from("ms_cashier_transactions").insert({pharmacy_id:pharmacyId(),session_id:window.activeCashierSession.id,staff_user_id:currentUser.id,transaction_type:type,payment_method:"cash",amount,note});if(error)return notify(error.message);notify("Cash movement saved.");}
+async function loadCashierPendingBills(){const h=$("cashierPendingBills");if(!h)return;const {data,error}=await sb.from("ms_sales").select("id,invoice_number,created_at,customer_name,customer_phone,total,payment_status,payment_method,billing_staff_name").eq("pharmacy_id",pharmacyId()).eq("payment_method","cashier_pending").eq("payment_status","pending").order("created_at",{ascending:true}).limit(200);if(error){h.textContent="Unable to load pending bills: "+error.message;return;}h.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Customer</th><th>Saved by</th><th>Amount</th><th>Action</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.invoice_number||x.id)}</td><td>${esc(x.customer_name||"Walk-in")}<br><small>${esc(x.customer_phone||"")}</small></td><td>${esc(x.billing_staff_name||"Pharmacist")}</td><td><b>${money(x.total)}</b></td><td><button class="btn" onclick="collectCashierBill('${x.id}',${Number(x.total)||0},'${esc(x.invoice_number||"")}')">Collect Payment</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No bills are waiting for cashier collection.</div>`;}
+async function collectCashierBill(id,total,invoice){if(!window.activeCashierSession)return notify("Open your cash session before collecting payment.");const method=prompt(`Collect ${money(total)} for ${invoice}. Enter cash, upi, card or split:` ,"cash");if(!method)return;const m=method.toLowerCase().trim();if(!["cash","upi","card"].includes(m))return notify("For now choose cash, upi or card. Split collection will be added in the next payment enhancement.");const reference=m==="upi"?prompt("Enter UPI UTR / reference number:"):"";if(m==="upi"&&!reference)return notify("UPI reference is required.");const {data,error}=await sb.rpc("ms_cashier_collect_bill",{p_sale_id:id,p_payment_method:m,p_reference:reference||null});if(error)return notify("Collection failed: "+error.message);notify("Payment collected and bill marked paid.");await loadCashierPendingBills();await loadCashierSession();}
+async function recordCashierRefund(e){e.preventDefault();if(!window.activeCashierSession)return notify("Open your cash session first.");const d=Object.fromEntries(new FormData(e.target));const amount=Number(d.amount);if(!Number.isFinite(amount)||amount<=0)return notify("Enter a valid refund amount.");if(d.payment_method==="upi"&&!d.reference)return notify("UPI reference is required.");const {error}=await sb.from("ms_cashier_transactions").insert({pharmacy_id:pharmacyId(),session_id:window.activeCashierSession.id,staff_user_id:currentUser.id,transaction_type:"sales_refund",payment_method:d.payment_method,amount,reference:d.reference||null,related_reference:d.return_ref,note:d.note||"Approved sales return refund"});if(error)return notify(error.message);notify("Sales return refund recorded.");e.target.reset();}
+async function closeCashierSession(){if(!window.activeCashierSession)return;const {data,error}=await sb.from("ms_cashier_transactions").select("transaction_type,payment_method,amount").eq("session_id",window.activeCashierSession.id);if(error)return notify(error.message);const rows=data||[];const cashIn=rows.filter(x=>["cash_in","sale_collection"].includes(x.transaction_type)&&x.payment_method==="cash").reduce((a,x)=>a+Number(x.amount),0);const cashOut=rows.filter(x=>["cash_out","sales_refund"].includes(x.transaction_type)&&x.payment_method==="cash").reduce((a,x)=>a+Number(x.amount),0);const expected=Number(window.activeCashierSession.opening_cash||0)+cashIn-cashOut;const counted=Number(prompt(`Expected cash ${money(expected)}. Enter actual counted cash (₹):`,expected.toFixed(2)));if(!Number.isFinite(counted)||counted<0)return notify("Enter valid counted cash.");const {error:updateError}=await sb.from("ms_cashier_sessions").update({closed_at:new Date().toISOString(),expected_cash:expected,closing_cash:counted,variance:Number((counted-expected).toFixed(2)),status:"closed"}).eq("id",window.activeCashierSession.id);if(updateError)return notify(updateError.message);notify("Cash session closed. Variance: "+money(counted-expected));await loadCashierSession();}
+async function renderCashierReport(){const today=new Date().toISOString().slice(0,10);$("pageContent").innerHTML=`${pageHead("Cashier Daily Collection Report","Your own collection, refunds and cash settlement")}<div class="panel"><div class="form-grid"><div class="field"><label>Report date</label><input id="cashierReportDate" type="date" class="feature-input" value="${today}"></div><button class="btn" onclick="loadCashierReport()">Generate Report</button><button class="btn light" onclick="printCashierReport()">Print Daily Report</button></div><div id="cashierReportRows">Loading...</div></div>`;await loadCashierReport();}
+async function loadCashierReport(){const h=$("cashierReportRows");if(!h)return;const date=$("cashierReportDate").value;const start=date+"T00:00:00",end=date+"T23:59:59.999";const {data,error}=await sb.from("ms_cashier_transactions").select("*").eq("pharmacy_id",pharmacyId()).eq("staff_user_id",currentUser.id).gte("created_at",start).lte("created_at",end).order("created_at");if(error){h.textContent=error.message;return;}const rows=data||[];const sum=(type,method)=>rows.filter(x=>x.transaction_type===type&&(!method||x.payment_method===method)).reduce((a,x)=>a+Number(x.amount),0);h.innerHTML=`<div class="stats-grid">${[["Cash Collected",sum("sale_collection","cash")],["UPI Collected",sum("sale_collection","upi")],["Card Collected",sum("sale_collection","card")],["Sales Refunds",sum("sales_refund")],["Cash In",sum("cash_in")],["Cash Out",sum("cash_out")]].map(x=>`<div class="stat-card"><small>${x[0]}</small><h3>${money(x[1])}</h3></div>`).join("")}</div><div class="table-wrap"><table><thead><tr><th>Time</th><th>Type</th><th>Method</th><th>Reference</th><th>Amount</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${new Date(x.created_at).toLocaleTimeString()}</td><td>${esc(x.transaction_type)}</td><td>${esc(x.payment_method)}</td><td>${esc(x.reference||x.related_reference||"-")}</td><td>${money(x.amount)}</td></tr>`).join("")}</tbody></table></div>`;}
+function printCashierReport(){const content=$("cashierReportRows")?.innerHTML||"";const w=window.open("","_blank");if(!w)return notify("Allow pop-ups to print the report.");w.document.write(`<html><head><title>Cashier Daily Report</title><style>body{font:14px Arial;padding:20px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #bbb;padding:7px;text-align:left}.stats-grid{display:flex;flex-wrap:wrap;gap:12px}.stat-card{border:1px solid #ddd;padding:12px}</style></head><body><h2>${esc(currentPharmacy?.pharmacy_name||"Pharmacy")} – Cashier Daily Report</h2><p>${esc(currentMember?.full_name||"")} · ${esc($("cashierReportDate")?.value||"")}</p>${content}</body></html>`);w.document.close();w.print();}
+function renderCashierDashboard(){
+ const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+ $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
+ <div class="dash-stats"><div class="dash-stat blue"><span class="dash-stat-icon">💵</span><div><small>Cashier</small><strong>${esc(currentMember?.full_name||"Staff")}</strong></div></div><div class="dash-stat green"><span class="dash-stat-icon">🏥</span><div><small>Pharmacy</small><strong>${esc(currentPharmacy?.pharmacy_name||"")}</strong></div></div></div>
+ <div class="dash-bottom-grid"><section class="dash-lower-card"><div class="dash-lower-head"><h3>💰 Cash & Payment</h3></div><div class="dash-tool-grid"><button class="dash-tool" onclick="navigate('cashierdesk')"><span>🧾</span><b>Pending Bill Collection</b><small>Collect pharmacist-saved bills</small></button><button class="dash-tool" onclick="navigate('cashierreport')"><span>📊</span><b>Daily Collection Report</b><small>Print cash, UPI, card and refunds</small></button><button class="dash-tool" onclick="navigate('cashbook')"><span>💳</span><b>Cashbook & Expenses</b><small>Cash in, cash out and expenses</small></button></div></section></div>
+ <div class="notice">Your account is restricted to cashier-related money functions. Inventory, purchasing, staff management and pharmacy settings are not available in this login.</div>`;
+}
+
 function renderDashboard(){
  if(isSuper()){renderSuperDashboard();return;}
  const today=new Date().toISOString().slice(0,10);
@@ -2127,6 +2246,7 @@ async function renderBilling(){
     <div class="field" style="margin:8px 0"><label>Bill discount (₹)</label><input id="billDiscount" type="number" min="0" step="0.01" value="0" oninput="renderCart()"><small id="discountLimitNote" class="feature-note"></small></div>
     <div class="total-row final"><span>Net payable</span><b id="billTotal">₹0.00</b></div></div>
    <div class="payment-head"><b>Payment mode</b><label class="split-toggle"><input id="splitPaymentToggle" type="checkbox" onchange="toggleSplitPayment()"> Split payment</label></div>
+    <div class="notice" style="margin:10px 0"><label style="display:flex;gap:10px;align-items:center;font-weight:700"><input id="sendToCashier" type="checkbox"> Save bill for cashier collection (payment will remain pending)</label><small>Use when a cashier is available. Otherwise collect payment directly as pharmacist.</small></div>
    <div id="singlePaymentBox" class="bill-meta"><div class="field"><label>Payment method</label><select id="billPayment" onchange="renderBillUpiPayment()"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option><option value="credit">Credit</option></select></div></div>
    <div id="billUpiPaymentBox" class="split-payment-box hidden" style="margin-top:8px"><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div id="billUpiQr" style="background:#fff;padding:8px;border-radius:8px;min-width:116px;min-height:116px;display:grid;place-items:center">UPI QR</div><div style="flex:1;min-width:150px"><b>Scan to pay</b><div class="feature-note">QR amount is linked to this bill total.</div><div id="billUpiAmount" style="font-size:19px;font-weight:800;margin:6px 0">₹0.00</div><small id="billUpiVpa" class="feature-note"></small></div></div><div class="field" style="margin-top:8px"><label>UPI reference / UTR number</label><input id="billUpiReference" placeholder="Enter UPI transaction reference number"></div></div>
    <div id="splitPaymentBox" class="split-payment-box hidden"><div class="split-payment-grid"><div class="field"><label>Cash (₹)</label><input id="splitCash" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>UPI (₹)</label><input id="splitUpi" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Card (₹)</label><input id="splitCard" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Credit (₹)</label><input id="splitCredit" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div></div><div class="split-total-line"><span>Allocated</span><b id="splitAllocated">₹0.00</b><span>Balance</span><b id="splitBalance">₹0.00</b></div><small id="splitPaymentHint" class="feature-note">Enter amounts to match the net payable.</small><div id="splitUpiPaymentBox" class="hidden" style="margin-top:9px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div id="splitUpiQr" style="background:#fff;padding:7px;border-radius:8px;min-width:112px;min-height:112px;display:grid;place-items:center"></div><div><b>Scan UPI amount</b><div id="splitUpiAmount" style="font-size:17px;font-weight:800">₹0.00</div><small class="feature-note" id="splitUpiVpa"></small></div></div><div class="field" style="margin-top:8px"><label>UPI reference / UTR number</label><input id="splitUpiReference" placeholder="Enter UPI transaction reference number"></div></div></div>
@@ -2370,7 +2490,7 @@ async function completeSale(){
  }
  const invoice="SM-"+Date.now();
  let paymentInfo;
- try{paymentInfo=getBillPayment();
+ try{paymentInfo=$("sendToCashier")?.checked && currentMember?.role!=="cashier" ? {method:"cashier_pending",status:"pending",upiAmount:0,reference:""} : getBillPayment();
   const payment=paymentInfo.method;
   if(paymentInfo.upiAmount>0&&!paymentInfo.reference)throw new Error("Enter the UPI reference / UTR number before saving this bill.");
   let customerId=window.billCustomerId||null;
@@ -2587,10 +2707,43 @@ async function renderCashbook(){
 async function loadCashbook(){const host=$("cashRows");if(!host)return;try{let q=sb.from("ms_cashbook_entries").select("*").eq("pharmacy_id",pharmacyId()).gte("entry_date",$("cashFrom").value).lte("entry_date",$("cashTo").value).order("entry_date",{ascending:false}).order("created_at",{ascending:false});const {data,error}=await q.limit(1000);if(error)throw error;const rows=data||[],income=rows.filter(x=>x.entry_type==="income").reduce((a,x)=>a+Number(x.amount),0),expense=rows.filter(x=>x.entry_type==="expense").reduce((a,x)=>a+Number(x.amount),0);$("cashSummary").innerHTML=[ ["Cash In",money(income)],["Cash Out",money(expense)],["Net Movement",money(income-expense)] ].map(x=>`<div class="stat-card"><small>${x[0]}</small><h3>${x[1]}</h3></div>`).join("");host.innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Payment</th><th>Amount</th><th>Action</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.entry_date)}</td><td><span class="badge ${x.entry_type==="income"?"green":"red"}">${esc(x.entry_type)}</span></td><td>${esc(x.category)}</td><td>${esc(x.description||"-")}</td><td>${esc(x.payment_method||"cash")}</td><td><b>${money(x.amount)}</b></td><td>${canManage()?`<button class="btn danger" onclick="deleteCashEntry('${x.id}')">Delete</button>`:"-"}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No cashbook entries for this date range.</div>`;}catch(e){host.textContent="Cashbook unavailable: "+e.message;}}
 function cashEntryModal(){ $("modalTitle").textContent="Add Cashbook Entry";$("modalBody").innerHTML=`<form id="cashForm"><div class="form-grid"><div class="field"><label>Entry type</label><select name="entry_type" class="feature-input"><option value="income">Cash In / Income</option><option value="expense">Cash Out / Expense</option></select></div><div class="field"><label>Date</label><input name="entry_date" type="date" required class="feature-input" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Category</label><input name="category" required class="feature-input" placeholder="Sales, Rent, Salary, Electricity"></div><div class="field"><label>Amount (₹)</label><input name="amount" type="number" min="0.01" step="0.01" required class="feature-input"></div><div class="field"><label>Payment method</label><select name="payment_method" class="feature-input"><option>cash</option><option>UPI</option><option>card</option><option>bank</option></select></div></div><div class="field"><label>Description</label><textarea name="description" class="feature-input"></textarea></div><button class="btn full">Save Entry</button></form>`;$("cashForm").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));d.pharmacy_id=pharmacyId();d.amount=Number(d.amount);d.created_by=currentUser.id;const {error}=await sb.from("ms_cashbook_entries").insert(d);if(error)return notify(error.message);closeModal();notify("Cashbook entry saved.");loadCashbook();};openModal();}
 async function deleteCashEntry(id){if(!canManage()||!confirm("Delete this cashbook entry?"))return;const {error}=await sb.from("ms_cashbook_entries").delete().eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);loadCashbook();}
-async function renderReminders(){ $("pageContent").innerHTML=`${pageHead("Refill Reminders","Track refill due dates. WhatsApp/SMS delivery is not automated in this build.",`<button class="btn" onclick="reminderModal()">+ Add Reminder</button>`)}<div class="panel"><div class="field"><label>Search patient / medicine / phone</label><input id="remSearch" class="feature-input" oninput="filterReminderRows()"></div><div id="remRows" class="empty">Loading reminders...</div></div>`;try{const {data,error}=await sb.from("ms_refill_reminders").select("*").eq("pharmacy_id",pharmacyId()).order("due_date");if(error)throw error;window.reminderRecords=data||[];filterReminderRows();}catch(e){$("remRows").textContent="Reminders unavailable: "+e.message;}}
-function filterReminderRows(){const h=$("remRows");if(!h)return;const q=($("remSearch")?.value||"").toLowerCase(),rows=(window.reminderRecords||[]).filter(x=>[x.patient_name,x.phone,x.medicine_name].join(" ").toLowerCase().includes(q));h.innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Patient</th><th>Phone</th><th>Medicine</th><th>Due</th><th>Status</th><th>Action</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.patient_name)}</td><td>${esc(x.phone||"-")}</td><td>${esc(x.medicine_name||"-")}</td><td>${esc(x.due_date)}</td><td>${esc(x.status)}</td><td><button class="btn light" onclick="completeReminder('${x.id}')">Complete</button> ${x.phone?`<a class="btn light" target="_blank" rel="noopener" href="https://wa.me/91${esc(x.phone.replace(/\D/g,''))}?text=${encodeURIComponent('Hello '+x.patient_name+', this is a refill reminder from Subha Medical.')}">WhatsApp</a>`:""}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No refill reminders.</div>`;}
-function reminderModal(){$("modalTitle").textContent="Add Refill Reminder";$("modalBody").innerHTML=`<form id="remForm"><div class="form-grid"><div class="field"><label>Patient name *</label><input name="patient_name" required class="feature-input"></div><div class="field"><label>Phone</label><input name="phone" class="feature-input"></div><div class="field"><label>Medicine</label><input name="medicine_name" class="feature-input"></div><div class="field"><label>Refill due date *</label><input name="due_date" type="date" required class="feature-input"></div></div><div class="field"><label>Notes</label><textarea name="notes" class="feature-input"></textarea></div><button class="btn full">Save Reminder</button></form>`;$("remForm").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));d.pharmacy_id=pharmacyId();d.created_by=currentUser.id;const {error}=await sb.from("ms_refill_reminders").insert(d);if(error)return notify(error.message);closeModal();notify("Reminder saved.");renderReminders();};openModal();}
-async function completeReminder(id){const {error}=await sb.from("ms_refill_reminders").update({status:"Completed"}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);renderReminders();}
+async function renderReminders(){
+ const host=$("pageContent");
+ host.innerHTML=`${pageHead("Patient Reminders","One customer record with each medicine listed separately. Follow up from a single customer reminder.",`<button class="btn" onclick="reminderModal()">＋ Add Customer Reminder</button>`)}
+ <section class="reminder-hero"><div class="reminder-orbit orbit-one"></div><div class="reminder-orbit orbit-two"></div><div class="reminder-hero-copy"><span class="reminder-kicker">CUSTOMER CARE</span><h2>Never miss a patient follow-up</h2><p>Keep one reminder per customer and list every medicine in its own row with an individual due date.</p></div><div class="reminder-hero-art" aria-hidden="true"><div class="reminder-art-circle"><span>✚</span></div><div class="reminder-art-pill pill-a"></div><div class="reminder-art-pill pill-b"></div><div class="reminder-art-spark">✦</div></div></section>
+ <div class="reminder-stats" id="reminderStats"><div class="reminder-stat"><span>👥</span><small>Customers</small><strong>—</strong></div><div class="reminder-stat"><span>💊</span><small>Medicine lines</small><strong>—</strong></div><div class="reminder-stat"><span>📅</span><small>Due / overdue</small><strong>—</strong></div></div>
+ <div class="panel reminder-panel"><div class="panel-head"><div><h3>Customer reminder list</h3><p class="feature-note">Each customer appears once. Medicines are shown in separate rows below.</p></div><input id="remSearch" class="search" placeholder="Search customer / medicine / phone" oninput="filterReminderRows()"></div><div id="remRows" class="empty">Loading customer reminders...</div></div>`;
+ try{
+  const {data:customers,error}=await sb.from("ms_patient_reminders").select("*").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false});
+  if(error)throw error;
+  const ids=(customers||[]).map(x=>x.id);
+  let medicines=[];
+  if(ids.length){const r=await sb.from("ms_patient_reminder_medicines").select("*").in("reminder_id",ids).eq("pharmacy_id",pharmacyId()).order("due_date");if(r.error)throw r.error;medicines=r.data||[];}
+  window.patientReminderRecords=(customers||[]).map(c=>({...c,medicines:medicines.filter(m=>m.reminder_id===c.id)}));
+  filterReminderRows();
+ }catch(e){$("remRows").textContent="Reminder setup required: "+e.message;}
+}
+function filterReminderRows(){
+ const host=$("remRows");if(!host)return;
+ const q=($("remSearch")?.value||"").trim().toLowerCase();
+ const all=window.patientReminderRecords||[];
+ const rows=all.filter(c=>[c.customer_name,c.phone,...(c.medicines||[]).map(m=>m.medicine_name)].join(" ").toLowerCase().includes(q));
+ const medicines=all.flatMap(c=>c.medicines||[]);const today=new Date().toISOString().slice(0,10);
+ const due=medicines.filter(m=>m.due_date<=today&&!['Purchased','Completed'].includes(m.status)).length;
+ const stats=$("reminderStats");if(stats)stats.innerHTML=`<div class="reminder-stat"><span>👥</span><small>Customers</small><strong>${all.length}</strong></div><div class="reminder-stat"><span>💊</span><small>Medicine lines</small><strong>${medicines.length}</strong></div><div class="reminder-stat"><span>📅</span><small>Due / overdue</small><strong>${due}</strong></div>`;
+ host.innerHTML=rows.length?rows.map(c=>`<article class="customer-reminder-card"><div class="customer-reminder-head"><div class="customer-avatar">${esc((c.customer_name||"C").trim().charAt(0).toUpperCase())}</div><div class="customer-reminder-info"><h4>${esc(c.customer_name)}</h4><p>☎ ${esc(c.phone||"Phone not added")} <span>•</span> ${c.medicines.length} medicine(s)</p></div><div class="customer-reminder-actions">${c.phone?`<a class="btn light" href="tel:${esc(c.phone)}">Call</a>`:""}${c.phone?`<a class="btn light" target="_blank" rel="noopener" href="https://wa.me/91${esc(String(c.phone).replace(/\D/g,''))}?text=${encodeURIComponent('Hello '+c.customer_name+', this is a follow-up reminder from your pharmacy.')} ">WhatsApp</a>`:""}<button class="btn light" onclick="deletePatientReminder('${c.id}')">Delete</button></div></div><div class="customer-medicine-table"><div class="customer-medicine-title"><strong>Medicine details</strong><span>Separate medicine-wise due dates and status</span></div><div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Quantity / note</th><th>Due date</th><th>Status</th><th>Action</th></tr></thead><tbody>${(c.medicines||[]).map(m=>`<tr><td><strong>${esc(m.medicine_name)}</strong></td><td>${esc(m.quantity_note||"—")}</td><td>${esc(m.due_date||"—")}</td><td><span class="reminder-status ${m.status==='Purchased'?'done':m.status==='Called'?'called':''}">${esc(m.status||"Pending")}</span></td><td><div class="actions"><button class="btn light" onclick="setPatientMedicineStatus('${m.id}','Called')">Called</button><button class="btn light" onclick="setPatientMedicineStatus('${m.id}','Purchased')">Purchased</button><button class="btn light" onclick="reschedulePatientMedicine('${m.id}','${m.due_date||''}')">Reschedule</button></div></td></tr>`).join("")||`<tr><td colspan="5">No medicine details added.</td></tr>`}</tbody></table></div></div></article>`).join(""):`<div class="empty"><div style="font-size:34px;margin-bottom:8px">♡</div>No customer reminders found. Add one customer and enter multiple medicines under that same reminder.</div>`;
+}
+function reminderAddMedicineRow(){const host=$("remMedicineRows");if(!host)return;const row=document.createElement("div");row.className="rem-medicine-input-row";row.innerHTML=`<div class="field"><label>Medicine name *</label><input class="feature-input rem-med-name" required placeholder="Medicine name"></div><div class="field"><label>Quantity / note</label><input class="feature-input rem-med-qty" placeholder="e.g. 1 strip"></div><div class="field"><label>Due date *</label><input class="feature-input rem-med-date" type="date" required></div><button type="button" class="rem-remove" title="Remove medicine" onclick="this.parentElement.remove()">×</button>`;host.appendChild(row);}
+function reminderModal(){
+ $("modalTitle").textContent="Add One Customer Reminder";
+ $("modalBody").innerHTML=`<form id="patientRemForm"><div class="rem-form-intro"><span>👤</span><div><strong>One customer · Multiple medicines</strong><small>Enter the customer once, then add each medicine as a separate line.</small></div></div><div class="form-grid"><div class="field"><label>Customer name *</label><input name="customer_name" required class="feature-input"></div><div class="field"><label>Phone number</label><input name="phone" type="tel" class="feature-input"></div></div><div class="rem-medicine-heading"><strong>Medicine-wise details</strong><button type="button" class="btn light" onclick="reminderAddMedicineRow()">＋ Add medicine</button></div><div id="remMedicineRows"></div><div class="field" style="margin-top:12px"><label>Customer follow-up notes</label><textarea name="notes" class="feature-input" rows="2" placeholder="Optional notes"></textarea></div><button class="btn full" type="submit">Save Customer Reminder</button></form>`;
+ reminderAddMedicineRow();
+ $("patientRemForm").onsubmit=async e=>{e.preventDefault();const form=e.target;const meds=[...form.querySelectorAll(".rem-medicine-input-row")].map(r=>({medicine_name:r.querySelector(".rem-med-name").value.trim(),quantity_note:r.querySelector(".rem-med-qty").value.trim()||null,due_date:r.querySelector(".rem-med-date").value,status:"Pending",pharmacy_id:pharmacyId()}));if(!meds.length||meds.some(m=>!m.medicine_name||!m.due_date))return notify("Add at least one medicine with its due date.");try{const d=Object.fromEntries(new FormData(form));const phone=d.phone.trim()||null;let head=null,createdNew=false;let lookup=sb.from("ms_patient_reminders").select("id").eq("pharmacy_id",pharmacyId()).ilike("customer_name",d.customer_name.trim());lookup=phone?lookup.eq("phone",phone):lookup.is("phone",null);const found=await lookup.maybeSingle();if(found.error)throw found.error;if(found.data){head=found.data;const upd=await sb.from("ms_patient_reminders").update({notes:d.notes.trim()||null,updated_at:new Date().toISOString()}).eq("id",head.id).eq("pharmacy_id",pharmacyId());if(upd.error)throw upd.error;}else{const ins=await sb.from("ms_patient_reminders").insert({pharmacy_id:pharmacyId(),customer_name:d.customer_name.trim(),phone,notes:d.notes.trim()||null,created_by:currentUser.id}).select("id").single();if(ins.error)throw ins.error;head=ins.data;createdNew=true;}const {error:medError}=await sb.from("ms_patient_reminder_medicines").insert(meds.map(m=>({...m,reminder_id:head.id})));if(medError){if(createdNew)await sb.from("ms_patient_reminders").delete().eq("id",head.id).eq("pharmacy_id",pharmacyId());throw medError;}closeModal();notify(found.data?"Medicine details added to the existing customer reminder.":"Customer reminder saved with separate medicine details.");renderReminders();}catch(err){notify("Could not save reminder: "+err.message);}};
+ openModal();
+}
+async function setPatientMedicineStatus(id,status){const {error}=await sb.from("ms_patient_reminder_medicines").update({status,updated_at:new Date().toISOString()}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Medicine reminder updated.");renderReminders();}
+async function reschedulePatientMedicine(id,current){const value=prompt("Enter new due date (YYYY-MM-DD)",current||new Date().toISOString().slice(0,10));if(!value)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return notify("Use date format YYYY-MM-DD.");const {error}=await sb.from("ms_patient_reminder_medicines").update({due_date:value,status:"Pending",updated_at:new Date().toISOString()}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Due date updated.");renderReminders();}
+async function deletePatientReminder(id){if(!confirm("Delete this customer reminder and all its medicine lines?"))return;const {error}=await sb.from("ms_patient_reminders").delete().eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Customer reminder deleted.");renderReminders();}
 async function renderReturns(){try{const [s,p]=await Promise.all([sb.from("ms_sales").select("id,invoice_number,created_at,total").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(100),sb.from("ms_purchases").select("id,invoice_number,created_at,total").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(100)]);if(s.error)throw s.error;if(p.error)throw p.error;window.returnSales=s.data||[];window.returnPurchases=p.data||[];$("pageContent").innerHTML=`${pageHead("Sales & Vendor Returns","Post approved returns with server-side stock adjustment")}<div class="panel"><h3>Customer Sales Return</h3><form id="saleReturnForm"><div class="form-grid"><div class="field"><label>Sales invoice</label><select name="sale_id" id="returnSale" required class="feature-input"><option value="">Select invoice</option>${window.returnSales.map(x=>`<option value="${x.id}">${esc(x.invoice_number||x.id.slice(0,8))} · ${new Date(x.created_at).toLocaleDateString()}</option>`).join("")}</select></div><div class="field"><label>Sale item</label><select name="sale_item_id" id="returnSaleItem" required class="feature-input"><option value="">Select invoice first</option></select></div><div class="field"><label>Return quantity</label><input name="quantity" type="number" min="0.001" step="0.001" required class="feature-input"></div></div><div class="field"><label>Reason</label><input name="reason" required class="feature-input"></div><button class="btn">Post Customer Return</button></form></div><div class="panel"><h3>Vendor Purchase Return</h3><form id="vendorReturnForm"><div class="form-grid"><div class="field"><label>Purchase invoice</label><select name="purchase_id" id="returnPurchase" required class="feature-input"><option value="">Select invoice</option>${window.returnPurchases.map(x=>`<option value="${x.id}">${esc(x.invoice_number||x.id.slice(0,8))} · ${new Date(x.created_at).toLocaleDateString()}</option>`).join("")}</select></div><div class="field"><label>Purchase item</label><select name="purchase_item_id" id="returnPurchaseItem" required class="feature-input"><option value="">Select invoice first</option></select></div><div class="field"><label>Return quantity</label><input name="quantity" type="number" min="0.001" step="0.001" required class="feature-input"></div></div><div class="field"><label>Reason</label><input name="reason" required class="feature-input"></div><button class="btn">Post Vendor Return</button></form></div><div class="panel"><div class="panel-head"><h3>Recent Returns</h3><div class="actions"><button class="btn light" onclick="printReturnHistory()">Print Returns</button><button class="btn light" onclick="exportReturnHistory()">Export CSV</button></div></div><div id="returnHistory">Loading...</div></div>`;
  $("returnSale").onchange=()=>loadReturnItems("sale",$("returnSale").value);$("returnPurchase").onchange=()=>loadReturnItems("purchase",$("returnPurchase").value);$("saleReturnForm").onsubmit=e=>submitReturn(e,"ms_post_sale_return");$("vendorReturnForm").onsubmit=e=>submitReturn(e,"ms_post_vendor_return");loadReturnHistory();}catch(e){$("pageContent").innerHTML=`${pageHead("Returns","Sales and vendor returns")}<div class="panel notice">Returns setup error: ${esc(e.message)}</div>`;}}
 async function loadReturnItems(type,id){const target=$(type==="sale"?"returnSaleItem":"returnPurchaseItem");target.innerHTML="<option>Loading...</option>";const table=type==="sale"?"ms_sale_items":"ms_purchase_items",fk=type==="sale"?"sale_id":"purchase_id";const {data,error}=await sb.from(table).select("id,product_name,quantity,batch_number").eq(fk,id).eq("pharmacy_id",pharmacyId());if(error){target.innerHTML="<option>Failed to load</option>";return notify(error.message);}target.innerHTML=`<option value="">Select item</option>`+(data||[]).map(x=>`<option value="${x.id}">${esc(x.product_name)} · Qty ${x.quantity} · ${esc(x.batch_number||"")}</option>`).join("");}
@@ -2611,7 +2764,8 @@ async function printSingleReturn(returnId){
  try{const {data,error}=await sb.from("ms_inventory_returns").select("*").eq("id",returnId).eq("pharmacy_id",pharmacyId()).single();if(error)throw error;const staffNames=await getPharmacyStaffNameMap();
  const fields=[["Return date",new Date(data.created_at).toLocaleString()],["Return type",data.return_type],["Reference",data.invoice_number||data.reference_number||data.sale_id||data.purchase_id],["Medicine",data.product_name],["Batch",data.batch_number],["Quantity",data.quantity],["Reason",data.reason],["Processed by",staffDisplayName(data,staffNames)]];
  const w=window.open("","_blank","width=760,height=700");if(!w)return notify("Allow pop-ups to print this return.");
- w.document.write(`<html><head><title>Return Voucher</title><style>body{font-family:Arial;padding:24px}h2{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}td{border:1px solid #bbb;padding:10px}td:first-child{font-weight:bold;width:32%}@media print{button{display:none}}</style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")}</h2><h3 style="text-align:center">Return Voucher</h3><table>${fields.map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v??"-")}</td></tr>`).join("")}</table><script>window.onload=()=>window.print();<\/script></body></html>`);w.document.close();
+ w.document.write(`<html><head><title>Return Voucher</title><style>body{font-family:Arial;padding:24px}h2{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}td{border:1px solid #bbb;padding:10px}td:first-child{font-weight:bold;width:32%}@media print{button{display:none}}#sidebar .role-hidden{display:none!important}
+</style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")}</h2><h3 style="text-align:center">Return Voucher</h3><table>${fields.map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v??"-")}</td></tr>`).join("")}</table><script>window.onload=()=>window.print();<\/script></body></html>`);w.document.close();
  }catch(e){notify("Could not print return: "+e.message);}
 }
 async function getReturnHistoryRows(){
@@ -2624,7 +2778,8 @@ async function printReturnHistory(){
   const staffNames=await getPharmacyStaffNameMap();
   const html=`<table><thead><tr><th>Date</th><th>Type</th><th>Reference</th><th>Medicine</th><th>Batch</th><th>Qty</th><th>Reason</th><th>Processed by</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(new Date(x.created_at).toLocaleString())}</td><td>${esc(x.return_type||"-")}</td><td>${esc(x.invoice_number||x.reference_number||"-")}</td><td>${esc(x.product_name||"-")}</td><td>${esc(x.batch_number||"-")}</td><td>${esc(x.quantity||0)}</td><td>${esc(x.reason||"-")}</td><td>${esc(staffDisplayName(x,staffNames))}</td></tr>`).join("")}</tbody></table>`;
   const w=window.open("","_blank","width=1000,height=750");if(!w)return notify("Allow pop-ups to print returns.");
-  w.document.write(`<html><head><title>Returns Register</title><style>body{font-family:Arial;padding:20px}h2{text-align:center}table{width:100%;border-collapse:collapse}th,td{border:1px solid #bbb;padding:7px;text-align:left;font-size:11px}th{background:#eef3f5}.no-print{display:none!important}</style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")} — Returns Register</h2>${html}<script>window.onload=()=>window.print();<\\/script></body></html>`);
+  w.document.write(`<html><head><title>Returns Register</title><style>body{font-family:Arial;padding:20px}h2{text-align:center}table{width:100%;border-collapse:collapse}th,td{border:1px solid #bbb;padding:7px;text-align:left;font-size:11px}th{background:#eef3f5}.no-print{display:none!important}#sidebar .role-hidden{display:none!important}
+</style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")} — Returns Register</h2>${html}<script>window.onload=()=>window.print();<\\/script></body></html>`);
   w.document.close();
  }catch(e){notify("Could not print returns: "+e.message);}
 }
@@ -3230,6 +3385,7 @@ body.auth-mode .subha-brand-footer{margin-top:clamp(14px,2.5vh,24px)!important;f
 
 /* Emergency billing module */
 .emergency-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;background:linear-gradient(120deg,#effbf8,#f5f8ff);border:1px solid #d8eee8}.emergency-hero h3{margin:7px 0;font-size:19px;color:#17384f}.emergency-mark{width:58px;height:58px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#0b9d91,#08717d);color:#fff;font-size:29px;box-shadow:0 10px 24px #0b82752b}.emergency-match-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:12px}.emergency-item{display:flex;align-items:center;gap:11px;width:100%;padding:13px;border:1px solid var(--border);border-radius:12px;background:#fff;text-align:left;cursor:pointer;transition:.18s}.emergency-item:hover{border-color:#0b9d91;transform:translateY(-2px);box-shadow:0 8px 20px #143c5812}.emergency-item-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#e9f8f4;font-size:19px}.emergency-item-info{display:grid;gap:4px;flex:1;min-width:0}.emergency-item-info b{font-size:13px}.emergency-item-info small{font-size:10px;color:#72818a}.emergency-item>strong{white-space:nowrap;color:#087f78}.emergency-total{display:flex;justify-content:space-between;align-items:center;margin:16px 0;padding:14px;border-radius:12px;background:#eff8f6;color:#17384f}.emergency-total strong{font-size:23px;color:#087f78}@media(max-width:600px){.emergency-hero{align-items:flex-start}.emergency-mark{width:44px;height:44px;font-size:23px;flex:0 0 44px}.emergency-match-grid{grid-template-columns:1fr}.emergency-item{padding:11px}}
+#sidebar .role-hidden{display:none!important}
 </style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")} — ${esc(activeReportTitle)}</h2>${host.innerHTML}<script>window.onload=()=>window.print();<\/script></body></html>`);
  w.document.close();
 }
@@ -3246,7 +3402,7 @@ async function renderStaff(){
  <div class="notice" style="margin-top:15px">Staff accounts are created securely through the Supabase Edge Function. The browser never receives an admin/service-role key. Manager access is limited to viewing staff and recording daily audits.</div>`;
  const {data,error}=await sb.from("ms_members").select("*").eq("pharmacy_id",pid).order("created_at",{ascending:true});
  if(error){$("staffRows").innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
- $("staffRows").innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Staff member</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead><tbody>${data.map(m=>`<tr><td data-label="Staff member"><b>${esc(m.full_name|| (m.user_id===currentUser.id?"Current account":String(m.user_id).slice(0,8)+"…"))}</b><br><small>${esc(m.phone||"")}</small></td><td data-label="Role"><select ${!canManage()||m.user_id===currentUser.id||currentMember.role!=="owner"?"disabled":""} onchange="changeStaffRole('${m.id}',this.value)"><option value="owner" ${m.role==="owner"?"selected":""}>Owner</option><option value="admin" ${m.role==="admin"?"selected":""}>Admin</option><option value="manager" ${m.role==="manager"?"selected":""}>Manager</option><option value="pharmacist" ${m.role==="pharmacist"?"selected":""}>Pharmacist</option><option value="cashier" ${m.role==="cashier"?"selected":""}>Cashier</option></select></td><td data-label="Status"><span class="badge ${m.is_active?"green":"red"}">${m.is_active?"Active":"Inactive"}</span></td><td data-label="Permissions"><button class="btn light" onclick="showStaffPermissions('${m.id}')">View</button></td><td data-label="Action"><div class="actions">${canManage()&&m.user_id!==currentUser.id?`<button class="btn light" onclick="editStaff('${m.id}')">Edit</button><button class="btn danger" onclick="deleteStaff('${m.id}')">Delete</button>`:""}${m.user_id===currentUser.id?"You":canManage()?`<button class="btn ${m.is_active?"danger":"light"}" onclick="toggleStaff('${m.id}',${!m.is_active})">${m.is_active?"Deactivate":"Activate"}</button>`:"View only"}</div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No staff accounts found for this pharmacy.</div>`;
+ $("staffRows").innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Staff member</th><th>Staff ID</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead><tbody>${data.map(m=>`<tr><td data-label="Staff member"><b>${esc(m.full_name|| (m.user_id===currentUser.id?"Current account":String(m.user_id).slice(0,8)+"…"))}</b><br><small>${esc(m.phone||"")}</small></td><td data-label="Staff ID"><b>${esc(m.staff_id||"Pending ID")}</b></td><td data-label="Role"><select ${!canManage()||m.user_id===currentUser.id||currentMember.role!=="owner"?"disabled":""} onchange="changeStaffRole('${m.id}',this.value)"><option value="owner" ${m.role==="owner"?"selected":""}>Owner</option><option value="admin" ${m.role==="admin"?"selected":""}>Admin</option><option value="manager" ${m.role==="manager"?"selected":""}>Manager</option><option value="pharmacist" ${m.role==="pharmacist"?"selected":""}>Pharmacist</option><option value="cashier" ${m.role==="cashier"?"selected":""}>Cashier</option></select></td><td data-label="Status"><span class="badge ${m.is_active?"green":"red"}">${m.is_active?"Active":"Inactive"}</span></td><td data-label="Permissions"><button class="btn light" onclick="showStaffPermissions('${m.id}')">View</button></td><td data-label="Action"><div class="actions">${canManage()&&m.user_id!==currentUser.id?`<button class="btn light" onclick="editStaff('${m.id}')">Edit</button><button class="btn danger" onclick="deleteStaff('${m.id}')">Delete</button>`:""}${m.user_id===currentUser.id?"You":canManage()?`<button class="btn ${m.is_active?"danger":"light"}" onclick="toggleStaff('${m.id}',${!m.is_active})">${m.is_active?"Deactivate":"Activate"}</button>`:"View only"}</div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No staff accounts found for this pharmacy.</div>`;
  window._staffCache=data||[];
  loadDailyAuditHistory();
 }
