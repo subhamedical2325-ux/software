@@ -1464,6 +1464,9 @@ const PRIMARY_ADMIN_EMAIL="subhamedical2325@gmail.com";
 const isPrimaryAdmin = () => String(currentUser?.email||"").toLowerCase()===PRIMARY_ADMIN_EMAIL;
 const isSuper = () => currentMember?.role === "super_admin" || (isPrimaryAdmin() && !!currentUser);
 const canManage = () => isPrimaryAdmin() || ["owner","admin","super_admin"].includes(currentMember?.role);
+const isPharmacyOwner = () => isPrimaryAdmin() || currentMember?.role === "owner";
+const workflowDefaults = {cashier_enabled:true,cashier_bill_collection:true,pharmacist_direct_collection:true,sales_return_owner_approval:true,vendor_return_owner_approval:true,owner_notifications:true,cash_payment_enabled:true,upi_payment_enabled:true,card_payment_enabled:true,split_payment_enabled:true,cashier_open_close_enabled:true};
+const workflowSetting = key => (pharmacySettings?.[key] ?? workflowDefaults[key]);
 const pharmacyId = () => isSuper() ? selectedAdminPharmacyId : currentMember?.pharmacy_id;
  
 function notify(message){
@@ -1856,7 +1859,86 @@ async function recordCashierRefund(e){e.preventDefault();if(!window.activeCashie
 async function closeCashierSession(){if(!window.activeCashierSession)return;const {data,error}=await sb.from("ms_cashier_transactions").select("transaction_type,payment_method,amount").eq("session_id",window.activeCashierSession.id);if(error)return notify(error.message);const rows=data||[];const cashIn=rows.filter(x=>["cash_in","sale_collection"].includes(x.transaction_type)&&x.payment_method==="cash").reduce((a,x)=>a+Number(x.amount),0);const cashOut=rows.filter(x=>["cash_out","sales_refund"].includes(x.transaction_type)&&x.payment_method==="cash").reduce((a,x)=>a+Number(x.amount),0);const expected=Number(window.activeCashierSession.opening_cash||0)+cashIn-cashOut;const counted=Number(prompt(`Expected cash ${money(expected)}. Enter actual counted cash (₹):`,expected.toFixed(2)));if(!Number.isFinite(counted)||counted<0)return notify("Enter valid counted cash.");const {error:updateError}=await sb.from("ms_cashier_sessions").update({closed_at:new Date().toISOString(),expected_cash:expected,closing_cash:counted,variance:Number((counted-expected).toFixed(2)),status:"closed"}).eq("id",window.activeCashierSession.id);if(updateError)return notify(updateError.message);notify("Cash session closed. Variance: "+money(counted-expected));await loadCashierSession();}
 async function renderCashierReport(){const today=new Date().toISOString().slice(0,10);$("pageContent").innerHTML=`${pageHead("Cashier Daily Collection Report","Your own collection, refunds and cash settlement")}<div class="panel"><div class="form-grid"><div class="field"><label>Report date</label><input id="cashierReportDate" type="date" class="feature-input" value="${today}"></div><button class="btn" onclick="loadCashierReport()">Generate Report</button><button class="btn light" onclick="printCashierReport()">Print Daily Report</button></div><div id="cashierReportRows">Loading...</div></div>`;await loadCashierReport();}
 async function loadCashierReport(){const h=$("cashierReportRows");if(!h)return;const date=$("cashierReportDate").value;const start=date+"T00:00:00",end=date+"T23:59:59.999";const {data,error}=await sb.from("ms_cashier_transactions").select("*").eq("pharmacy_id",pharmacyId()).eq("staff_user_id",currentUser.id).gte("created_at",start).lte("created_at",end).order("created_at");if(error){h.textContent=error.message;return;}const rows=data||[];const sum=(type,method)=>rows.filter(x=>x.transaction_type===type&&(!method||x.payment_method===method)).reduce((a,x)=>a+Number(x.amount),0);h.innerHTML=`<div class="stats-grid">${[["Cash Collected",sum("sale_collection","cash")],["UPI Collected",sum("sale_collection","upi")],["Card Collected",sum("sale_collection","card")],["Sales Refunds",sum("sales_refund")],["Cash In",sum("cash_in")],["Cash Out",sum("cash_out")]].map(x=>`<div class="stat-card"><small>${x[0]}</small><h3>${money(x[1])}</h3></div>`).join("")}</div><div class="table-wrap"><table><thead><tr><th>Time</th><th>Type</th><th>Method</th><th>Reference</th><th>Amount</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${new Date(x.created_at).toLocaleTimeString()}</td><td>${esc(x.transaction_type)}</td><td>${esc(x.payment_method)}</td><td>${esc(x.reference||x.related_reference||"-")}</td><td>${money(x.amount)}</td></tr>`).join("")}</tbody></table></div>`;}
-function printCashierReport(){const content=$("cashierReportRows")?.innerHTML||"";const w=window.open("","_blank");if(!w)return notify("Allow pop-ups to print the report.");w.document.write(`<html><head><title>Cashier Daily Report</title><style>body{font:14px Arial;padding:20px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #bbb;padding:7px;text-align:left}.stats-grid{display:flex;flex-wrap:wrap;gap:12px}.stat-card{border:1px solid #ddd;padding:12px}</style></head><body><h2>${esc(currentPharmacy?.pharmacy_name||"Pharmacy")} – Cashier Daily Report</h2><p>${esc(currentMember?.full_name||"")} · ${esc($("cashierReportDate")?.value||"")}</p>${content}</body></html>`);w.document.close();w.print();}
+function printCashierReport(){const content=$("cashierReportRows")?.innerHTML||"";const w=window.open("","_blank");if(!w)return notify("Allow pop-ups to print the report.");w.document.write(`<html><head><title>Cashier Daily Report</title><style>body{font:14px Arial;padding:20px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #bbb;padding:7px;text-align:left}.stats-grid{display:flex;flex-wrap:wrap;gap:12px}.stat-card{border:1px solid #ddd;padding:12px}</style></head><body><h2>${esc(currentPharmacy?.pharmacy_name||"Pharmacy")} – Cashier Daily Report</h2><p>${esc(currentMember?.full_name||"")} · ${esc($("cashierReportDate")?.value||"")}</p>${content}<script>
+/* SUBHA MEDICAL — CASHIER / RETURN APPROVAL UPGRADE */
+async function collectCashierBill(id,total,invoice){
+ if(!window.activeCashierSession)return notify('Open your cash session before collecting payment.');
+ const choice=(prompt(`Collect ${money(total)} for ${invoice}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();
+ if(!choice)return;
+ let cash=0,upi=0,card=0,upiref='',cardref='';
+ if(choice==='split'){
+  cash=Number(prompt('Cash amount (₹)','0')||0); upi=Number(prompt('UPI amount (₹)','0')||0); card=Number(prompt('Card amount (₹)','0')||0);
+  if(upi>0){upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');}
+  if(card>0){cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else if(['cash','upi','card'].includes(choice)){
+  if(choice==='cash')cash=Number(total); if(choice==='upi'){upi=Number(total);upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');} if(choice==='card'){card=Number(total);cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-Number(total))>0.009)return notify('Cash + UPI + Card must exactly match the bill total.');
+ const {data,error}=await sb.rpc('ms_cashier_collect_bill_split',{p_sale_id:id,p_cash:cash,p_upi:upi,p_card:card,p_upi_reference:upiref||null,p_card_reference:cardref||null});
+ if(error)return notify('Collection failed: '+error.message);
+ notify('Payment saved. Bill status updated to PAID.');
+ await loadCashierPendingBills(); await loadCashierSession();
+ try{await refreshData();}catch(e){} if(currentPage==='dashboard')renderDashboard();
+}
+async function loadCashierReturnTasks(){
+ const h=$('cashierReturnTasks');if(!h)return;
+ const {data,error}=await sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','approved').order('approved_at',{ascending:true}).limit(100);
+ if(error){h.innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
+ h.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Return</th><th>Invoice</th><th>Reason</th><th>Refund due</th><th>Action</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.return_code||x.id)}</td><td>${esc(x.invoice_number||'-')}</td><td>${esc(x.reason||'-')}</td><td><b>${money(x.refund_amount)}</b></td><td><button class="btn" onclick="payApprovedSalesReturn('${x.id}',${Number(x.refund_amount)||0})">Refund customer</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No approved customer refunds waiting for payment.</div>';
+}
+async function payApprovedSalesReturn(id,total){
+ if(!window.activeCashierSession)return notify('Open your cash session first.');
+ const choice=(prompt(`Refund ${money(total)}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();if(!choice)return;
+ let cash=0,upi=0,card=0,ref='';
+ if(choice==='split'){cash=Number(prompt('Cash refund (₹)','0')||0);upi=Number(prompt('UPI refund (₹)','0')||0);card=Number(prompt('Card refund (₹)','0')||0);if(upi>0){ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}}
+ else if(['cash','upi','card'].includes(choice)){if(choice==='cash')cash=total;if(choice==='upi'){upi=total;ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}if(choice==='card')card=total;}else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-total)>0.009)return notify('Refund split must equal approved refund amount.');
+ const {error}=await sb.rpc('ms_cashier_pay_sales_return',{p_return_id:id,p_cash:cash,p_upi:upi,p_card:card,p_reference:ref||null});if(error)return notify('Refund failed: '+error.message);
+ notify('Customer refund recorded successfully.');await loadCashierReturnTasks();await loadCashierSession();
+}
+async function renderCashierDesk(){
+ const pid=pharmacyId();
+ $('pageContent').innerHTML=`${pageHead('Cashier Collection Desk','Bills, approved customer refunds and your independent cash drawer')}<div id="cashierSessionPanel" class="panel">Loading your cash session...</div><div class="panel"><div class="panel-head"><h3>🧾 Bills waiting for collection</h3><button class="btn light" onclick="renderCashierDesk()">Refresh</button></div><div id="cashierPendingBills">Loading...</div></div><div class="panel"><div class="panel-head"><h3>↩ Approved sales return refunds</h3><button class="btn light" onclick="loadCashierReturnTasks()">Refresh</button></div><div id="cashierReturnTasks">Loading...</div></div>`;
+ await loadCashierSession();await loadCashierPendingBills();await loadCashierReturnTasks();
+}
+async function submitReturn(e,rpc){
+ e.preventDefault();const d=Object.fromEntries(new FormData(e.target));
+ try{
+  let result;
+  if(rpc==='ms_post_sale_return'){
+   const refundAmount=Number(prompt('Refund amount requested for owner approval (₹):','0')||0);if(!Number.isFinite(refundAmount)||refundAmount<=0)return notify('Enter a valid refund amount.');
+   result=await sb.rpc('ms_request_sales_return',{p_sale_item_id:d.sale_item_id,p_quantity:Number(d.quantity),p_reason:d.reason,p_refund_amount:refundAmount});
+  }else{
+   result=await sb.rpc('ms_request_vendor_return',{p_purchase_item_id:d.purchase_item_id,p_quantity:Number(d.quantity),p_reason:d.reason});
+  }
+  if(result.error)throw result.error;if(result.data?.error)throw new Error(result.data.error);
+  notify(result.data?.status==='approved'?'Return request is approved under this pharmacy owner setting. Complete the refund / vendor processing using the authorized workflow.':'Return request sent to the owner for approval. No stock or refund is posted before approval.');e.target.reset();await loadReturnHistory();
+ }catch(err){notify('Return request failed: '+err.message);}
+}
+async function loadOwnerApprovalPopup(){
+ if(!currentUser||!isPharmacyOwner()||workflowSetting("owner_notifications")===false)return;
+ const [sr,vr]=await Promise.all([
+  sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30),
+  sb.from('ms_vendor_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30)
+ ]);
+ if(sr.error||vr.error)return;
+ const items=[...(sr.data||[]).map(x=>({...x,_kind:'sales'})),...(vr.data||[]).map(x=>({...x,_kind:'vendor'}))];
+ let old=document.getElementById('ownerApprovalPopup');if(!items.length){old?.remove();return;}
+ if(!old){old=document.createElement('div');old.id='ownerApprovalPopup';old.style.cssText='position:fixed;z-index:99999;right:16px;top:76px;width:min(440px,calc(100vw - 32px));max-height:75vh;overflow:auto;background:var(--panel,#fff);color:var(--text,#172033);border:1px solid #dbe3ef;border-radius:16px;box-shadow:0 18px 55px #10213b33;padding:16px';document.body.appendChild(old);}
+ old.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>🔔 Owner approvals (${items.length})</b><button class="btn light" onclick="document.getElementById('ownerApprovalPopup')?.remove()">Close</button></div>${items.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #e5eaf2"><b>${x._kind==='sales'?'Customer sales return':'Vendor purchase return'}</b><div style="font-size:13px;margin:5px 0">${esc(x.return_code||x.id)} · ${esc(x.reason||'')}</div><div style="font-size:13px;margin-bottom:8px">${x._kind==='sales'?'Refund requested: '+money(x.refund_amount):'Quantity: '+esc(x.quantity)}</div><button class="btn" onclick="decideReturnRequest('${x._kind}','${x.id}','approve')">Approve</button> <button class="btn danger" onclick="decideReturnRequest('${x._kind}','${x.id}','reject')">Reject</button></div>`).join('')}`;
+}
+async function decideReturnRequest(kind,id,decision){const {error}=await sb.rpc('ms_owner_decide_return',{p_kind:kind,p_request_id:id,p_decision:decision,p_note:null});if(error)return notify(error.message);notify(`Return request ${decision}d.`);await loadOwnerApprovalPopup();}
+window.renderCashierDashboard=function(){
+ const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+ $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
+ <div class="dash-stats"><div class="dash-stat blue"><span class="dash-stat-icon">💵</span><div><small>Cashier</small><strong>${esc(currentMember?.full_name||"Staff")}</strong></div></div><div class="dash-stat green"><span class="dash-stat-icon">🏥</span><div><small>Pharmacy</small><strong>${esc(currentPharmacy?.pharmacy_name||"")}</strong></div></div></div>
+ <div class="dash-bottom-grid"><section class="dash-lower-card"><div class="dash-lower-head"><h3>💰 Cash & Payment</h3></div><div class="dash-tool-grid"><button class="dash-tool" onclick="navigate('cashierdesk')"><span>🧾</span><b>Pending Bill Collection</b><small>Collect pharmacist-saved bills</small></button><button class="dash-tool" onclick="navigate('cashierdesk')"><span>↩️</span><b>Sales Return Refunds</b><small>Pay owner-approved customer returns</small></button><button class="dash-tool" onclick="navigate('cashierreport')"><span>📊</span><b>Daily Collection Report</b><small>Cash, UPI, card, split and refunds</small></button><button class="dash-tool" onclick="navigate('cashbook')"><span>💳</span><b>Cashbook & Expenses</b><small>Cash in, cash out and expenses</small></button></div></section></div>
+ <div class="notice">Your account is restricted to cashier-related money functions. Inventory, purchasing, staff management and pharmacy settings are not available in this login.</div>`;
+};
+const _subhaOriginalRenderDashboard=window.renderDashboard;
+window.renderDashboard=function(){_subhaOriginalRenderDashboard();setTimeout(loadOwnerApprovalPopup,250);};
+</script>
+</body></html>`);w.document.close();w.print();}
 function renderCashierDashboard(){
  const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
  $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
@@ -2246,7 +2328,7 @@ async function renderBilling(){
     <div class="field" style="margin:8px 0"><label>Bill discount (₹)</label><input id="billDiscount" type="number" min="0" step="0.01" value="0" oninput="renderCart()"><small id="discountLimitNote" class="feature-note"></small></div>
     <div class="total-row final"><span>Net payable</span><b id="billTotal">₹0.00</b></div></div>
    <div class="payment-head"><b>Payment mode</b><label class="split-toggle"><input id="splitPaymentToggle" type="checkbox" onchange="toggleSplitPayment()"> Split payment</label></div>
-    <div class="notice" style="margin:10px 0"><label style="display:flex;gap:10px;align-items:center;font-weight:700"><input id="sendToCashier" type="checkbox"> Save bill for cashier collection (payment will remain pending)</label><small>Use when a cashier is available. Otherwise collect payment directly as pharmacist.</small></div>
+    ${workflowSetting("cashier_enabled")!==false&&workflowSetting("cashier_bill_collection")!==false?`<div class="notice" style="margin:10px 0"><label style="display:flex;gap:10px;align-items:center;font-weight:700"><input id="sendToCashier" type="checkbox"> Save bill for cashier collection (payment will remain pending)</label><small>Owner has enabled cashier collection. Otherwise collect payment directly.</small></div>`:""}
    <div id="singlePaymentBox" class="bill-meta"><div class="field"><label>Payment method</label><select id="billPayment" onchange="renderBillUpiPayment()"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option><option value="credit">Credit</option></select></div></div>
    <div id="billUpiPaymentBox" class="split-payment-box hidden" style="margin-top:8px"><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div id="billUpiQr" style="background:#fff;padding:8px;border-radius:8px;min-width:116px;min-height:116px;display:grid;place-items:center">UPI QR</div><div style="flex:1;min-width:150px"><b>Scan to pay</b><div class="feature-note">QR amount is linked to this bill total.</div><div id="billUpiAmount" style="font-size:19px;font-weight:800;margin:6px 0">₹0.00</div><small id="billUpiVpa" class="feature-note"></small></div></div><div class="field" style="margin-top:8px"><label>UPI reference / UTR number</label><input id="billUpiReference" placeholder="Enter UPI transaction reference number"></div></div>
    <div id="splitPaymentBox" class="split-payment-box hidden"><div class="split-payment-grid"><div class="field"><label>Cash (₹)</label><input id="splitCash" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>UPI (₹)</label><input id="splitUpi" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Card (₹)</label><input id="splitCard" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div><div class="field"><label>Credit (₹)</label><input id="splitCredit" type="number" min="0" step="0.01" value="0" oninput="syncSplitPayment()"></div></div><div class="split-total-line"><span>Allocated</span><b id="splitAllocated">₹0.00</b><span>Balance</span><b id="splitBalance">₹0.00</b></div><small id="splitPaymentHint" class="feature-note">Enter amounts to match the net payable.</small><div id="splitUpiPaymentBox" class="hidden" style="margin-top:9px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div id="splitUpiQr" style="background:#fff;padding:7px;border-radius:8px;min-width:112px;min-height:112px;display:grid;place-items:center"></div><div><b>Scan UPI amount</b><div id="splitUpiAmount" style="font-size:17px;font-weight:800">₹0.00</div><small class="feature-note" id="splitUpiVpa"></small></div></div><div class="field" style="margin-top:8px"><label>UPI reference / UTR number</label><input id="splitUpiReference" placeholder="Enter UPI transaction reference number"></div></div></div>
@@ -2367,8 +2449,10 @@ function syncSplitPayment(){
  renderBillUpiPayment();
 }
 function getBillPayment(){
- if(!$("splitPaymentToggle")?.checked){const method=$("billPayment").value;return {method,status:method==="credit"?"pending":"paid",upiAmount:method==="upi"?calculateBill().total:0,reference:method==="upi"?($("billUpiReference")?.value.trim()||""): ""};}
+ if(!$("splitPaymentToggle")?.checked){const method=$("billPayment").value;if(method==="cash"&&!workflowSetting("cash_payment_enabled"))throw new Error("Cash payment is disabled by the owner.");if(method==="upi"&&!workflowSetting("upi_payment_enabled"))throw new Error("UPI payment is disabled by the owner.");if(method==="card"&&!workflowSetting("card_payment_enabled"))throw new Error("Card payment is disabled by the owner.");return {method,status:method==="credit"?"pending":"paid",upiAmount:method==="upi"?calculateBill().total:0,reference:method==="upi"?($("billUpiReference")?.value.trim()||""): ""};}
+ if(!workflowSetting("split_payment_enabled"))throw new Error("Split payment is disabled by the owner.");
  const keys=["cash","upi","card","credit"],vals=keys.map(k=>Math.max(0,Number($("split"+k[0].toUpperCase()+k.slice(1))?.value||0)));
+ if(vals[0]>0&&!workflowSetting("cash_payment_enabled"))throw new Error("Cash payment is disabled by the owner.");if(vals[1]>0&&!workflowSetting("upi_payment_enabled"))throw new Error("UPI payment is disabled by the owner.");if(vals[2]>0&&!workflowSetting("card_payment_enabled"))throw new Error("Card payment is disabled by the owner.");
  const total=vals.reduce((a,b)=>a+b,0),due=calculateBill().total;
  if(vals.some(v=>!Number.isFinite(v))||Math.abs(total-due)>0.009)throw new Error(`Split payment amounts must total exactly ${money(due)}.`);
  if(!vals.some(v=>v>0))throw new Error("Enter at least one split payment amount.");
@@ -2490,7 +2574,7 @@ async function completeSale(){
  }
  const invoice="SM-"+Date.now();
  let paymentInfo;
- try{paymentInfo=$("sendToCashier")?.checked && currentMember?.role!=="cashier" ? {method:"cashier_pending",status:"pending",upiAmount:0,reference:""} : getBillPayment();
+ try{const cashierAvailable=workflowSetting("cashier_enabled")!==false && workflowSetting("cashier_bill_collection")!==false;paymentInfo=$("sendToCashier")?.checked && cashierAvailable && currentMember?.role!=="cashier" ? {method:"cashier_pending",status:"pending",upiAmount:0,reference:""} : getBillPayment();
   const payment=paymentInfo.method;
   if(paymentInfo.upiAmount>0&&!paymentInfo.reference)throw new Error("Enter the UPI reference / UTR number before saving this bill.");
   let customerId=window.billCustomerId||null;
@@ -2604,7 +2688,86 @@ function printInvoice(sale,items,t,copyLabel="ORIGINAL"){
  ${items.map(p=>`<tr><td>${esc(p.name)}${pharmacySettings.show_batch_expiry===false||pharmacySettings.show_batch_expiry==="no"?"":`<br><small>Exp: ${esc(p.expiry_date||"-")}</small>`}${Number(p.discount_pct||0)>0?`<br><small>Discount ${Number(p.discount_pct).toFixed(1)}%</small>`:""}</td><td>${esc(p.batch_number||"-")}</td><td>${p.qty} ${esc(p.unit||"")}</td><td>${money(cartRate(p))}</td><td class="right">${money(p.qty*cartRate(p)*(1-Number(p.discount_pct||0)/100))}</td></tr>`).join("")}
  </table><p class="right">Subtotal (incl. GST): ${money(t.subtotal)}<br>Taxable value: ${money(taxSplit.taxable)}<br>CGST: ${money(taxSplit.cgst)}<br>SGST: ${money(taxSplit.sgst)}<br>Discount: ${money(t.discount)}</p>
  <p class="right total">Net Payable: ${money(t.total)}</p><p style="text-align:left;font-size:11px">Payment: ${esc(sale.payment_method||"-")}<br>Status: ${esc(sale.payment_status||"-")}${sale.payment_reference_number?`<br>UPI reference: ${esc(sale.payment_reference_number)}`:""}</p>${pharmacySettings.bill_terms?`<hr><p style="text-align:left;font-size:10px">${esc(pharmacySettings.bill_terms)}</p>`:""}<hr><p>${esc(footer)}</p>
- <script>window.onload=()=>window.print();<\/script></body></html>`);
+ <script>window.onload=()=>window.print();<\/script><script>
+/* SUBHA MEDICAL — CASHIER / RETURN APPROVAL UPGRADE */
+async function collectCashierBill(id,total,invoice){
+ if(!window.activeCashierSession)return notify('Open your cash session before collecting payment.');
+ const choice=(prompt(`Collect ${money(total)} for ${invoice}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();
+ if(!choice)return;
+ let cash=0,upi=0,card=0,upiref='',cardref='';
+ if(choice==='split'){
+  cash=Number(prompt('Cash amount (₹)','0')||0); upi=Number(prompt('UPI amount (₹)','0')||0); card=Number(prompt('Card amount (₹)','0')||0);
+  if(upi>0){upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');}
+  if(card>0){cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else if(['cash','upi','card'].includes(choice)){
+  if(choice==='cash')cash=Number(total); if(choice==='upi'){upi=Number(total);upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');} if(choice==='card'){card=Number(total);cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-Number(total))>0.009)return notify('Cash + UPI + Card must exactly match the bill total.');
+ const {data,error}=await sb.rpc('ms_cashier_collect_bill_split',{p_sale_id:id,p_cash:cash,p_upi:upi,p_card:card,p_upi_reference:upiref||null,p_card_reference:cardref||null});
+ if(error)return notify('Collection failed: '+error.message);
+ notify('Payment saved. Bill status updated to PAID.');
+ await loadCashierPendingBills(); await loadCashierSession();
+ try{await refreshData();}catch(e){} if(currentPage==='dashboard')renderDashboard();
+}
+async function loadCashierReturnTasks(){
+ const h=$('cashierReturnTasks');if(!h)return;
+ const {data,error}=await sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','approved').order('approved_at',{ascending:true}).limit(100);
+ if(error){h.innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
+ h.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Return</th><th>Invoice</th><th>Reason</th><th>Refund due</th><th>Action</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.return_code||x.id)}</td><td>${esc(x.invoice_number||'-')}</td><td>${esc(x.reason||'-')}</td><td><b>${money(x.refund_amount)}</b></td><td><button class="btn" onclick="payApprovedSalesReturn('${x.id}',${Number(x.refund_amount)||0})">Refund customer</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No approved customer refunds waiting for payment.</div>';
+}
+async function payApprovedSalesReturn(id,total){
+ if(!window.activeCashierSession)return notify('Open your cash session first.');
+ const choice=(prompt(`Refund ${money(total)}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();if(!choice)return;
+ let cash=0,upi=0,card=0,ref='';
+ if(choice==='split'){cash=Number(prompt('Cash refund (₹)','0')||0);upi=Number(prompt('UPI refund (₹)','0')||0);card=Number(prompt('Card refund (₹)','0')||0);if(upi>0){ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}}
+ else if(['cash','upi','card'].includes(choice)){if(choice==='cash')cash=total;if(choice==='upi'){upi=total;ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}if(choice==='card')card=total;}else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-total)>0.009)return notify('Refund split must equal approved refund amount.');
+ const {error}=await sb.rpc('ms_cashier_pay_sales_return',{p_return_id:id,p_cash:cash,p_upi:upi,p_card:card,p_reference:ref||null});if(error)return notify('Refund failed: '+error.message);
+ notify('Customer refund recorded successfully.');await loadCashierReturnTasks();await loadCashierSession();
+}
+async function renderCashierDesk(){
+ const pid=pharmacyId();
+ $('pageContent').innerHTML=`${pageHead('Cashier Collection Desk','Bills, approved customer refunds and your independent cash drawer')}<div id="cashierSessionPanel" class="panel">Loading your cash session...</div><div class="panel"><div class="panel-head"><h3>🧾 Bills waiting for collection</h3><button class="btn light" onclick="renderCashierDesk()">Refresh</button></div><div id="cashierPendingBills">Loading...</div></div><div class="panel"><div class="panel-head"><h3>↩ Approved sales return refunds</h3><button class="btn light" onclick="loadCashierReturnTasks()">Refresh</button></div><div id="cashierReturnTasks">Loading...</div></div>`;
+ await loadCashierSession();await loadCashierPendingBills();await loadCashierReturnTasks();
+}
+async function submitReturn(e,rpc){
+ e.preventDefault();const d=Object.fromEntries(new FormData(e.target));
+ try{
+  let result;
+  if(rpc==='ms_post_sale_return'){
+   const refundAmount=Number(prompt('Refund amount requested for owner approval (₹):','0')||0);if(!Number.isFinite(refundAmount)||refundAmount<=0)return notify('Enter a valid refund amount.');
+   result=await sb.rpc('ms_request_sales_return',{p_sale_item_id:d.sale_item_id,p_quantity:Number(d.quantity),p_reason:d.reason,p_refund_amount:refundAmount});
+  }else{
+   result=await sb.rpc('ms_request_vendor_return',{p_purchase_item_id:d.purchase_item_id,p_quantity:Number(d.quantity),p_reason:d.reason});
+  }
+  if(result.error)throw result.error;if(result.data?.error)throw new Error(result.data.error);
+  notify(result.data?.status==='approved'?'Return request is approved under this pharmacy owner setting. Complete the refund / vendor processing using the authorized workflow.':'Return request sent to the owner for approval. No stock or refund is posted before approval.');e.target.reset();await loadReturnHistory();
+ }catch(err){notify('Return request failed: '+err.message);}
+}
+async function loadOwnerApprovalPopup(){
+ if(!currentUser||!isPharmacyOwner()||workflowSetting("owner_notifications")===false)return;
+ const [sr,vr]=await Promise.all([
+  sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30),
+  sb.from('ms_vendor_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30)
+ ]);
+ if(sr.error||vr.error)return;
+ const items=[...(sr.data||[]).map(x=>({...x,_kind:'sales'})),...(vr.data||[]).map(x=>({...x,_kind:'vendor'}))];
+ let old=document.getElementById('ownerApprovalPopup');if(!items.length){old?.remove();return;}
+ if(!old){old=document.createElement('div');old.id='ownerApprovalPopup';old.style.cssText='position:fixed;z-index:99999;right:16px;top:76px;width:min(440px,calc(100vw - 32px));max-height:75vh;overflow:auto;background:var(--panel,#fff);color:var(--text,#172033);border:1px solid #dbe3ef;border-radius:16px;box-shadow:0 18px 55px #10213b33;padding:16px';document.body.appendChild(old);}
+ old.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>🔔 Owner approvals (${items.length})</b><button class="btn light" onclick="document.getElementById('ownerApprovalPopup')?.remove()">Close</button></div>${items.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #e5eaf2"><b>${x._kind==='sales'?'Customer sales return':'Vendor purchase return'}</b><div style="font-size:13px;margin:5px 0">${esc(x.return_code||x.id)} · ${esc(x.reason||'')}</div><div style="font-size:13px;margin-bottom:8px">${x._kind==='sales'?'Refund requested: '+money(x.refund_amount):'Quantity: '+esc(x.quantity)}</div><button class="btn" onclick="decideReturnRequest('${x._kind}','${x.id}','approve')">Approve</button> <button class="btn danger" onclick="decideReturnRequest('${x._kind}','${x.id}','reject')">Reject</button></div>`).join('')}`;
+}
+async function decideReturnRequest(kind,id,decision){const {error}=await sb.rpc('ms_owner_decide_return',{p_kind:kind,p_request_id:id,p_decision:decision,p_note:null});if(error)return notify(error.message);notify(`Return request ${decision}d.`);await loadOwnerApprovalPopup();}
+window.renderCashierDashboard=function(){
+ const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+ $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
+ <div class="dash-stats"><div class="dash-stat blue"><span class="dash-stat-icon">💵</span><div><small>Cashier</small><strong>${esc(currentMember?.full_name||"Staff")}</strong></div></div><div class="dash-stat green"><span class="dash-stat-icon">🏥</span><div><small>Pharmacy</small><strong>${esc(currentPharmacy?.pharmacy_name||"")}</strong></div></div></div>
+ <div class="dash-bottom-grid"><section class="dash-lower-card"><div class="dash-lower-head"><h3>💰 Cash & Payment</h3></div><div class="dash-tool-grid"><button class="dash-tool" onclick="navigate('cashierdesk')"><span>🧾</span><b>Pending Bill Collection</b><small>Collect pharmacist-saved bills</small></button><button class="dash-tool" onclick="navigate('cashierdesk')"><span>↩️</span><b>Sales Return Refunds</b><small>Pay owner-approved customer returns</small></button><button class="dash-tool" onclick="navigate('cashierreport')"><span>📊</span><b>Daily Collection Report</b><small>Cash, UPI, card, split and refunds</small></button><button class="dash-tool" onclick="navigate('cashbook')"><span>💳</span><b>Cashbook & Expenses</b><small>Cash in, cash out and expenses</small></button></div></section></div>
+ <div class="notice">Your account is restricted to cashier-related money functions. Inventory, purchasing, staff management and pharmacy settings are not available in this login.</div>`;
+};
+const _subhaOriginalRenderDashboard=window.renderDashboard;
+window.renderDashboard=function(){_subhaOriginalRenderDashboard();setTimeout(loadOwnerApprovalPopup,250);};
+</script>
+</body></html>`);
  w.document.close();
 }
  
@@ -2765,7 +2928,86 @@ async function printSingleReturn(returnId){
  const fields=[["Return date",new Date(data.created_at).toLocaleString()],["Return type",data.return_type],["Reference",data.invoice_number||data.reference_number||data.sale_id||data.purchase_id],["Medicine",data.product_name],["Batch",data.batch_number],["Quantity",data.quantity],["Reason",data.reason],["Processed by",staffDisplayName(data,staffNames)]];
  const w=window.open("","_blank","width=760,height=700");if(!w)return notify("Allow pop-ups to print this return.");
  w.document.write(`<html><head><title>Return Voucher</title><style>body{font-family:Arial;padding:24px}h2{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}td{border:1px solid #bbb;padding:10px}td:first-child{font-weight:bold;width:32%}@media print{button{display:none}}#sidebar .role-hidden{display:none!important}
-</style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")}</h2><h3 style="text-align:center">Return Voucher</h3><table>${fields.map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v??"-")}</td></tr>`).join("")}</table><script>window.onload=()=>window.print();<\/script></body></html>`);w.document.close();
+</style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")}</h2><h3 style="text-align:center">Return Voucher</h3><table>${fields.map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v??"-")}</td></tr>`).join("")}</table><script>window.onload=()=>window.print();<\/script><script>
+/* SUBHA MEDICAL — CASHIER / RETURN APPROVAL UPGRADE */
+async function collectCashierBill(id,total,invoice){
+ if(!window.activeCashierSession)return notify('Open your cash session before collecting payment.');
+ const choice=(prompt(`Collect ${money(total)} for ${invoice}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();
+ if(!choice)return;
+ let cash=0,upi=0,card=0,upiref='',cardref='';
+ if(choice==='split'){
+  cash=Number(prompt('Cash amount (₹)','0')||0); upi=Number(prompt('UPI amount (₹)','0')||0); card=Number(prompt('Card amount (₹)','0')||0);
+  if(upi>0){upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');}
+  if(card>0){cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else if(['cash','upi','card'].includes(choice)){
+  if(choice==='cash')cash=Number(total); if(choice==='upi'){upi=Number(total);upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');} if(choice==='card'){card=Number(total);cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-Number(total))>0.009)return notify('Cash + UPI + Card must exactly match the bill total.');
+ const {data,error}=await sb.rpc('ms_cashier_collect_bill_split',{p_sale_id:id,p_cash:cash,p_upi:upi,p_card:card,p_upi_reference:upiref||null,p_card_reference:cardref||null});
+ if(error)return notify('Collection failed: '+error.message);
+ notify('Payment saved. Bill status updated to PAID.');
+ await loadCashierPendingBills(); await loadCashierSession();
+ try{await refreshData();}catch(e){} if(currentPage==='dashboard')renderDashboard();
+}
+async function loadCashierReturnTasks(){
+ const h=$('cashierReturnTasks');if(!h)return;
+ const {data,error}=await sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','approved').order('approved_at',{ascending:true}).limit(100);
+ if(error){h.innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
+ h.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Return</th><th>Invoice</th><th>Reason</th><th>Refund due</th><th>Action</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.return_code||x.id)}</td><td>${esc(x.invoice_number||'-')}</td><td>${esc(x.reason||'-')}</td><td><b>${money(x.refund_amount)}</b></td><td><button class="btn" onclick="payApprovedSalesReturn('${x.id}',${Number(x.refund_amount)||0})">Refund customer</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No approved customer refunds waiting for payment.</div>';
+}
+async function payApprovedSalesReturn(id,total){
+ if(!window.activeCashierSession)return notify('Open your cash session first.');
+ const choice=(prompt(`Refund ${money(total)}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();if(!choice)return;
+ let cash=0,upi=0,card=0,ref='';
+ if(choice==='split'){cash=Number(prompt('Cash refund (₹)','0')||0);upi=Number(prompt('UPI refund (₹)','0')||0);card=Number(prompt('Card refund (₹)','0')||0);if(upi>0){ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}}
+ else if(['cash','upi','card'].includes(choice)){if(choice==='cash')cash=total;if(choice==='upi'){upi=total;ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}if(choice==='card')card=total;}else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-total)>0.009)return notify('Refund split must equal approved refund amount.');
+ const {error}=await sb.rpc('ms_cashier_pay_sales_return',{p_return_id:id,p_cash:cash,p_upi:upi,p_card:card,p_reference:ref||null});if(error)return notify('Refund failed: '+error.message);
+ notify('Customer refund recorded successfully.');await loadCashierReturnTasks();await loadCashierSession();
+}
+async function renderCashierDesk(){
+ const pid=pharmacyId();
+ $('pageContent').innerHTML=`${pageHead('Cashier Collection Desk','Bills, approved customer refunds and your independent cash drawer')}<div id="cashierSessionPanel" class="panel">Loading your cash session...</div><div class="panel"><div class="panel-head"><h3>🧾 Bills waiting for collection</h3><button class="btn light" onclick="renderCashierDesk()">Refresh</button></div><div id="cashierPendingBills">Loading...</div></div><div class="panel"><div class="panel-head"><h3>↩ Approved sales return refunds</h3><button class="btn light" onclick="loadCashierReturnTasks()">Refresh</button></div><div id="cashierReturnTasks">Loading...</div></div>`;
+ await loadCashierSession();await loadCashierPendingBills();await loadCashierReturnTasks();
+}
+async function submitReturn(e,rpc){
+ e.preventDefault();const d=Object.fromEntries(new FormData(e.target));
+ try{
+  let result;
+  if(rpc==='ms_post_sale_return'){
+   const refundAmount=Number(prompt('Refund amount requested for owner approval (₹):','0')||0);if(!Number.isFinite(refundAmount)||refundAmount<=0)return notify('Enter a valid refund amount.');
+   result=await sb.rpc('ms_request_sales_return',{p_sale_item_id:d.sale_item_id,p_quantity:Number(d.quantity),p_reason:d.reason,p_refund_amount:refundAmount});
+  }else{
+   result=await sb.rpc('ms_request_vendor_return',{p_purchase_item_id:d.purchase_item_id,p_quantity:Number(d.quantity),p_reason:d.reason});
+  }
+  if(result.error)throw result.error;if(result.data?.error)throw new Error(result.data.error);
+  notify(result.data?.status==='approved'?'Return request is approved under this pharmacy owner setting. Complete the refund / vendor processing using the authorized workflow.':'Return request sent to the owner for approval. No stock or refund is posted before approval.');e.target.reset();await loadReturnHistory();
+ }catch(err){notify('Return request failed: '+err.message);}
+}
+async function loadOwnerApprovalPopup(){
+ if(!currentUser||!isPharmacyOwner()||workflowSetting("owner_notifications")===false)return;
+ const [sr,vr]=await Promise.all([
+  sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30),
+  sb.from('ms_vendor_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30)
+ ]);
+ if(sr.error||vr.error)return;
+ const items=[...(sr.data||[]).map(x=>({...x,_kind:'sales'})),...(vr.data||[]).map(x=>({...x,_kind:'vendor'}))];
+ let old=document.getElementById('ownerApprovalPopup');if(!items.length){old?.remove();return;}
+ if(!old){old=document.createElement('div');old.id='ownerApprovalPopup';old.style.cssText='position:fixed;z-index:99999;right:16px;top:76px;width:min(440px,calc(100vw - 32px));max-height:75vh;overflow:auto;background:var(--panel,#fff);color:var(--text,#172033);border:1px solid #dbe3ef;border-radius:16px;box-shadow:0 18px 55px #10213b33;padding:16px';document.body.appendChild(old);}
+ old.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>🔔 Owner approvals (${items.length})</b><button class="btn light" onclick="document.getElementById('ownerApprovalPopup')?.remove()">Close</button></div>${items.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #e5eaf2"><b>${x._kind==='sales'?'Customer sales return':'Vendor purchase return'}</b><div style="font-size:13px;margin:5px 0">${esc(x.return_code||x.id)} · ${esc(x.reason||'')}</div><div style="font-size:13px;margin-bottom:8px">${x._kind==='sales'?'Refund requested: '+money(x.refund_amount):'Quantity: '+esc(x.quantity)}</div><button class="btn" onclick="decideReturnRequest('${x._kind}','${x.id}','approve')">Approve</button> <button class="btn danger" onclick="decideReturnRequest('${x._kind}','${x.id}','reject')">Reject</button></div>`).join('')}`;
+}
+async function decideReturnRequest(kind,id,decision){const {error}=await sb.rpc('ms_owner_decide_return',{p_kind:kind,p_request_id:id,p_decision:decision,p_note:null});if(error)return notify(error.message);notify(`Return request ${decision}d.`);await loadOwnerApprovalPopup();}
+window.renderCashierDashboard=function(){
+ const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+ $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
+ <div class="dash-stats"><div class="dash-stat blue"><span class="dash-stat-icon">💵</span><div><small>Cashier</small><strong>${esc(currentMember?.full_name||"Staff")}</strong></div></div><div class="dash-stat green"><span class="dash-stat-icon">🏥</span><div><small>Pharmacy</small><strong>${esc(currentPharmacy?.pharmacy_name||"")}</strong></div></div></div>
+ <div class="dash-bottom-grid"><section class="dash-lower-card"><div class="dash-lower-head"><h3>💰 Cash & Payment</h3></div><div class="dash-tool-grid"><button class="dash-tool" onclick="navigate('cashierdesk')"><span>🧾</span><b>Pending Bill Collection</b><small>Collect pharmacist-saved bills</small></button><button class="dash-tool" onclick="navigate('cashierdesk')"><span>↩️</span><b>Sales Return Refunds</b><small>Pay owner-approved customer returns</small></button><button class="dash-tool" onclick="navigate('cashierreport')"><span>📊</span><b>Daily Collection Report</b><small>Cash, UPI, card, split and refunds</small></button><button class="dash-tool" onclick="navigate('cashbook')"><span>💳</span><b>Cashbook & Expenses</b><small>Cash in, cash out and expenses</small></button></div></section></div>
+ <div class="notice">Your account is restricted to cashier-related money functions. Inventory, purchasing, staff management and pharmacy settings are not available in this login.</div>`;
+};
+const _subhaOriginalRenderDashboard=window.renderDashboard;
+window.renderDashboard=function(){_subhaOriginalRenderDashboard();setTimeout(loadOwnerApprovalPopup,250);};
+</script>
+</body></html>`);w.document.close();
  }catch(e){notify("Could not print return: "+e.message);}
 }
 async function getReturnHistoryRows(){
@@ -2779,7 +3021,86 @@ async function printReturnHistory(){
   const html=`<table><thead><tr><th>Date</th><th>Type</th><th>Reference</th><th>Medicine</th><th>Batch</th><th>Qty</th><th>Reason</th><th>Processed by</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(new Date(x.created_at).toLocaleString())}</td><td>${esc(x.return_type||"-")}</td><td>${esc(x.invoice_number||x.reference_number||"-")}</td><td>${esc(x.product_name||"-")}</td><td>${esc(x.batch_number||"-")}</td><td>${esc(x.quantity||0)}</td><td>${esc(x.reason||"-")}</td><td>${esc(staffDisplayName(x,staffNames))}</td></tr>`).join("")}</tbody></table>`;
   const w=window.open("","_blank","width=1000,height=750");if(!w)return notify("Allow pop-ups to print returns.");
   w.document.write(`<html><head><title>Returns Register</title><style>body{font-family:Arial;padding:20px}h2{text-align:center}table{width:100%;border-collapse:collapse}th,td{border:1px solid #bbb;padding:7px;text-align:left;font-size:11px}th{background:#eef3f5}.no-print{display:none!important}#sidebar .role-hidden{display:none!important}
-</style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")} — Returns Register</h2>${html}<script>window.onload=()=>window.print();<\\/script></body></html>`);
+</style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")} — Returns Register</h2>${html}<script>window.onload=()=>window.print();<\\/script><script>
+/* SUBHA MEDICAL — CASHIER / RETURN APPROVAL UPGRADE */
+async function collectCashierBill(id,total,invoice){
+ if(!window.activeCashierSession)return notify('Open your cash session before collecting payment.');
+ const choice=(prompt(`Collect ${money(total)} for ${invoice}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();
+ if(!choice)return;
+ let cash=0,upi=0,card=0,upiref='',cardref='';
+ if(choice==='split'){
+  cash=Number(prompt('Cash amount (₹)','0')||0); upi=Number(prompt('UPI amount (₹)','0')||0); card=Number(prompt('Card amount (₹)','0')||0);
+  if(upi>0){upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');}
+  if(card>0){cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else if(['cash','upi','card'].includes(choice)){
+  if(choice==='cash')cash=Number(total); if(choice==='upi'){upi=Number(total);upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');} if(choice==='card'){card=Number(total);cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-Number(total))>0.009)return notify('Cash + UPI + Card must exactly match the bill total.');
+ const {data,error}=await sb.rpc('ms_cashier_collect_bill_split',{p_sale_id:id,p_cash:cash,p_upi:upi,p_card:card,p_upi_reference:upiref||null,p_card_reference:cardref||null});
+ if(error)return notify('Collection failed: '+error.message);
+ notify('Payment saved. Bill status updated to PAID.');
+ await loadCashierPendingBills(); await loadCashierSession();
+ try{await refreshData();}catch(e){} if(currentPage==='dashboard')renderDashboard();
+}
+async function loadCashierReturnTasks(){
+ const h=$('cashierReturnTasks');if(!h)return;
+ const {data,error}=await sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','approved').order('approved_at',{ascending:true}).limit(100);
+ if(error){h.innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
+ h.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Return</th><th>Invoice</th><th>Reason</th><th>Refund due</th><th>Action</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.return_code||x.id)}</td><td>${esc(x.invoice_number||'-')}</td><td>${esc(x.reason||'-')}</td><td><b>${money(x.refund_amount)}</b></td><td><button class="btn" onclick="payApprovedSalesReturn('${x.id}',${Number(x.refund_amount)||0})">Refund customer</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No approved customer refunds waiting for payment.</div>';
+}
+async function payApprovedSalesReturn(id,total){
+ if(!window.activeCashierSession)return notify('Open your cash session first.');
+ const choice=(prompt(`Refund ${money(total)}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();if(!choice)return;
+ let cash=0,upi=0,card=0,ref='';
+ if(choice==='split'){cash=Number(prompt('Cash refund (₹)','0')||0);upi=Number(prompt('UPI refund (₹)','0')||0);card=Number(prompt('Card refund (₹)','0')||0);if(upi>0){ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}}
+ else if(['cash','upi','card'].includes(choice)){if(choice==='cash')cash=total;if(choice==='upi'){upi=total;ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}if(choice==='card')card=total;}else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-total)>0.009)return notify('Refund split must equal approved refund amount.');
+ const {error}=await sb.rpc('ms_cashier_pay_sales_return',{p_return_id:id,p_cash:cash,p_upi:upi,p_card:card,p_reference:ref||null});if(error)return notify('Refund failed: '+error.message);
+ notify('Customer refund recorded successfully.');await loadCashierReturnTasks();await loadCashierSession();
+}
+async function renderCashierDesk(){
+ const pid=pharmacyId();
+ $('pageContent').innerHTML=`${pageHead('Cashier Collection Desk','Bills, approved customer refunds and your independent cash drawer')}<div id="cashierSessionPanel" class="panel">Loading your cash session...</div><div class="panel"><div class="panel-head"><h3>🧾 Bills waiting for collection</h3><button class="btn light" onclick="renderCashierDesk()">Refresh</button></div><div id="cashierPendingBills">Loading...</div></div><div class="panel"><div class="panel-head"><h3>↩ Approved sales return refunds</h3><button class="btn light" onclick="loadCashierReturnTasks()">Refresh</button></div><div id="cashierReturnTasks">Loading...</div></div>`;
+ await loadCashierSession();await loadCashierPendingBills();await loadCashierReturnTasks();
+}
+async function submitReturn(e,rpc){
+ e.preventDefault();const d=Object.fromEntries(new FormData(e.target));
+ try{
+  let result;
+  if(rpc==='ms_post_sale_return'){
+   const refundAmount=Number(prompt('Refund amount requested for owner approval (₹):','0')||0);if(!Number.isFinite(refundAmount)||refundAmount<=0)return notify('Enter a valid refund amount.');
+   result=await sb.rpc('ms_request_sales_return',{p_sale_item_id:d.sale_item_id,p_quantity:Number(d.quantity),p_reason:d.reason,p_refund_amount:refundAmount});
+  }else{
+   result=await sb.rpc('ms_request_vendor_return',{p_purchase_item_id:d.purchase_item_id,p_quantity:Number(d.quantity),p_reason:d.reason});
+  }
+  if(result.error)throw result.error;if(result.data?.error)throw new Error(result.data.error);
+  notify(result.data?.status==='approved'?'Return request is approved under this pharmacy owner setting. Complete the refund / vendor processing using the authorized workflow.':'Return request sent to the owner for approval. No stock or refund is posted before approval.');e.target.reset();await loadReturnHistory();
+ }catch(err){notify('Return request failed: '+err.message);}
+}
+async function loadOwnerApprovalPopup(){
+ if(!currentUser||!isPharmacyOwner()||workflowSetting("owner_notifications")===false)return;
+ const [sr,vr]=await Promise.all([
+  sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30),
+  sb.from('ms_vendor_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30)
+ ]);
+ if(sr.error||vr.error)return;
+ const items=[...(sr.data||[]).map(x=>({...x,_kind:'sales'})),...(vr.data||[]).map(x=>({...x,_kind:'vendor'}))];
+ let old=document.getElementById('ownerApprovalPopup');if(!items.length){old?.remove();return;}
+ if(!old){old=document.createElement('div');old.id='ownerApprovalPopup';old.style.cssText='position:fixed;z-index:99999;right:16px;top:76px;width:min(440px,calc(100vw - 32px));max-height:75vh;overflow:auto;background:var(--panel,#fff);color:var(--text,#172033);border:1px solid #dbe3ef;border-radius:16px;box-shadow:0 18px 55px #10213b33;padding:16px';document.body.appendChild(old);}
+ old.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>🔔 Owner approvals (${items.length})</b><button class="btn light" onclick="document.getElementById('ownerApprovalPopup')?.remove()">Close</button></div>${items.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #e5eaf2"><b>${x._kind==='sales'?'Customer sales return':'Vendor purchase return'}</b><div style="font-size:13px;margin:5px 0">${esc(x.return_code||x.id)} · ${esc(x.reason||'')}</div><div style="font-size:13px;margin-bottom:8px">${x._kind==='sales'?'Refund requested: '+money(x.refund_amount):'Quantity: '+esc(x.quantity)}</div><button class="btn" onclick="decideReturnRequest('${x._kind}','${x.id}','approve')">Approve</button> <button class="btn danger" onclick="decideReturnRequest('${x._kind}','${x.id}','reject')">Reject</button></div>`).join('')}`;
+}
+async function decideReturnRequest(kind,id,decision){const {error}=await sb.rpc('ms_owner_decide_return',{p_kind:kind,p_request_id:id,p_decision:decision,p_note:null});if(error)return notify(error.message);notify(`Return request ${decision}d.`);await loadOwnerApprovalPopup();}
+window.renderCashierDashboard=function(){
+ const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+ $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
+ <div class="dash-stats"><div class="dash-stat blue"><span class="dash-stat-icon">💵</span><div><small>Cashier</small><strong>${esc(currentMember?.full_name||"Staff")}</strong></div></div><div class="dash-stat green"><span class="dash-stat-icon">🏥</span><div><small>Pharmacy</small><strong>${esc(currentPharmacy?.pharmacy_name||"")}</strong></div></div></div>
+ <div class="dash-bottom-grid"><section class="dash-lower-card"><div class="dash-lower-head"><h3>💰 Cash & Payment</h3></div><div class="dash-tool-grid"><button class="dash-tool" onclick="navigate('cashierdesk')"><span>🧾</span><b>Pending Bill Collection</b><small>Collect pharmacist-saved bills</small></button><button class="dash-tool" onclick="navigate('cashierdesk')"><span>↩️</span><b>Sales Return Refunds</b><small>Pay owner-approved customer returns</small></button><button class="dash-tool" onclick="navigate('cashierreport')"><span>📊</span><b>Daily Collection Report</b><small>Cash, UPI, card, split and refunds</small></button><button class="dash-tool" onclick="navigate('cashbook')"><span>💳</span><b>Cashbook & Expenses</b><small>Cash in, cash out and expenses</small></button></div></section></div>
+ <div class="notice">Your account is restricted to cashier-related money functions. Inventory, purchasing, staff management and pharmacy settings are not available in this login.</div>`;
+};
+const _subhaOriginalRenderDashboard=window.renderDashboard;
+window.renderDashboard=function(){_subhaOriginalRenderDashboard();setTimeout(loadOwnerApprovalPopup,250);};
+</script>
+</body></html>`);
   w.document.close();
  }catch(e){notify("Could not print returns: "+e.message);}
 }
@@ -3386,7 +3707,86 @@ body.auth-mode .subha-brand-footer{margin-top:clamp(14px,2.5vh,24px)!important;f
 /* Emergency billing module */
 .emergency-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;background:linear-gradient(120deg,#effbf8,#f5f8ff);border:1px solid #d8eee8}.emergency-hero h3{margin:7px 0;font-size:19px;color:#17384f}.emergency-mark{width:58px;height:58px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#0b9d91,#08717d);color:#fff;font-size:29px;box-shadow:0 10px 24px #0b82752b}.emergency-match-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:12px}.emergency-item{display:flex;align-items:center;gap:11px;width:100%;padding:13px;border:1px solid var(--border);border-radius:12px;background:#fff;text-align:left;cursor:pointer;transition:.18s}.emergency-item:hover{border-color:#0b9d91;transform:translateY(-2px);box-shadow:0 8px 20px #143c5812}.emergency-item-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#e9f8f4;font-size:19px}.emergency-item-info{display:grid;gap:4px;flex:1;min-width:0}.emergency-item-info b{font-size:13px}.emergency-item-info small{font-size:10px;color:#72818a}.emergency-item>strong{white-space:nowrap;color:#087f78}.emergency-total{display:flex;justify-content:space-between;align-items:center;margin:16px 0;padding:14px;border-radius:12px;background:#eff8f6;color:#17384f}.emergency-total strong{font-size:23px;color:#087f78}@media(max-width:600px){.emergency-hero{align-items:flex-start}.emergency-mark{width:44px;height:44px;font-size:23px;flex:0 0 44px}.emergency-match-grid{grid-template-columns:1fr}.emergency-item{padding:11px}}
 #sidebar .role-hidden{display:none!important}
-</style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")} — ${esc(activeReportTitle)}</h2>${host.innerHTML}<script>window.onload=()=>window.print();<\/script></body></html>`);
+</style></head><body><h2>${esc(pharmacySettings.print_header||currentPharmacy?.pharmacy_name||"PHARMACY")} — ${esc(activeReportTitle)}</h2>${host.innerHTML}<script>window.onload=()=>window.print();<\/script><script>
+/* SUBHA MEDICAL — CASHIER / RETURN APPROVAL UPGRADE */
+async function collectCashierBill(id,total,invoice){
+ if(!window.activeCashierSession)return notify('Open your cash session before collecting payment.');
+ const choice=(prompt(`Collect ${money(total)} for ${invoice}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();
+ if(!choice)return;
+ let cash=0,upi=0,card=0,upiref='',cardref='';
+ if(choice==='split'){
+  cash=Number(prompt('Cash amount (₹)','0')||0); upi=Number(prompt('UPI amount (₹)','0')||0); card=Number(prompt('Card amount (₹)','0')||0);
+  if(upi>0){upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');}
+  if(card>0){cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else if(['cash','upi','card'].includes(choice)){
+  if(choice==='cash')cash=Number(total); if(choice==='upi'){upi=Number(total);upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');} if(choice==='card'){card=Number(total);cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-Number(total))>0.009)return notify('Cash + UPI + Card must exactly match the bill total.');
+ const {data,error}=await sb.rpc('ms_cashier_collect_bill_split',{p_sale_id:id,p_cash:cash,p_upi:upi,p_card:card,p_upi_reference:upiref||null,p_card_reference:cardref||null});
+ if(error)return notify('Collection failed: '+error.message);
+ notify('Payment saved. Bill status updated to PAID.');
+ await loadCashierPendingBills(); await loadCashierSession();
+ try{await refreshData();}catch(e){} if(currentPage==='dashboard')renderDashboard();
+}
+async function loadCashierReturnTasks(){
+ const h=$('cashierReturnTasks');if(!h)return;
+ const {data,error}=await sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','approved').order('approved_at',{ascending:true}).limit(100);
+ if(error){h.innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
+ h.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Return</th><th>Invoice</th><th>Reason</th><th>Refund due</th><th>Action</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.return_code||x.id)}</td><td>${esc(x.invoice_number||'-')}</td><td>${esc(x.reason||'-')}</td><td><b>${money(x.refund_amount)}</b></td><td><button class="btn" onclick="payApprovedSalesReturn('${x.id}',${Number(x.refund_amount)||0})">Refund customer</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No approved customer refunds waiting for payment.</div>';
+}
+async function payApprovedSalesReturn(id,total){
+ if(!window.activeCashierSession)return notify('Open your cash session first.');
+ const choice=(prompt(`Refund ${money(total)}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();if(!choice)return;
+ let cash=0,upi=0,card=0,ref='';
+ if(choice==='split'){cash=Number(prompt('Cash refund (₹)','0')||0);upi=Number(prompt('UPI refund (₹)','0')||0);card=Number(prompt('Card refund (₹)','0')||0);if(upi>0){ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}}
+ else if(['cash','upi','card'].includes(choice)){if(choice==='cash')cash=total;if(choice==='upi'){upi=total;ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}if(choice==='card')card=total;}else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-total)>0.009)return notify('Refund split must equal approved refund amount.');
+ const {error}=await sb.rpc('ms_cashier_pay_sales_return',{p_return_id:id,p_cash:cash,p_upi:upi,p_card:card,p_reference:ref||null});if(error)return notify('Refund failed: '+error.message);
+ notify('Customer refund recorded successfully.');await loadCashierReturnTasks();await loadCashierSession();
+}
+async function renderCashierDesk(){
+ const pid=pharmacyId();
+ $('pageContent').innerHTML=`${pageHead('Cashier Collection Desk','Bills, approved customer refunds and your independent cash drawer')}<div id="cashierSessionPanel" class="panel">Loading your cash session...</div><div class="panel"><div class="panel-head"><h3>🧾 Bills waiting for collection</h3><button class="btn light" onclick="renderCashierDesk()">Refresh</button></div><div id="cashierPendingBills">Loading...</div></div><div class="panel"><div class="panel-head"><h3>↩ Approved sales return refunds</h3><button class="btn light" onclick="loadCashierReturnTasks()">Refresh</button></div><div id="cashierReturnTasks">Loading...</div></div>`;
+ await loadCashierSession();await loadCashierPendingBills();await loadCashierReturnTasks();
+}
+async function submitReturn(e,rpc){
+ e.preventDefault();const d=Object.fromEntries(new FormData(e.target));
+ try{
+  let result;
+  if(rpc==='ms_post_sale_return'){
+   const refundAmount=Number(prompt('Refund amount requested for owner approval (₹):','0')||0);if(!Number.isFinite(refundAmount)||refundAmount<=0)return notify('Enter a valid refund amount.');
+   result=await sb.rpc('ms_request_sales_return',{p_sale_item_id:d.sale_item_id,p_quantity:Number(d.quantity),p_reason:d.reason,p_refund_amount:refundAmount});
+  }else{
+   result=await sb.rpc('ms_request_vendor_return',{p_purchase_item_id:d.purchase_item_id,p_quantity:Number(d.quantity),p_reason:d.reason});
+  }
+  if(result.error)throw result.error;if(result.data?.error)throw new Error(result.data.error);
+  notify(result.data?.status==='approved'?'Return request is approved under this pharmacy owner setting. Complete the refund / vendor processing using the authorized workflow.':'Return request sent to the owner for approval. No stock or refund is posted before approval.');e.target.reset();await loadReturnHistory();
+ }catch(err){notify('Return request failed: '+err.message);}
+}
+async function loadOwnerApprovalPopup(){
+ if(!currentUser||!isPharmacyOwner()||workflowSetting("owner_notifications")===false)return;
+ const [sr,vr]=await Promise.all([
+  sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30),
+  sb.from('ms_vendor_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30)
+ ]);
+ if(sr.error||vr.error)return;
+ const items=[...(sr.data||[]).map(x=>({...x,_kind:'sales'})),...(vr.data||[]).map(x=>({...x,_kind:'vendor'}))];
+ let old=document.getElementById('ownerApprovalPopup');if(!items.length){old?.remove();return;}
+ if(!old){old=document.createElement('div');old.id='ownerApprovalPopup';old.style.cssText='position:fixed;z-index:99999;right:16px;top:76px;width:min(440px,calc(100vw - 32px));max-height:75vh;overflow:auto;background:var(--panel,#fff);color:var(--text,#172033);border:1px solid #dbe3ef;border-radius:16px;box-shadow:0 18px 55px #10213b33;padding:16px';document.body.appendChild(old);}
+ old.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>🔔 Owner approvals (${items.length})</b><button class="btn light" onclick="document.getElementById('ownerApprovalPopup')?.remove()">Close</button></div>${items.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #e5eaf2"><b>${x._kind==='sales'?'Customer sales return':'Vendor purchase return'}</b><div style="font-size:13px;margin:5px 0">${esc(x.return_code||x.id)} · ${esc(x.reason||'')}</div><div style="font-size:13px;margin-bottom:8px">${x._kind==='sales'?'Refund requested: '+money(x.refund_amount):'Quantity: '+esc(x.quantity)}</div><button class="btn" onclick="decideReturnRequest('${x._kind}','${x.id}','approve')">Approve</button> <button class="btn danger" onclick="decideReturnRequest('${x._kind}','${x.id}','reject')">Reject</button></div>`).join('')}`;
+}
+async function decideReturnRequest(kind,id,decision){const {error}=await sb.rpc('ms_owner_decide_return',{p_kind:kind,p_request_id:id,p_decision:decision,p_note:null});if(error)return notify(error.message);notify(`Return request ${decision}d.`);await loadOwnerApprovalPopup();}
+window.renderCashierDashboard=function(){
+ const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+ $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
+ <div class="dash-stats"><div class="dash-stat blue"><span class="dash-stat-icon">💵</span><div><small>Cashier</small><strong>${esc(currentMember?.full_name||"Staff")}</strong></div></div><div class="dash-stat green"><span class="dash-stat-icon">🏥</span><div><small>Pharmacy</small><strong>${esc(currentPharmacy?.pharmacy_name||"")}</strong></div></div></div>
+ <div class="dash-bottom-grid"><section class="dash-lower-card"><div class="dash-lower-head"><h3>💰 Cash & Payment</h3></div><div class="dash-tool-grid"><button class="dash-tool" onclick="navigate('cashierdesk')"><span>🧾</span><b>Pending Bill Collection</b><small>Collect pharmacist-saved bills</small></button><button class="dash-tool" onclick="navigate('cashierdesk')"><span>↩️</span><b>Sales Return Refunds</b><small>Pay owner-approved customer returns</small></button><button class="dash-tool" onclick="navigate('cashierreport')"><span>📊</span><b>Daily Collection Report</b><small>Cash, UPI, card, split and refunds</small></button><button class="dash-tool" onclick="navigate('cashbook')"><span>💳</span><b>Cashbook & Expenses</b><small>Cash in, cash out and expenses</small></button></div></section></div>
+ <div class="notice">Your account is restricted to cashier-related money functions. Inventory, purchasing, staff management and pharmacy settings are not available in this login.</div>`;
+};
+const _subhaOriginalRenderDashboard=window.renderDashboard;
+window.renderDashboard=function(){_subhaOriginalRenderDashboard();setTimeout(loadOwnerApprovalPopup,250);};
+</script>
+</body></html>`);
  w.document.close();
 }
 async function renderStaff(){
@@ -3488,7 +3888,7 @@ async function deletePharmacyApplication(id){
  }catch(e){notify("Pharmacy deletion failed; no partial deletion was committed. Install the Super Admin deletion SQL and check the error: "+(e?.message||String(e)));}
 }
 async function renderSettings(){
- const p=currentPharmacy||{},owner=canManage()||String(currentUser?.email||"").toLowerCase()==="subhamedical2325@gmail.com";
+ const p=currentPharmacy||{},owner=isPharmacyOwner();
  const st=pharmacySettings||{};
  $("pageContent").innerHTML=`${pageHead("Pharmacy Settings","Pharmacy profile, payment QR and complete bill-sheet setup")}
  <div class="panel"><h3>Pharmacy profile</h3><div class="form-grid">${field("Pharmacy name","bill_pharmacy_name",p.pharmacy_name||"",owner?"":"disabled")}${field("Owner name","bill_owner_name",p.owner_name||"",owner?"":"disabled")}${field("Phone number","bill_phone",p.phone||"",owner?"":"disabled")}${field("Email address","pharmacy_contact_email",p.owner_email||currentUser?.email||"",owner?"":"disabled")}</div><div class="field"><label>Full pharmacy address</label><textarea id="bill_address" class="feature-input" rows="2" ${owner?"":"disabled"}>${esc(p.address||"")}</textarea></div></div>
@@ -3502,13 +3902,29 @@ async function renderSettings(){
  <div class="form-grid" style="margin-top:16px"><div><label>Pharmacy logo image</label><input id="pharmacyLogoUpload" type="file" accept="image/*" ${owner?"":"disabled"}><div id="pharmacyLogoPreview">${st.logo_data_url?`<img src="${st.logo_data_url}" style="max-width:150px;max-height:90px">`:"No logo uploaded"}</div></div><div><label>Payment QR image (upload any image)</label><input id="billQrUpload" type="file" accept="image/*" ${owner?"":"disabled"}><div id="billQrPreview" style="margin-top:8px">${st.payment_qr_data_url?`<img src="${st.payment_qr_data_url}" alt="Uploaded payment QR image" style="max-width:240px;max-height:240px;object-fit:contain;border:1px solid #dce5e7;border-radius:10px;padding:8px;background:#fff">`:"No payment QR image uploaded"}</div></div></div>
  ${owner?'<div class="feature-tools"><button type="button" class="btn light" onclick="saveBillImages()">Save uploaded images</button></div>':''}</div>
  <div class="panel"><h3>UPI payment setup for bill-time QR</h3><p class="feature-note">The uploaded Payment QR image above is stored as an image preview in settings. A separate bill-time UPI QR is generated with the exact payable amount.</p><div class="form-grid">${field("UPI ID (VPA)","upi_id",st.upi_id||"",owner?"":"disabled")}${field("UPI display / account name","upi_name",st.upi_name||p.pharmacy_name||"",owner?"":"disabled")}</div><div class="feature-tools">${owner?'<button class="btn" onclick="saveBillSettingsOnly()" type="button">Save UPI Setup</button>':''}<button type="button" class="btn light" onclick="generateUpiQr()">Generate UPI QR</button></div><div id="upiQrPreview" style="margin-top:15px;text-align:center"></div></div>
- <div class="panel"><h3>Staff management</h3><button class="btn" onclick="navigate('staff')">Open Staff Management / Create Staff</button></div>
+ <div class="panel" id="ownerWorkflowSettings"><div class="panel-head"><div><h3>Owner Control · Pharmacy Workflow</h3><p class="feature-note">All workflow switches are controlled only by the pharmacy owner. Each pharmacy can operate with or without a cashier.</p></div><span class="badge">Owner only</span></div>
+ <div class="form-grid">
+ <label class="field"><span>Cashier system</span><select id="wf_cashier_enabled" class="feature-input" ${owner?"":"disabled"}><option value="true">Enabled</option><option value="false">Disabled — pharmacist / owner collects payment</option></select></label>
+ <label class="field"><span>Cashier bill collection</span><select id="wf_cashier_bill_collection" class="feature-input" ${owner?"":"disabled"}><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+ <label class="field"><span>Pharmacist / owner direct collection</span><select id="wf_pharmacist_direct_collection" class="feature-input" ${owner?"":"disabled"}><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+ <label class="field"><span>Sales return owner approval</span><select id="wf_sales_return_owner_approval" class="feature-input" ${owner?"":"disabled"}><option value="true">Required</option><option value="false">Not required — permitted staff can process</option></select></label>
+ <label class="field"><span>Vendor return owner approval</span><select id="wf_vendor_return_owner_approval" class="feature-input" ${owner?"":"disabled"}><option value="true">Required</option><option value="false">Not required — permitted staff can process</option></select></label>
+ <label class="field"><span>Owner dashboard notifications</span><select id="wf_owner_notifications" class="feature-input" ${owner?"":"disabled"}><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+ <label class="field"><span>Cash payments</span><select id="wf_cash_payment_enabled" class="feature-input" ${owner?"":"disabled"}><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+ <label class="field"><span>UPI payments</span><select id="wf_upi_payment_enabled" class="feature-input" ${owner?"":"disabled"}><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+ <label class="field"><span>Card payments</span><select id="wf_card_payment_enabled" class="feature-input" ${owner?"":"disabled"}><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+ <label class="field"><span>Split payments</span><select id="wf_split_payment_enabled" class="feature-input" ${owner?"":"disabled"}><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+ <label class="field"><span>Cashier opening / closing register</span><select id="wf_cashier_open_close_enabled" class="feature-input" ${owner?"":"disabled"}><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+ </div>${owner?'<button class="btn" type="button" onclick="saveOwnerWorkflowSettings()">Save Owner Workflow Settings</button>':'<div class="notice">Only the pharmacy owner can change these settings.</div>'}</div> <div class="panel"><h3>Staff management</h3><button class="btn" onclick="navigate('staff')">Open Staff Management / Create Staff</button></div>
  <div class="panel"><h3>Signed-in account</h3><p>${esc(currentUser.email||"")}</p><p>Role: <b>${esc(currentMember?.role||"")}</b></p><button class="btn danger" onclick="logout()">Sign out</button></div>`;
+ const workflowKeys=["cashier_enabled","cashier_bill_collection","pharmacist_direct_collection","sales_return_owner_approval","vendor_return_owner_approval","owner_notifications","cash_payment_enabled","upi_payment_enabled","card_payment_enabled","split_payment_enabled","cashier_open_close_enabled"];
+ workflowKeys.forEach(k=>{const el=$("wf_"+k);if(el)el.value=String(workflowSetting(k));});
  const form=$("billSheetForm");if(form&&owner)form.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form));const settings={...pharmacySettings,...d,show_batch_expiry:d.show_batch_expiry==="yes",gst_number:$("gst_number")?.value||"",drug_license:$("drug_license")?.value||"",drug_license_2:$("drug_license_2")?.value||"",bill_email:$("bill_email")?.value||"",website:$("website")?.value||"",print_header:$("print_header")?.value||""};await saveSettingsJson(settings,{pharmacy_name:$("bill_pharmacy_name")?.value,owner_name:$("bill_owner_name")?.value,phone:$("bill_phone")?.value,address:$("bill_address")?.value});};
  if(st.upi_id&&$("upi_id"))generateUpiQr();
 }
-async function saveSettingsJson(settings,profile={}){try{if(!pharmacyId())throw new Error("Select a pharmacy workspace before saving its settings.");if(Object.values(profile).some(v=>v!==undefined)){const clean=Object.fromEntries(Object.entries(profile).filter(([k,v])=>v!==undefined));const {error:pe}=await sb.from("ms_pharmacies").update(clean).eq("id",pharmacyId());if(pe)throw pe;currentPharmacy={...currentPharmacy,...clean};}
+async function saveSettingsJson(settings,profile={}){try{if(!isPharmacyOwner())throw new Error("Only the pharmacy owner can change pharmacy settings.");if(!pharmacyId())throw new Error("Select a pharmacy workspace before saving its settings.");if(Object.values(profile).some(v=>v!==undefined)){const clean=Object.fromEntries(Object.entries(profile).filter(([k,v])=>v!==undefined));const {error:pe}=await sb.from("ms_pharmacies").update(clean).eq("id",pharmacyId());if(pe)throw pe;currentPharmacy={...currentPharmacy,...clean};}
  const {error}=await sb.from("ms_pharmacy_settings").upsert({pharmacy_id:pharmacyId(),settings,logo_data_url:settings.logo_data_url||pharmacySettings.logo_data_url||null,updated_by:currentUser.id},{onConflict:"pharmacy_id"});if(error)throw error;pharmacySettings={...settings};notify("Bill sheet settings saved.");}catch(e){notify("Settings save failed: "+e.message);}}
+async function saveOwnerWorkflowSettings(){if(!isPharmacyOwner())return notify("Only the pharmacy owner can change workflow settings.");const keys=["cashier_enabled","cashier_bill_collection","pharmacist_direct_collection","sales_return_owner_approval","vendor_return_owner_approval","owner_notifications","cash_payment_enabled","upi_payment_enabled","card_payment_enabled","split_payment_enabled","cashier_open_close_enabled"];const next={...pharmacySettings};keys.forEach(k=>{const el=$("wf_"+k);if(el)next[k]=el.value==="true";});if(!next.cashier_enabled)next.cashier_bill_collection=false;if(!next.cashier_enabled&&!next.pharmacist_direct_collection)return notify("Enable direct collection when disabling the cashier system, so bills can still be paid.");await saveSettingsJson(next);notify("Owner workflow settings saved for this pharmacy.");renderSettings();}
 async function saveBillSettingsOnly(){const settings={...pharmacySettings,upi_id:$("upi_id")?.value.trim()||"",upi_name:$("upi_name")?.value.trim()||""};await saveSettingsJson(settings);if(settings.upi_id)generateUpiQr();}
 async function saveBillImages(){if(!canManage()&&String(currentUser?.email||"").toLowerCase()!=="subhamedical2325@gmail.com")return notify("Admin permission required.");try{const logo=$("pharmacyLogoUpload")?.files?.[0],qr=$("billQrUpload")?.files?.[0];if(!logo&&!qr)return notify("Choose a logo or QR image first.");for(const f of [logo,qr].filter(Boolean)){if(!f.type.startsWith("image/"))throw new Error("Please upload image files only.");if(f.size>4000000)throw new Error("Each image must be below 4 MB.");}const settings={...pharmacySettings};if(logo)settings.logo_data_url=await fileAsDataUrl(logo);if(qr)settings.payment_qr_data_url=await fileAsDataUrl(qr);await saveSettingsJson(settings);renderSettings();}catch(e){notify("Image upload failed: "+e.message);}}
 function generateUpiQr(){
@@ -3568,7 +3984,86 @@ function printUpiQr(){
 .grn-calc-live{margin-top:6px;color:#126b58;font-weight:700}
 @media(max-width:700px){.grn-conversion{min-width:170px}}
 </style>
-</head><body style="font-family:Arial;text-align:center;padding:25px"><h2>${esc(pharmacySettings.upi_name||currentPharmacy?.pharmacy_name||"Subha Medical")}</h2><img src="${src}" style="width:260px;height:260px"><p>${esc(pharmacySettings.upi_id||"")}</p><script>window.onload=()=>window.print();<\/script></body></html>`);w.document.close();
+</head><body style="font-family:Arial;text-align:center;padding:25px"><h2>${esc(pharmacySettings.upi_name||currentPharmacy?.pharmacy_name||"Subha Medical")}</h2><img src="${src}" style="width:260px;height:260px"><p>${esc(pharmacySettings.upi_id||"")}</p><script>window.onload=()=>window.print();<\/script><script>
+/* SUBHA MEDICAL — CASHIER / RETURN APPROVAL UPGRADE */
+async function collectCashierBill(id,total,invoice){
+ if(!window.activeCashierSession)return notify('Open your cash session before collecting payment.');
+ const choice=(prompt(`Collect ${money(total)} for ${invoice}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();
+ if(!choice)return;
+ let cash=0,upi=0,card=0,upiref='',cardref='';
+ if(choice==='split'){
+  cash=Number(prompt('Cash amount (₹)','0')||0); upi=Number(prompt('UPI amount (₹)','0')||0); card=Number(prompt('Card amount (₹)','0')||0);
+  if(upi>0){upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');}
+  if(card>0){cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else if(['cash','upi','card'].includes(choice)){
+  if(choice==='cash')cash=Number(total); if(choice==='upi'){upi=Number(total);upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');} if(choice==='card'){card=Number(total);cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-Number(total))>0.009)return notify('Cash + UPI + Card must exactly match the bill total.');
+ const {data,error}=await sb.rpc('ms_cashier_collect_bill_split',{p_sale_id:id,p_cash:cash,p_upi:upi,p_card:card,p_upi_reference:upiref||null,p_card_reference:cardref||null});
+ if(error)return notify('Collection failed: '+error.message);
+ notify('Payment saved. Bill status updated to PAID.');
+ await loadCashierPendingBills(); await loadCashierSession();
+ try{await refreshData();}catch(e){} if(currentPage==='dashboard')renderDashboard();
+}
+async function loadCashierReturnTasks(){
+ const h=$('cashierReturnTasks');if(!h)return;
+ const {data,error}=await sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','approved').order('approved_at',{ascending:true}).limit(100);
+ if(error){h.innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
+ h.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Return</th><th>Invoice</th><th>Reason</th><th>Refund due</th><th>Action</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.return_code||x.id)}</td><td>${esc(x.invoice_number||'-')}</td><td>${esc(x.reason||'-')}</td><td><b>${money(x.refund_amount)}</b></td><td><button class="btn" onclick="payApprovedSalesReturn('${x.id}',${Number(x.refund_amount)||0})">Refund customer</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No approved customer refunds waiting for payment.</div>';
+}
+async function payApprovedSalesReturn(id,total){
+ if(!window.activeCashierSession)return notify('Open your cash session first.');
+ const choice=(prompt(`Refund ${money(total)}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();if(!choice)return;
+ let cash=0,upi=0,card=0,ref='';
+ if(choice==='split'){cash=Number(prompt('Cash refund (₹)','0')||0);upi=Number(prompt('UPI refund (₹)','0')||0);card=Number(prompt('Card refund (₹)','0')||0);if(upi>0){ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}}
+ else if(['cash','upi','card'].includes(choice)){if(choice==='cash')cash=total;if(choice==='upi'){upi=total;ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}if(choice==='card')card=total;}else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-total)>0.009)return notify('Refund split must equal approved refund amount.');
+ const {error}=await sb.rpc('ms_cashier_pay_sales_return',{p_return_id:id,p_cash:cash,p_upi:upi,p_card:card,p_reference:ref||null});if(error)return notify('Refund failed: '+error.message);
+ notify('Customer refund recorded successfully.');await loadCashierReturnTasks();await loadCashierSession();
+}
+async function renderCashierDesk(){
+ const pid=pharmacyId();
+ $('pageContent').innerHTML=`${pageHead('Cashier Collection Desk','Bills, approved customer refunds and your independent cash drawer')}<div id="cashierSessionPanel" class="panel">Loading your cash session...</div><div class="panel"><div class="panel-head"><h3>🧾 Bills waiting for collection</h3><button class="btn light" onclick="renderCashierDesk()">Refresh</button></div><div id="cashierPendingBills">Loading...</div></div><div class="panel"><div class="panel-head"><h3>↩ Approved sales return refunds</h3><button class="btn light" onclick="loadCashierReturnTasks()">Refresh</button></div><div id="cashierReturnTasks">Loading...</div></div>`;
+ await loadCashierSession();await loadCashierPendingBills();await loadCashierReturnTasks();
+}
+async function submitReturn(e,rpc){
+ e.preventDefault();const d=Object.fromEntries(new FormData(e.target));
+ try{
+  let result;
+  if(rpc==='ms_post_sale_return'){
+   const refundAmount=Number(prompt('Refund amount requested for owner approval (₹):','0')||0);if(!Number.isFinite(refundAmount)||refundAmount<=0)return notify('Enter a valid refund amount.');
+   result=await sb.rpc('ms_request_sales_return',{p_sale_item_id:d.sale_item_id,p_quantity:Number(d.quantity),p_reason:d.reason,p_refund_amount:refundAmount});
+  }else{
+   result=await sb.rpc('ms_request_vendor_return',{p_purchase_item_id:d.purchase_item_id,p_quantity:Number(d.quantity),p_reason:d.reason});
+  }
+  if(result.error)throw result.error;if(result.data?.error)throw new Error(result.data.error);
+  notify(result.data?.status==='approved'?'Return request is approved under this pharmacy owner setting. Complete the refund / vendor processing using the authorized workflow.':'Return request sent to the owner for approval. No stock or refund is posted before approval.');e.target.reset();await loadReturnHistory();
+ }catch(err){notify('Return request failed: '+err.message);}
+}
+async function loadOwnerApprovalPopup(){
+ if(!currentUser||!isPharmacyOwner()||workflowSetting("owner_notifications")===false)return;
+ const [sr,vr]=await Promise.all([
+  sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30),
+  sb.from('ms_vendor_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30)
+ ]);
+ if(sr.error||vr.error)return;
+ const items=[...(sr.data||[]).map(x=>({...x,_kind:'sales'})),...(vr.data||[]).map(x=>({...x,_kind:'vendor'}))];
+ let old=document.getElementById('ownerApprovalPopup');if(!items.length){old?.remove();return;}
+ if(!old){old=document.createElement('div');old.id='ownerApprovalPopup';old.style.cssText='position:fixed;z-index:99999;right:16px;top:76px;width:min(440px,calc(100vw - 32px));max-height:75vh;overflow:auto;background:var(--panel,#fff);color:var(--text,#172033);border:1px solid #dbe3ef;border-radius:16px;box-shadow:0 18px 55px #10213b33;padding:16px';document.body.appendChild(old);}
+ old.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>🔔 Owner approvals (${items.length})</b><button class="btn light" onclick="document.getElementById('ownerApprovalPopup')?.remove()">Close</button></div>${items.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #e5eaf2"><b>${x._kind==='sales'?'Customer sales return':'Vendor purchase return'}</b><div style="font-size:13px;margin:5px 0">${esc(x.return_code||x.id)} · ${esc(x.reason||'')}</div><div style="font-size:13px;margin-bottom:8px">${x._kind==='sales'?'Refund requested: '+money(x.refund_amount):'Quantity: '+esc(x.quantity)}</div><button class="btn" onclick="decideReturnRequest('${x._kind}','${x.id}','approve')">Approve</button> <button class="btn danger" onclick="decideReturnRequest('${x._kind}','${x.id}','reject')">Reject</button></div>`).join('')}`;
+}
+async function decideReturnRequest(kind,id,decision){const {error}=await sb.rpc('ms_owner_decide_return',{p_kind:kind,p_request_id:id,p_decision:decision,p_note:null});if(error)return notify(error.message);notify(`Return request ${decision}d.`);await loadOwnerApprovalPopup();}
+window.renderCashierDashboard=function(){
+ const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+ $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
+ <div class="dash-stats"><div class="dash-stat blue"><span class="dash-stat-icon">💵</span><div><small>Cashier</small><strong>${esc(currentMember?.full_name||"Staff")}</strong></div></div><div class="dash-stat green"><span class="dash-stat-icon">🏥</span><div><small>Pharmacy</small><strong>${esc(currentPharmacy?.pharmacy_name||"")}</strong></div></div></div>
+ <div class="dash-bottom-grid"><section class="dash-lower-card"><div class="dash-lower-head"><h3>💰 Cash & Payment</h3></div><div class="dash-tool-grid"><button class="dash-tool" onclick="navigate('cashierdesk')"><span>🧾</span><b>Pending Bill Collection</b><small>Collect pharmacist-saved bills</small></button><button class="dash-tool" onclick="navigate('cashierdesk')"><span>↩️</span><b>Sales Return Refunds</b><small>Pay owner-approved customer returns</small></button><button class="dash-tool" onclick="navigate('cashierreport')"><span>📊</span><b>Daily Collection Report</b><small>Cash, UPI, card, split and refunds</small></button><button class="dash-tool" onclick="navigate('cashbook')"><span>💳</span><b>Cashbook & Expenses</b><small>Cash in, cash out and expenses</small></button></div></section></div>
+ <div class="notice">Your account is restricted to cashier-related money functions. Inventory, purchasing, staff management and pharmacy settings are not available in this login.</div>`;
+};
+const _subhaOriginalRenderDashboard=window.renderDashboard;
+window.renderDashboard=function(){_subhaOriginalRenderDashboard();setTimeout(loadOwnerApprovalPopup,250);};
+</script>
+</body></html>`);w.document.close();
 }
  
 function openModal(){$("modal").classList.remove("hidden");}
@@ -3682,6 +4177,85 @@ start().catch(err=>{
   document.addEventListener('visibilitychange',()=>{if(document.hidden){if(timer)clearInterval(timer);timer=null;}else start();});
 })();
 document.addEventListener("submit",function(e){if(e.target?.id==="emergencySetupForm")saveEmergencyItem(e);});
+</script>
+<script>
+/* SUBHA MEDICAL — CASHIER / RETURN APPROVAL UPGRADE */
+async function collectCashierBill(id,total,invoice){
+ if(!window.activeCashierSession)return notify('Open your cash session before collecting payment.');
+ const choice=(prompt(`Collect ${money(total)} for ${invoice}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();
+ if(!choice)return;
+ let cash=0,upi=0,card=0,upiref='',cardref='';
+ if(choice==='split'){
+  cash=Number(prompt('Cash amount (₹)','0')||0); upi=Number(prompt('UPI amount (₹)','0')||0); card=Number(prompt('Card amount (₹)','0')||0);
+  if(upi>0){upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');}
+  if(card>0){cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else if(['cash','upi','card'].includes(choice)){
+  if(choice==='cash')cash=Number(total); if(choice==='upi'){upi=Number(total);upiref=(prompt('UPI UTR / reference number:')||'').trim();if(!upiref)return notify('UPI reference is required.');} if(choice==='card'){card=Number(total);cardref=(prompt('Card transaction reference (optional):')||'').trim();}
+ }else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-Number(total))>0.009)return notify('Cash + UPI + Card must exactly match the bill total.');
+ const {data,error}=await sb.rpc('ms_cashier_collect_bill_split',{p_sale_id:id,p_cash:cash,p_upi:upi,p_card:card,p_upi_reference:upiref||null,p_card_reference:cardref||null});
+ if(error)return notify('Collection failed: '+error.message);
+ notify('Payment saved. Bill status updated to PAID.');
+ await loadCashierPendingBills(); await loadCashierSession();
+ try{await refreshData();}catch(e){} if(currentPage==='dashboard')renderDashboard();
+}
+async function loadCashierReturnTasks(){
+ const h=$('cashierReturnTasks');if(!h)return;
+ const {data,error}=await sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','approved').order('approved_at',{ascending:true}).limit(100);
+ if(error){h.innerHTML=`<div class="notice">${esc(error.message)}</div>`;return;}
+ h.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Return</th><th>Invoice</th><th>Reason</th><th>Refund due</th><th>Action</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.return_code||x.id)}</td><td>${esc(x.invoice_number||'-')}</td><td>${esc(x.reason||'-')}</td><td><b>${money(x.refund_amount)}</b></td><td><button class="btn" onclick="payApprovedSalesReturn('${x.id}',${Number(x.refund_amount)||0})">Refund customer</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No approved customer refunds waiting for payment.</div>';
+}
+async function payApprovedSalesReturn(id,total){
+ if(!window.activeCashierSession)return notify('Open your cash session first.');
+ const choice=(prompt(`Refund ${money(total)}. Enter cash, upi, card or split:`,'cash')||'').trim().toLowerCase();if(!choice)return;
+ let cash=0,upi=0,card=0,ref='';
+ if(choice==='split'){cash=Number(prompt('Cash refund (₹)','0')||0);upi=Number(prompt('UPI refund (₹)','0')||0);card=Number(prompt('Card refund (₹)','0')||0);if(upi>0){ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}}
+ else if(['cash','upi','card'].includes(choice)){if(choice==='cash')cash=total;if(choice==='upi'){upi=total;ref=(prompt('UPI refund reference:')||'').trim();if(!ref)return notify('UPI reference required.');}if(choice==='card')card=total;}else return notify('Choose cash, UPI, card or split.');
+ if(Math.abs(cash+upi+card-total)>0.009)return notify('Refund split must equal approved refund amount.');
+ const {error}=await sb.rpc('ms_cashier_pay_sales_return',{p_return_id:id,p_cash:cash,p_upi:upi,p_card:card,p_reference:ref||null});if(error)return notify('Refund failed: '+error.message);
+ notify('Customer refund recorded successfully.');await loadCashierReturnTasks();await loadCashierSession();
+}
+async function renderCashierDesk(){
+ const pid=pharmacyId();
+ $('pageContent').innerHTML=`${pageHead('Cashier Collection Desk','Bills, approved customer refunds and your independent cash drawer')}<div id="cashierSessionPanel" class="panel">Loading your cash session...</div><div class="panel"><div class="panel-head"><h3>🧾 Bills waiting for collection</h3><button class="btn light" onclick="renderCashierDesk()">Refresh</button></div><div id="cashierPendingBills">Loading...</div></div><div class="panel"><div class="panel-head"><h3>↩ Approved sales return refunds</h3><button class="btn light" onclick="loadCashierReturnTasks()">Refresh</button></div><div id="cashierReturnTasks">Loading...</div></div>`;
+ await loadCashierSession();await loadCashierPendingBills();await loadCashierReturnTasks();
+}
+async function submitReturn(e,rpc){
+ e.preventDefault();const d=Object.fromEntries(new FormData(e.target));
+ try{
+  let result;
+  if(rpc==='ms_post_sale_return'){
+   const refundAmount=Number(prompt('Refund amount requested for owner approval (₹):','0')||0);if(!Number.isFinite(refundAmount)||refundAmount<=0)return notify('Enter a valid refund amount.');
+   result=await sb.rpc('ms_request_sales_return',{p_sale_item_id:d.sale_item_id,p_quantity:Number(d.quantity),p_reason:d.reason,p_refund_amount:refundAmount});
+  }else{
+   result=await sb.rpc('ms_request_vendor_return',{p_purchase_item_id:d.purchase_item_id,p_quantity:Number(d.quantity),p_reason:d.reason});
+  }
+  if(result.error)throw result.error;if(result.data?.error)throw new Error(result.data.error);
+  notify(result.data?.status==='approved'?'Return request is approved under this pharmacy owner setting. Complete the refund / vendor processing using the authorized workflow.':'Return request sent to the owner for approval. No stock or refund is posted before approval.');e.target.reset();await loadReturnHistory();
+ }catch(err){notify('Return request failed: '+err.message);}
+}
+async function loadOwnerApprovalPopup(){
+ if(!currentUser||!isPharmacyOwner()||workflowSetting("owner_notifications")===false)return;
+ const [sr,vr]=await Promise.all([
+  sb.from('ms_sales_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30),
+  sb.from('ms_vendor_return_requests').select('*').eq('pharmacy_id',pharmacyId()).eq('status','pending').order('created_at',{ascending:false}).limit(30)
+ ]);
+ if(sr.error||vr.error)return;
+ const items=[...(sr.data||[]).map(x=>({...x,_kind:'sales'})),...(vr.data||[]).map(x=>({...x,_kind:'vendor'}))];
+ let old=document.getElementById('ownerApprovalPopup');if(!items.length){old?.remove();return;}
+ if(!old){old=document.createElement('div');old.id='ownerApprovalPopup';old.style.cssText='position:fixed;z-index:99999;right:16px;top:76px;width:min(440px,calc(100vw - 32px));max-height:75vh;overflow:auto;background:var(--panel,#fff);color:var(--text,#172033);border:1px solid #dbe3ef;border-radius:16px;box-shadow:0 18px 55px #10213b33;padding:16px';document.body.appendChild(old);}
+ old.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>🔔 Owner approvals (${items.length})</b><button class="btn light" onclick="document.getElementById('ownerApprovalPopup')?.remove()">Close</button></div>${items.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #e5eaf2"><b>${x._kind==='sales'?'Customer sales return':'Vendor purchase return'}</b><div style="font-size:13px;margin:5px 0">${esc(x.return_code||x.id)} · ${esc(x.reason||'')}</div><div style="font-size:13px;margin-bottom:8px">${x._kind==='sales'?'Refund requested: '+money(x.refund_amount):'Quantity: '+esc(x.quantity)}</div><button class="btn" onclick="decideReturnRequest('${x._kind}','${x.id}','approve')">Approve</button> <button class="btn danger" onclick="decideReturnRequest('${x._kind}','${x.id}','reject')">Reject</button></div>`).join('')}`;
+}
+async function decideReturnRequest(kind,id,decision){const {error}=await sb.rpc('ms_owner_decide_return',{p_kind:kind,p_request_id:id,p_decision:decision,p_note:null});if(error)return notify(error.message);notify(`Return request ${decision}d.`);await loadOwnerApprovalPopup();}
+window.renderCashierDashboard=function(){
+ const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+ $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
+ <div class="dash-stats"><div class="dash-stat blue"><span class="dash-stat-icon">💵</span><div><small>Cashier</small><strong>${esc(currentMember?.full_name||"Staff")}</strong></div></div><div class="dash-stat green"><span class="dash-stat-icon">🏥</span><div><small>Pharmacy</small><strong>${esc(currentPharmacy?.pharmacy_name||"")}</strong></div></div></div>
+ <div class="dash-bottom-grid"><section class="dash-lower-card"><div class="dash-lower-head"><h3>💰 Cash & Payment</h3></div><div class="dash-tool-grid"><button class="dash-tool" onclick="navigate('cashierdesk')"><span>🧾</span><b>Pending Bill Collection</b><small>Collect pharmacist-saved bills</small></button><button class="dash-tool" onclick="navigate('cashierdesk')"><span>↩️</span><b>Sales Return Refunds</b><small>Pay owner-approved customer returns</small></button><button class="dash-tool" onclick="navigate('cashierreport')"><span>📊</span><b>Daily Collection Report</b><small>Cash, UPI, card, split and refunds</small></button><button class="dash-tool" onclick="navigate('cashbook')"><span>💳</span><b>Cashbook & Expenses</b><small>Cash in, cash out and expenses</small></button></div></section></div>
+ <div class="notice">Your account is restricted to cashier-related money functions. Inventory, purchasing, staff management and pharmacy settings are not available in this login.</div>`;
+};
+const _subhaOriginalRenderDashboard=window.renderDashboard;
+window.renderDashboard=function(){_subhaOriginalRenderDashboard();setTimeout(loadOwnerApprovalPopup,250);};
 </script>
 </body>
 </html>
