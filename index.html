@@ -1869,6 +1869,36 @@ function renderCashierDashboard(){
  <div class="notice">Your account is restricted to cashier-related money functions. Inventory, purchasing, staff management and pharmacy settings are not available in this login.</div>`;
 }
 
+let ownerPendingBillTimer=null;
+let ownerPendingBillSeen=new Set();
+async function loadOwnerPendingBillAlerts(){
+ if(!currentUser||currentMember?.role!=="owner"||currentPage!=="dashboard")return;
+ const host=$("ownerPendingCashierBills");
+ const {data,error}=await sb.from("ms_sales")
+  .select("id,invoice_number,created_at,customer_name,customer_phone,total,payment_status,payment_method,billing_staff_name")
+  .eq("pharmacy_id",pharmacyId())
+  .eq("payment_method","cashier_pending")
+  .eq("payment_status","pending")
+  .order("created_at",{ascending:true}).limit(200);
+ if(error){if(host)host.innerHTML=`<div class="notice">Unable to load pending collections: ${esc(error.message)}</div>`;return;}
+ const rows=data||[];
+ const total=rows.reduce((n,x)=>n+Number(x.total||0),0);
+ if(host){
+  host.innerHTML=rows.length?`<div class="dash-stats"><div class="dash-stat orange"><span class="dash-stat-icon">⏳</span><div><small>Uncollected bills</small><strong>${rows.length}</strong></div></div><div class="dash-stat blue"><span class="dash-stat-icon">₹</span><div><small>Amount awaiting collection</small><strong>${money(total)}</strong></div></div></div><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Customer</th><th>Saved by</th><th>Saved time</th><th>Pending amount</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.invoice_number||x.id)}</td><td>${esc(x.customer_name||"Walk-in")}<br><small>${esc(x.customer_phone||"")}</small></td><td>${esc(x.billing_staff_name||"Staff")}</td><td>${x.created_at?new Date(x.created_at).toLocaleString():"—"}</td><td><b>${money(x.total)}</b></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No bills are waiting for cashier collection.</div>`;
+ }
+ const fresh=rows.filter(x=>!ownerPendingBillSeen.has(x.id));
+ rows.forEach(x=>ownerPendingBillSeen.add(x.id));
+ if(fresh.length)notify(`${fresh.length} bill(s) are still waiting for cashier collection. Pending amount: ${money(fresh.reduce((n,x)=>n+Number(x.total||0),0))}`);
+}
+function startOwnerPendingBillAlerts(){
+ const panel=document.getElementById("ownerPendingCashierBills")?.closest("section");
+ if(panel)panel.style.display=currentMember?.role==="owner"?"block":"none";
+ if(ownerPendingBillTimer){clearInterval(ownerPendingBillTimer);ownerPendingBillTimer=null;}
+ if(currentMember?.role!=="owner")return;
+ loadOwnerPendingBillAlerts();
+ ownerPendingBillTimer=setInterval(()=>{if(currentPage==="dashboard")loadOwnerPendingBillAlerts();},30000);
+}
+
 function renderDashboard(){
  if(isSuper()){renderSuperDashboard();return;}
  const today=new Date().toISOString().slice(0,10);
@@ -1892,6 +1922,7 @@ function renderDashboard(){
  const quick=(icon,label,desc,page)=>`<button class="dash-tool" onclick="navigate('${page}')"><span>${icon}</span><b>${label}</b><small>${desc}</small></button>`;
  $("pageContent").innerHTML=`
  <div class="dash-welcome"><div><span class="dash-eyebrow">PHARMACY WORKSPACE</span><h2>Dashboard</h2><p>Your pharmacy operations at a glance</p></div><div class="dash-date">▦ &nbsp;${new Date().toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric',weekday:'short'})}</div></div>
+ <section class="dash-lower-card" style="margin:14px 0;border:1px solid #f0c36d"><div class="dash-lower-head"><h3>🔔 Owner Notifications – Pending Cashier Collections</h3><button class="btn light" onclick="loadOwnerPendingBillAlerts()">Refresh</button></div><div id="ownerPendingCashierBills">Loading pending bills...</div></section>
  <div class="dash-stats">${stats.map(x=>`<div class="dash-stat ${x[3]}"><span class="dash-stat-icon">${x[0]}</span><div><small>${x[1]}</small><strong>${x[2]}</strong></div></div>`).join('')}</div>
  <div class="dash-main-grid">
   <section class="dash-module"><div class="dash-module-head"><h3>🛒 &nbsp;Billing (POS)</h3><button class="dash-primary" onclick="navigate('billing')">Open Billing</button></div><div class="dash-module-body"><div class="dash-module-art bill-art"><div class="art-cross">✚</div><div class="art-pill pill-one"></div><div class="art-pill pill-two"></div><div class="art-box">Rx</div></div><div class="dash-module-copy"><b>Fast counter billing</b><p>Search medicines, scan barcodes, manage cart quantities and complete customer payments.</p><button class="dash-action" onclick="navigate('billing')">New Bill <span>→</span></button></div></div></section>
@@ -1932,6 +1963,7 @@ async function renderSuperDashboard(){
   <button class="admin-quick" onclick="navigate('settings')"><span class="aq-icon">⚙</span><span><b>Workspace settings</b><small>Profile, bill sheet and payment setup</small></span></button>
  </div></div>
  <div class="panel"><div class="panel-head"><h3>Pharmacy workspaces</h3><button class="btn light" onclick="navigate('pharmacies')">Manage all</button></div><div class="table-wrap"><table><thead><tr><th>Pharmacy</th><th>Code</th><th>Status</th><th>Workspace</th></tr></thead><tbody>${adminPharmacyOptions.length?adminPharmacyOptions.slice(0,12).map(p=>`<tr><td><b>${esc(p.pharmacy_name||'Pharmacy')}</b></td><td>${esc(p.pharmacy_code||'-')}</td><td><span class="badge ${p.approval_status==='approved'?'green':p.approval_status==='rejected'?'red':''}">${esc(p.approval_status||'pending')}</span></td><td><button class="btn light" onclick="switchAdminPharmacy('${p.id}')">Open workspace</button></td></tr>`).join(''):`<tr><td colspan="4" class="empty">No pharmacy records found.</td></tr>`}</tbody></table></div></div>`;
+ startOwnerPendingBillAlerts();
 }
  
 /* CSV / EXCEL PRODUCT IMPORT
@@ -2751,22 +2783,49 @@ function reminderModal(){
 async function setPatientMedicineStatus(id,status){const {error}=await sb.from("ms_patient_reminder_medicines").update({status,updated_at:new Date().toISOString()}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Medicine reminder updated.");renderReminders();}
 async function reschedulePatientMedicine(id,current){const value=prompt("Enter new due date (YYYY-MM-DD)",current||new Date().toISOString().slice(0,10));if(!value)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return notify("Use date format YYYY-MM-DD.");const {error}=await sb.from("ms_patient_reminder_medicines").update({due_date:value,status:"Pending",updated_at:new Date().toISOString()}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Due date updated.");renderReminders();}
 async function deletePatientReminder(id){if(!confirm("Delete this customer reminder and all its medicine lines?"))return;const {error}=await sb.from("ms_patient_reminders").delete().eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Customer reminder deleted.");renderReminders();}
-async function renderReturns(){try{const [s,p]=await Promise.all([sb.from("ms_sales").select("id,invoice_number,created_at,total").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(100),sb.from("ms_purchases").select("id,invoice_number,created_at,total").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(100)]);if(s.error)throw s.error;if(p.error)throw p.error;window.returnSales=s.data||[];window.returnPurchases=p.data||[];$("pageContent").innerHTML=`${pageHead("Sales & Vendor Returns","Post approved returns with server-side stock adjustment")}<div class="panel"><h3>Customer Sales Return</h3><form id="saleReturnForm"><div class="form-grid"><div class="field"><label>Sales invoice</label><select name="sale_id" id="returnSale" required class="feature-input"><option value="">Select invoice</option>${window.returnSales.map(x=>`<option value="${x.id}">${esc(x.invoice_number||x.id.slice(0,8))} · ${new Date(x.created_at).toLocaleDateString()}</option>`).join("")}</select></div><div class="field"><label>Sale item</label><select name="sale_item_id" id="returnSaleItem" required class="feature-input"><option value="">Select invoice first</option></select></div><div class="field"><label>Return quantity</label><input name="quantity" type="number" min="0.001" step="0.001" required class="feature-input"></div></div><div class="field"><label>Reason</label><input name="reason" required class="feature-input"></div><button class="btn">Post Customer Return</button></form></div><div class="panel"><h3>Vendor Purchase Return</h3><form id="vendorReturnForm"><div class="form-grid"><div class="field"><label>Purchase invoice</label><select name="purchase_id" id="returnPurchase" required class="feature-input"><option value="">Select invoice</option>${window.returnPurchases.map(x=>`<option value="${x.id}">${esc(x.invoice_number||x.id.slice(0,8))} · ${new Date(x.created_at).toLocaleDateString()}</option>`).join("")}</select></div><div class="field"><label>Purchase item</label><select name="purchase_item_id" id="returnPurchaseItem" required class="feature-input"><option value="">Select invoice first</option></select></div><div class="field"><label>Return quantity</label><input name="quantity" type="number" min="0.001" step="0.001" required class="feature-input"></div></div><div class="field"><label>Reason</label><input name="reason" required class="feature-input"></div><button class="btn">Post Vendor Return</button></form></div><div class="panel"><div class="panel-head"><h3>Recent Returns</h3><div class="actions"><button class="btn light" onclick="printReturnHistory()">Print Returns</button><button class="btn light" onclick="exportReturnHistory()">Export CSV</button></div></div><div id="returnHistory">Loading...</div></div>`;
- $("returnSale").onchange=()=>loadReturnItems("sale",$("returnSale").value);$("returnPurchase").onchange=()=>loadReturnItems("purchase",$("returnPurchase").value);$("saleReturnForm").onsubmit=e=>submitReturn(e,"ms_post_sale_return");$("vendorReturnForm").onsubmit=e=>submitReturn(e,"ms_post_vendor_return");loadReturnHistory();}catch(e){$("pageContent").innerHTML=`${pageHead("Returns","Sales and vendor returns")}<div class="panel notice">Returns setup error: ${esc(e.message)}</div>`;}}
-async function loadReturnItems(type,id){const target=$(type==="sale"?"returnSaleItem":"returnPurchaseItem");target.innerHTML="<option>Loading...</option>";const table=type==="sale"?"ms_sale_items":"ms_purchase_items",fk=type==="sale"?"sale_id":"purchase_id";const {data,error}=await sb.from(table).select("id,product_name,quantity,batch_number").eq(fk,id).eq("pharmacy_id",pharmacyId());if(error){target.innerHTML="<option>Failed to load</option>";return notify(error.message);}target.innerHTML=`<option value="">Select item</option>`+(data||[]).map(x=>`<option value="${x.id}">${esc(x.product_name)} · Qty ${x.quantity} · ${esc(x.batch_number||"")}</option>`).join("");}
+async function renderReturns(){
+ try{
+  const [s,p]=await Promise.all([
+   sb.from("ms_sales").select("id,invoice_number,created_at,total").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(500),
+   sb.from("ms_purchases").select("id,invoice_number,created_at,total").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(500)
+  ]);
+  if(s.error)throw s.error;if(p.error)throw p.error;
+  window.returnSales=s.data||[];window.returnPurchases=p.data||[];
+  const invOptions=window.returnSales.map(x=>`<option value="${x.id}">${esc(x.invoice_number||x.id.slice(0,8))} · ${new Date(x.created_at).toLocaleDateString()} · ${money(x.total||0)}</option>`).join("");
+  $("pageContent").innerHTML=`${pageHead("Sales & Vendor Returns","Search invoices, request returns and track owner approval")}
+  <div class="panel"><h3>Customer Sales Return</h3>
+   <div class="form-grid"><div class="field"><label>Search sales invoice number</label><input id="returnInvoiceSearch" class="feature-input" placeholder="Type invoice number to search"></div><div class="field"><label>Sales invoice</label><select name="sale_id" id="returnSale" required class="feature-input"><option value="">Select invoice</option>${invOptions}</select></div></div>
+   <form id="saleReturnForm"><div class="form-grid"><div class="field"><label>Sale item</label><select name="sale_item_id" id="returnSaleItem" required class="feature-input"><option value="">Select invoice first</option></select></div><div class="field"><label>Return quantity</label><input name="quantity" id="returnQuantity" type="number" min="0.001" step="0.001" required class="feature-input" disabled></div><div class="field"><label>Refund amount (₹) · calculated from original bill</label><input name="refund_amount" id="returnRefundAmount" type="number" min="0.01" step="0.01" required class="feature-input" readonly placeholder="Select invoice and item"></div></div><div class="field"><label>Reason</label><input name="reason" required class="feature-input"></div><button class="btn">Submit Sales Return for Owner Approval</button></form>
+  </div>
+  <div class="panel"><h3>Vendor Purchase Return</h3><form id="vendorReturnForm"><div class="form-grid"><div class="field"><label>Purchase invoice</label><select name="purchase_id" id="returnPurchase" required class="feature-input"><option value="">Select invoice</option>${window.returnPurchases.map(x=>`<option value="${x.id}">${esc(x.invoice_number||x.id.slice(0,8))} · ${new Date(x.created_at).toLocaleDateString()}</option>`).join("")}</select></div><div class="field"><label>Purchase item</label><select name="purchase_item_id" id="returnPurchaseItem" required class="feature-input"><option value="">Select invoice first</option></select></div><div class="field"><label>Return quantity</label><input name="quantity" type="number" min="0.001" step="0.001" required class="feature-input"></div></div><div class="field"><label>Reason</label><input name="reason" required class="feature-input"></div><button class="btn">Submit Vendor Return for Owner Approval</button></form></div>
+  <div class="panel"><div class="panel-head"><h3>Return Approval Status</h3><div class="actions"><button class="btn light" onclick="loadReturnHistory()">Refresh</button><button class="btn light" onclick="printReturnHistory()">Print Returns</button><button class="btn light" onclick="exportReturnHistory()">Export CSV</button></div></div><div id="returnHistory">Loading...</div></div>`;
+  const search=$("returnInvoiceSearch"),select=$("returnSale");
+  search.oninput=()=>{const q=search.value.trim().toLowerCase();[...select.options].forEach((o,i)=>{if(i===0)return;const sale=window.returnSales.find(x=>x.id===o.value);o.hidden=!!q&&!String(sale?.invoice_number||"").toLowerCase().includes(q);});};
+  select.onchange=()=>loadReturnItems("sale",select.value);
+  $("returnQuantity").oninput=calculateReturnRefund;
+  $("returnSaleItem").onchange=()=>{const item=(window.returnSaleItems||[]).find(x=>x.id===$("returnSaleItem").value);const q=$("returnQuantity");q.disabled=!item;if(item){q.max=String(Number(item.quantity)||0);q.value="";q.placeholder="Max "+item.quantity;}calculateReturnRefund();};
+  $("returnPurchase").onchange=()=>loadReturnItems("purchase",$("returnPurchase").value);
+  $("saleReturnForm").onsubmit=e=>submitReturn(e,"ms_request_sales_return");
+  $("vendorReturnForm").onsubmit=e=>submitReturn(e,"ms_request_vendor_return");
+  await loadReturnHistory();
+ }catch(e){$("pageContent").innerHTML=`${pageHead("Returns","Sales and vendor returns")}<div class="panel notice">Returns setup error: ${esc(e.message)}</div>`;}
+}
+async function loadReturnItems(type,id){const target=$(type==="sale"?"returnSaleItem":"returnPurchaseItem");target.innerHTML="<option>Loading...</option>";const table=type==="sale"?"ms_sale_items":"ms_purchase_items",fk=type==="sale"?"sale_id":"purchase_id";const fields=type==="sale"?"id,product_name,quantity,batch_number,unit_price,line_total,product_id":"id,product_name,quantity,batch_number";const {data,error}=await sb.from(table).select(fields).eq(fk,id).eq("pharmacy_id",pharmacyId());if(error){target.innerHTML="<option>Failed to load</option>";return notify(error.message);}if(type==="sale"){window.returnSaleItems=data||[];$("returnQuantity").disabled=true;$("returnQuantity").value="";$("returnRefundAmount").value="";}target.innerHTML=`<option value="">Select item</option>`+(data||[]).map(x=>`<option value="${x.id}">${esc(x.product_name)} · Sold ${x.quantity} · ${esc(x.batch_number||"")}${type==="sale"?` · ${money(x.unit_price||0)} each`:""}</option>`).join("");}
+function calculateReturnRefund(){const item=(window.returnSaleItems||[]).find(x=>x.id===$("returnSaleItem")?.value);const q=Number($("returnQuantity")?.value||0);if(!item){if($("returnRefundAmount"))$("returnRefundAmount").value="";return;}const max=Number(item.quantity)||0;const unit=Number(item.unit_price)||0;const line=Number(item.line_total);const rate=unit>0?unit:(max>0&&Number.isFinite(line)?line/max:0);const safeQty=Math.min(Math.max(q,0),max);if($("returnRefundAmount"))$("returnRefundAmount").value=(safeQty*rate).toFixed(2);}
+
 async function submitReturn(e,rpc){e.preventDefault();if(!canManage())return notify("Owner/Admin permission required to post returns.");const d=Object.fromEntries(new FormData(e.target));const args=rpc==="ms_post_sale_return"?{p_sale_item_id:d.sale_item_id,p_quantity:Number(d.quantity),p_reason:d.reason}:{p_purchase_item_id:d.purchase_item_id,p_quantity:Number(d.quantity),p_reason:d.reason};try{const {data,error}=await sb.rpc(rpc,args);if(error)throw error;if(data?.error)throw new Error(data.error);notify("Return posted. Stock updated by the database.");e.target.reset();loadReturnHistory();}catch(err){notify("Return failed: "+err.message);}}
 async function loadReturnHistory(){
  const h=$("returnHistory");if(!h)return;
  try{
-  const [{data,error},staffNames]=await Promise.all([
-   sb.from("ms_inventory_returns").select("*").eq("pharmacy_id",pharmacyId()).order("created_at",{ascending:false}).limit(100),
-   getPharmacyStaffNameMap()
+  const [sales,vendors]=await Promise.all([
+   sb.from("ms_sales_return_requests").select("*").eq("pharmacy_id",pharmacyId()).order("requested_at",{ascending:false}).limit(200),
+   sb.from("ms_vendor_return_requests").select("*").eq("pharmacy_id",pharmacyId()).order("requested_at",{ascending:false}).limit(200)
   ]);
-  if(error)throw error;
-  h.innerHTML=data?.length?`<div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Item</th><th>Qty</th><th>Reason</th><th>Processed by</th><th class="no-print">Print</th></tr></thead><tbody>${data.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString()}</td><td>${esc(x.return_type||"-")}</td><td>${esc(x.product_name||"-")}</td><td>${x.quantity}</td><td>${esc(x.reason||"-")}</td><td>${esc(staffDisplayName(x,staffNames))}</td><td class="no-print"><button class="btn light" onclick="printSingleReturn('${String(x.id).replace(/'/g,"\'")}')">Print</button></td></tr>`).join("")}</tbody></table></div>`:"No returns posted yet.";
- }catch(e){h.textContent=e.message||"Unable to load returns.";}
+  if(sales.error)throw sales.error;if(vendors.error)throw vendors.error;
+  const rows=[...(sales.data||[]).map(x=>({...x,_kind:"Sales return"})),...(vendors.data||[]).map(x=>({...x,_kind:"Vendor return"}))].sort((a,b)=>new Date(b.requested_at||b.created_at||0)-new Date(a.requested_at||a.created_at||0));
+  h.innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Return ID</th><th>Invoice</th><th>Qty</th><th>Return / Refund amount</th><th>Status</th><th>Owner note</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${new Date(x.requested_at||x.created_at).toLocaleString()}</td><td>${x._kind}</td><td>${esc(x.return_code||String(x.id).slice(0,8))}</td><td>${esc(x.invoice_number||x.purchase_invoice_number||"—")}</td><td>${esc(x.quantity??"—")}</td><td><b>${x._kind==="Sales return"?money(x.refund_amount||0):(x.return_amount!=null?money(x.return_amount):"Awaiting owner review")}</b></td><td><span class="status-pill ${x.status==="approved"||x.status==="refunded"||x.status==="processed"?"success":x.status==="rejected"?"danger":"pending"}">${esc(String(x.status||"pending").toUpperCase())}</span></td><td>${esc(x.approval_note||"—")}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No sales or vendor return requests yet.</div>`;
+ }catch(e){h.innerHTML=`<div class="notice">Unable to load return approvals: ${esc(e.message||e)}</div>`;}
 }
-
 async function printSingleReturn(returnId){
  try{const {data,error}=await sb.from("ms_inventory_returns").select("*").eq("id",returnId).eq("pharmacy_id",pharmacyId()).single();if(error)throw error;const staffNames=await getPharmacyStaffNameMap();
  const fields=[["Return date",new Date(data.created_at).toLocaleString()],["Return type",data.return_type],["Reference",data.invoice_number||data.reference_number||data.sale_id||data.purchase_id],["Medicine",data.product_name],["Batch",data.batch_number],["Quantity",data.quantity],["Reason",data.reason],["Processed by",staffDisplayName(data,staffNames)]];
@@ -3749,23 +3808,37 @@ async function payApprovedSalesReturn(id,total){
 }
 async function renderCashierDesk(){
  const pid=pharmacyId();
- $('pageContent').innerHTML=`${pageHead('Cashier Collection Desk','Bills, approved customer refunds and your independent cash drawer')}<div id="cashierSessionPanel" class="panel">Loading your cash session...</div><div class="panel"><div class="panel-head"><h3>🧾 Bills waiting for collection</h3><button class="btn light" onclick="renderCashierDesk()">Refresh</button></div><div id="cashierPendingBills">Loading...</div></div><div class="panel"><div class="panel-head"><h3>↩ Approved sales return refunds</h3><button class="btn light" onclick="loadCashierReturnTasks()">Refresh</button></div><div id="cashierReturnTasks">Loading...</div></div>`;
- await loadCashierSession();await loadCashierPendingBills();await loadCashierReturnTasks();
+ $('pageContent').innerHTML=`${pageHead('Cashier Collection Desk','Bills, approved customer refunds and your independent cash drawer')}<div id="cashierSessionPanel" class="panel">Loading your cash session...</div><div class="panel"><div class="panel-head"><h3>🧾 Bills waiting for collection</h3><button class="btn light" onclick="renderCashierDesk()">Refresh</button></div><div id="cashierPendingBills">Loading...</div></div><div class="panel"><div class="panel-head"><h3>↩ Approved sales return refunds</h3><button class="btn light" onclick="loadCashierReturnTasks()">Refresh</button></div><div id="cashierReturnTasks">Loading...</div></div><div class="panel"><div class="panel-head"><h3>🔔 Return request status</h3><button class="btn light" onclick="loadStaffReturnStatus()">Refresh</button></div><div id="staffReturnStatus">Loading approval status...</div><small class="feature-note">Pending means the request is waiting for owner approval. Staff can view status but cannot approve or reject.</small></div>`;
+ await loadCashierSession();await loadCashierPendingBills();await loadCashierReturnTasks();await loadStaffReturnStatus();
 }
 async function submitReturn(e,rpc){
  e.preventDefault();const d=Object.fromEntries(new FormData(e.target));
  try{
   let result;
-  if(rpc==='ms_post_sale_return'){
-   const refundAmount=Number(prompt('Refund amount requested for owner approval (₹):','0')||0);if(!Number.isFinite(refundAmount)||refundAmount<=0)return notify('Enter a valid refund amount.');
-   result=await sb.rpc('ms_request_sales_return',{p_sale_item_id:d.sale_item_id,p_quantity:Number(d.quantity),p_reason:d.reason,p_refund_amount:refundAmount});
+  if(rpc==='ms_request_sales_return'){
+   const item=(window.returnSaleItems||[]).find(x=>x.id===d.sale_item_id);const qty=Number(d.quantity||0);const max=Number(item?.quantity||0);const unit=Number(item?.unit_price)||((Number(item?.line_total)||0)/Math.max(1,max));const amount=Number((qty*unit).toFixed(2));if(!item||!Number.isFinite(qty)||qty<=0||qty>max)return notify('Select a valid invoice item and return quantity not exceeding sold quantity.');if(amount<=0)return notify('Could not calculate refund from the original bill. Check the sale item unit price.');
+   result=await sb.rpc('ms_request_sales_return',{p_sale_item_id:d.sale_item_id,p_quantity:qty,p_reason:d.reason,p_refund_amount:amount});
   }else{
    result=await sb.rpc('ms_request_vendor_return',{p_purchase_item_id:d.purchase_item_id,p_quantity:Number(d.quantity),p_reason:d.reason});
   }
   if(result.error)throw result.error;if(result.data?.error)throw new Error(result.data.error);
-  notify(result.data?.status==='approved'?'Return request is approved under this pharmacy owner setting. Complete the refund / vendor processing using the authorized workflow.':'Return request sent to the owner for approval. No stock or refund is posted before approval.');e.target.reset();await loadReturnHistory();
+  notify(result.data?.status==='approved'?'Return approved according to owner settings.':'Return submitted. It is pending owner approval; stock and accounts must not change until approval.');
+  e.target.reset();await loadReturnHistory();
  }catch(err){notify('Return request failed: '+err.message);}
 }
+
+
+async function loadStaffReturnStatus(){
+ const h=$('staffReturnStatus');if(!h)return;
+ const [sales,vendors]=await Promise.all([
+  sb.from('ms_sales_return_requests').select('id,return_code,invoice_number,quantity,refund_amount,status,requested_at,approval_note').eq('pharmacy_id',pharmacyId()).in('status',['pending','approved','rejected','refunded']).order('requested_at',{ascending:false}).limit(100),
+  sb.from('ms_vendor_return_requests').select('id,return_code,purchase_id,quantity,status,requested_at,approval_note').eq('pharmacy_id',pharmacyId()).in('status',['pending','approved','rejected','processed']).order('requested_at',{ascending:false}).limit(100)
+ ]);
+ if(sales.error||vendors.error){h.innerHTML=`<div class="notice">Unable to load return status: ${esc((sales.error||vendors.error).message)}</div>`;return;}
+ const rows=[...(sales.data||[]).map(x=>({...x,_type:'Sales return',_invoice:x.invoice_number||'—',_amount:money(x.refund_amount||0)})),...(vendors.data||[]).map(x=>({...x,_type:'Vendor return',_invoice:x.purchase_id||'—',_amount:'—'}))].sort((a,b)=>new Date(b.requested_at||0)-new Date(a.requested_at||0));
+ h.innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Type</th><th>Reference / Invoice</th><th>Qty</th><th>Amount</th><th>Status</th><th>Owner response</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${x._type}</td><td>${esc(x.return_code||String(x.id).slice(0,8))}<br><small>${esc(x._invoice)}</small></td><td>${esc(x.quantity??'—')}</td><td>${esc(x._amount)}</td><td><span class="status-pill ${['approved','refunded','processed'].includes(x.status)?'success':x.status==='rejected'?'danger':'pending'}">${esc(String(x.status||'pending').toUpperCase())}</span>${x.status==='pending'?'<br><small>Waiting for owner approval</small>':''}</td><td>${esc(x.approval_note|| (x.status==='pending'?'Owner has not approved yet':'—'))}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No return requests found for this pharmacy.</div>';
+}
+
 async function loadOwnerApprovalPopup(){
  if(!currentUser||!isPharmacyOwner()||workflowSetting("owner_notifications")===false)return;
  const [sr,vr]=await Promise.all([
@@ -3778,7 +3851,7 @@ async function loadOwnerApprovalPopup(){
  if(!old){old=document.createElement('div');old.id='ownerApprovalPopup';old.style.cssText='position:fixed;z-index:99999;right:16px;top:76px;width:min(440px,calc(100vw - 32px));max-height:75vh;overflow:auto;background:var(--panel,#fff);color:var(--text,#172033);border:1px solid #dbe3ef;border-radius:16px;box-shadow:0 18px 55px #10213b33;padding:16px';document.body.appendChild(old);}
  old.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>🔔 Owner approvals (${items.length})</b><button class="btn light" onclick="document.getElementById('ownerApprovalPopup')?.remove()">Close</button></div>${items.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #e5eaf2"><b>${x._kind==='sales'?'Customer sales return':'Vendor purchase return'}</b><div style="font-size:13px;margin:5px 0">${esc(x.return_code||x.id)} · ${esc(x.reason||'')}</div><div style="font-size:13px;margin-bottom:8px">${x._kind==='sales'?'Refund requested: '+money(x.refund_amount):'Quantity: '+esc(x.quantity)}</div><button class="btn" onclick="decideReturnRequest('${x._kind}','${x.id}','approve')">Approve</button> <button class="btn danger" onclick="decideReturnRequest('${x._kind}','${x.id}','reject')">Reject</button></div>`).join('')}`;
 }
-async function decideReturnRequest(kind,id,decision){const {error}=await sb.rpc('ms_owner_decide_return',{p_kind:kind,p_request_id:id,p_decision:decision,p_note:null});if(error)return notify(error.message);notify(`Return request ${decision}d.`);await loadOwnerApprovalPopup();}
+async function decideReturnRequest(kind,id,decision){const {error}=await sb.rpc('ms_owner_decide_return',{p_kind:kind,p_request_id:id,p_decision:decision,p_note:null});if(error)return notify(error.message);notify(`Return request ${decision}d.`);await loadOwnerApprovalPopup();if(typeof loadReturnHistory==='function')await loadReturnHistory();}
 window.renderCashierDashboard=function(){
  const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
  $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
