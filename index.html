@@ -1203,6 +1203,46 @@ body.auth-mode .auth-card{background:#fff!important;box-shadow:-18px 0 55px #173
 @keyframes reminderAppear{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:650px){.reminder-hero{padding:20px;min-height:170px}.reminder-hero-art{width:100px;flex-basis:100px;transform:scale(.78);transform-origin:center right;margin-left:-20px}.reminder-stats{gap:7px}.reminder-stat{padding:10px 8px;grid-template-columns:28px 1fr;column-gap:6px}.reminder-stat span{width:28px;height:28px;font-size:13px}.reminder-stat strong{font-size:17px}.customer-reminder-head{padding:13px}.customer-reminder-actions{width:100%;padding-left:55px}.customer-medicine-table{padding:12px}.rem-medicine-input-row{grid-template-columns:1fr 1fr 32px}.rem-medicine-input-row .field:first-child{grid-column:1/-1}.rem-medicine-input-row .field:nth-child(3){grid-column:2}.rem-remove{grid-column:3;grid-row:2}.customer-medicine-title{align-items:flex-start;flex-direction:column;gap:4px}}
 
+
+/* SUBHA MEDICAL – premium visual refresh */
+:root{--primary:#5542a3;--primary-dark:#382d78;--gold:#e0b85e;--bg:#f4f6fc;--border:#e5e8f2}
+body{background:radial-gradient(ellipse at 92% 0%,#ece9ff 0,transparent 32%),linear-gradient(145deg,#f7f8fd,#f1f3fa)}
+.auth-wrap{background:radial-gradient(circle at 18% 18%,#8b7be0 0,transparent 28%),radial-gradient(circle at 85% 85%,#d5b96e 0,transparent 24%),linear-gradient(135deg,#28204f,#5b4aa4 58%,#7868bd)}
+.auth-card{animation:sm-rise .65s cubic-bezier(.2,.8,.2,1) both;border:1px solid #ffffff9c;backdrop-filter:blur(12px)}
+.brand-logo,.side-icon{box-shadow:0 8px 22px #34276a35;position:relative;overflow:hidden}
+.brand-logo:after,.side-icon:after{content:"";position:absolute;inset:-60% auto -60% -35%;width:35%;background:#ffffff55;transform:rotate(28deg);animation:sm-shine 5s ease-in-out infinite}
+.sidebar{background:linear-gradient(180deg,#282143,#342b5d 70%,#25203e);box-shadow:8px 0 30px #25204412}
+.nav{transition:background .2s ease,transform .2s ease,color .2s ease}
+.nav:hover,.nav.active{transform:translateX(3px);background:linear-gradient(90deg,#6555a9,#4d417f)}
+.topbar{box-shadow:0 4px 18px #29234a08;backdrop-filter:blur(12px)}
+.page-head{position:relative;padding:5px 2px 13px}
+.page-head h2{letter-spacing:-.45px}
+.page-head:after{content:"";position:absolute;left:0;bottom:0;width:58px;height:3px;border-radius:9px;background:linear-gradient(90deg,var(--gold),var(--primary))}
+.panel,.stat,.dash-stat,.dash-lower-card,.customer-reminder-card{border:1px solid #e7e8f2;box-shadow:0 7px 24px #29234a08;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.panel{position:relative;overflow:hidden;background:linear-gradient(145deg,#fff,#fdfdff)}
+.panel:before{content:"";position:absolute;right:-38px;top:-48px;width:118px;height:118px;border-radius:50%;background:radial-gradient(circle,#eeeaff 0,#f7f5ff 60%,transparent 68%);pointer-events:none}
+.panel:hover,.stat:hover,.dash-stat:hover,.dash-lower-card:hover,.customer-reminder-card:hover{transform:translateY(-3px);box-shadow:0 13px 30px #29234a12;border-color:#d7d0f3}
+.stat{background:linear-gradient(145deg,#fff,#faf9ff)}
+.stat .symbol{box-shadow:0 4px 12px #5946a815}
+.btn{box-shadow:0 4px 10px #5946a81c;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.btn:hover{transform:translateY(-1px);box-shadow:0 7px 16px #5946a82b;filter:saturate(1.08)}
+.btn:active{transform:translateY(0) scale(.98)}
+.field input,.field select,.feature-input{transition:border-color .18s ease,box-shadow .18s ease}
+.field input:focus,.field select:focus,.feature-input:focus{box-shadow:0 0 0 3px #5946a817}
+th{background:linear-gradient(90deg,#f7f6fc,#fbfbff)}
+tbody tr{transition:background .16s ease}tbody tr:hover{background:#f8f7ff}
+.status-pill,.badge{box-shadow:inset 0 0 0 1px #00000005}
+#ownerApprovalPopup{animation:sm-pop .3s cubic-bezier(.2,.8,.2,1) both!important;border-color:#dcd5f5!important;box-shadow:0 20px 65px #21183f35!important}
+#ownerApprovalPopup>div:first-child{padding-bottom:10px;border-bottom:1px solid #ece9f7;margin-bottom:6px}
+#toast{box-shadow:0 10px 30px #1e183b35;animation:sm-toast .25s ease-out both}
+.customer-avatar{box-shadow:0 5px 14px #5946a82a}
+@keyframes sm-rise{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes sm-pop{from{opacity:0;transform:translateY(-9px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes sm-toast{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sm-shine{0%,72%,100%{left:-45%}86%{left:125%}}
+@media(max-width:700px){.panel,.stat{border-radius:14px}.page-head h2{font-size:20px}.panel{padding:15px}.btn{min-height:40px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
 </style>
 
 <style id="subha-motion-polish">
