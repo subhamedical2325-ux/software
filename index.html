@@ -1243,6 +1243,15 @@ tbody tr{transition:background .16s ease}tbody tr:hover{background:#f8f7ff}
 @media(max-width:700px){.panel,.stat{border-radius:14px}.page-head h2{font-size:20px}.panel{padding:15px}.btn{min-height:40px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 
+ 
+.customer-reminder-toggle{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:#31556a;cursor:pointer}
+.customer-reminder-toggle input{width:16px;height:16px;accent-color:#078b87}
+.pos-reminder-check{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;color:#087b78;white-space:nowrap}
+.pos-reminder-check input{width:14px;height:14px;accent-color:#078b87}
+.reminder-alert-dashboard{border-color:#cfe6e4!important;background:linear-gradient(145deg,#fff,#f6fcfb)!important}
+.reminder-alert-table{min-width:580px!important}
+.reminder-alert-table td small{display:block;color:#8b6b32;font-size:9px;margin-top:2px}
+@media(max-width:700px){.pos-reminder-check{font-size:8px}.reminder-alert-table{min-width:540px!important}}
 </style>
 
 <style id="subha-motion-polish">
@@ -1904,9 +1913,10 @@ function printCashierReport(){const content=$("cashierReportRows")?.innerHTML||"
 function renderCashierDashboard(){
  const today=new Date().toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
  $("pageContent").innerHTML=`<div class="dash-welcome"><div><span class="dash-eyebrow">CASHIER WORKSPACE</span><h2>Cashier Desk</h2><p>Payment and cash handling only</p></div><div class="dash-date">${today}</div></div>
- <div class="dash-stats"><div class="dash-stat blue"><span class="dash-stat-icon">💵</span><div><small>Cashier</small><strong>${esc(currentMember?.full_name||"Staff")}</strong></div></div><div class="dash-stat green"><span class="dash-stat-icon">🏥</span><div><small>Pharmacy</small><strong>${esc(currentPharmacy?.pharmacy_name||"")}</strong></div></div></div>
+ <section class="dash-lower-card reminder-alert-dashboard" style="margin:12px 0"><div class="dash-lower-head"><h3>🔔 Customer medicine reminders</h3><button onclick="loadCustomerReminderAlerts()">Refresh</button></div><div id="customerReminderAlerts">Loading reminders...</div></section><div class="dash-stats"><div class="dash-stat blue"><span class="dash-stat-icon">💵</span><div><small>Cashier</small><strong>${esc(currentMember?.full_name||"Staff")}</strong></div></div><div class="dash-stat green"><span class="dash-stat-icon">🏥</span><div><small>Pharmacy</small><strong>${esc(currentPharmacy?.pharmacy_name||"")}</strong></div></div></div>
  <div class="dash-bottom-grid"><section class="dash-lower-card"><div class="dash-lower-head"><h3>💰 Cash & Payment</h3></div><div class="dash-tool-grid"><button class="dash-tool" onclick="navigate('cashierdesk')"><span>🧾</span><b>Pending Bill Collection</b><small>Collect pharmacist-saved bills</small></button><button class="dash-tool" onclick="navigate('cashierreport')"><span>📊</span><b>Daily Collection Report</b><small>Print cash, UPI, card and refunds</small></button><button class="dash-tool" onclick="navigate('cashbook')"><span>💳</span><b>Cashbook & Expenses</b><small>Cash in, cash out and expenses</small></button></div></section></div>
  <div class="notice">Your account is restricted to cashier-related money functions. Inventory, purchasing, staff management and pharmacy settings are not available in this login.</div>`;
+ loadCustomerReminderAlerts();
 }
 
 let ownerPendingBillTimer=null;
@@ -1939,6 +1949,16 @@ function startOwnerPendingBillAlerts(){
  ownerPendingBillTimer=setInterval(()=>{if(currentPage==="dashboard")loadOwnerPendingBillAlerts();},30000);
 }
 
+async function loadCustomerReminderAlerts(){
+ const host=$("customerReminderAlerts");if(!host)return;
+ try{
+  const {data,error}=await sb.from("ms_customer_reminder_notifications").select("*").eq("pharmacy_id",pharmacyId()).order("due_date",{ascending:true}).limit(50);
+  if(error)throw error;
+  const rows=data||[];
+  host.innerHTML=rows.length?`<div class="table-wrap"><table class="reminder-alert-table"><thead><tr><th>Customer</th><th>Phone</th><th>Medicine</th><th>Due date</th><th>Follow-up</th></tr></thead><tbody>${rows.map(r=>`<tr><td><b>${esc(r.customer_name||"Customer")}</b></td><td>${esc(r.phone||"—")}</td><td>${esc(r.medicine_name)}</td><td>${esc(r.due_date)} <small>(${Number(r.days_until_due)<0?Math.abs(Number(r.days_until_due))+" days overdue":Number(r.days_until_due)===0?"Due today":Number(r.days_until_due)+" days"})</small></td><td><button class="btn light" onclick="logPatientReminderCall('${r.reminder_medicine_id}')">Call notes & close</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="dash-clear">✓ No customer medicine reminders due in the next 4 days.</div>`;
+ }catch(e){host.innerHTML=`<div class="feature-note">Customer reminder alerts unavailable: ${esc(e.message)}. Confirm the reminder SQL setup has been run.</div>`;}
+}
+
 function renderDashboard(){
  if(isSuper()){renderSuperDashboard();return;}
  const today=new Date().toISOString().slice(0,10);
@@ -1963,6 +1983,7 @@ function renderDashboard(){
  $("pageContent").innerHTML=`
  <div class="dash-welcome"><div><span class="dash-eyebrow">PHARMACY WORKSPACE</span><h2>Dashboard</h2><p>Your pharmacy operations at a glance</p></div><div class="dash-date">▦ &nbsp;${new Date().toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric',weekday:'short'})}</div></div>
  <section class="dash-lower-card" style="margin:14px 0;border:1px solid #f0c36d"><div class="dash-lower-head"><h3>🔔 Owner Notifications – Pending Cashier Collections</h3><button class="btn light" onclick="loadOwnerPendingBillAlerts()">Refresh</button></div><div id="ownerPendingCashierBills">Loading pending bills...</div></section>
+ <section class="dash-lower-card reminder-alert-dashboard" style="margin:12px 0"><div class="dash-lower-head"><h3>🔔 Customer medicine reminders</h3><button onclick="loadCustomerReminderAlerts()">Refresh</button></div><div id="customerReminderAlerts">Loading reminders...</div></section>
  <div class="dash-stats">${stats.map(x=>`<div class="dash-stat ${x[3]}"><span class="dash-stat-icon">${x[0]}</span><div><small>${x[1]}</small><strong>${x[2]}</strong></div></div>`).join('')}</div>
  <div class="dash-main-grid">
   <section class="dash-module"><div class="dash-module-head"><h3>🛒 &nbsp;Billing (POS)</h3><button class="dash-primary" onclick="navigate('billing')">Open Billing</button></div><div class="dash-module-body"><div class="dash-module-art bill-art"><div class="art-cross">✚</div><div class="art-pill pill-one"></div><div class="art-pill pill-two"></div><div class="art-box">Rx</div></div><div class="dash-module-copy"><b>Fast counter billing</b><p>Search medicines, scan barcodes, manage cart quantities and complete customer payments.</p><button class="dash-action" onclick="navigate('billing')">New Bill <span>→</span></button></div></div></section>
@@ -1975,6 +1996,7 @@ function renderDashboard(){
   <section class="dash-lower-card"><div class="dash-lower-head"><h3>🔔 &nbsp;Inventory Alerts</h3><button onclick="navigate('products')">View All →</button></div><div class="dash-alert-list">${alertItems.length?alertItems.map(x=>`<div class="dash-alert ${x.type}"><span>${x.type==='low'?'!':x.type==='near'?'◷':'×'}</span><div><b>${esc(x.name)}</b><small>${esc(x.detail)}</small></div></div>`).join(''):'<div class="dash-clear">✓ &nbsp;No current stock alerts</div>'}</div></section>
   <section class="dash-lower-card"><div class="dash-lower-head"><h3>🔧 &nbsp;Quick Tools</h3><button onclick="navigate('settings')">Settings →</button></div><div class="dash-tool-grid">${quick('▥','Barcode Scan','Scan product barcode','scanner')}${quick('▦','Medicine Rack','Rack / shelf / bin','rack')}${quick('▤','Item Master','Medicine details','itemmaster')}${quick('⇩','Purchase Order','Create purchase order','purchaseorders')}${quick('↻','Stock Adjustment','Stock audit','audit')}${quick('⚙','Settings','Pharmacy setup','settings')}</div></section>
  </div>`;
+ loadCustomerReminderAlerts();
 }
 async function renderSuperDashboard(){
  const {data,error}=await sb.from("ms_pharmacies").select("*").order("created_at",{ascending:false});
@@ -2247,11 +2269,18 @@ function renderCustomers(){
  $("pageContent").innerHTML=`
  ${pageHead("Customers","Customer details and credit information",button)}
  <div class="panel"><div class="panel-head"><h3>Customer list</h3><input class="search" placeholder="Search customer" oninput="filterCustomers(this.value)"></div>
- <div class="table-wrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Address</th><th>Credit balance</th></tr></thead><tbody id="customerRows"></tbody></table></div></div>`;
+ <div class="table-wrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Address</th><th>Credit balance</th><th>Monthly medicine reminders</th></tr></thead><tbody id="customerRows"></tbody></table></div></div>`;
  fillCustomerRows(customers);
 }
 function fillCustomerRows(list){
- $("customerRows").innerHTML=list.length?list.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.phone||"-")}</td><td>${esc(c.address||"-")}</td><td>${money(c.credit_balance)}</td></tr>`).join(""):`<tr><td colspan="4" class="empty">No customers added.</td></tr>`;
+ $("customerRows").innerHTML=list.length?list.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.phone||"-")}</td><td>${esc(c.address||"-")}</td><td>${money(c.credit_balance)}</td><td>${canManage()?`<label class="customer-reminder-toggle"><input type="checkbox" ${c.monthly_reminder_enabled?"checked":""} onchange="toggleCustomerMonthlyReminder('${c.id}',this.checked)"> <span>${c.monthly_reminder_enabled?"Enabled":"Disabled"}</span></label>`:`${c.monthly_reminder_enabled?"Enabled":"Disabled"}`}</td></tr>`).join(""):`<tr><td colspan="5" class="empty">No customers added.</td></tr>`;
+}
+async function toggleCustomerMonthlyReminder(id,enabled){
+ const {error}=await sb.from("ms_customers").update({monthly_reminder_enabled:!!enabled,reminder_interval_months:1}).eq("id",id).eq("pharmacy_id",pharmacyId());
+ if(error){notify("Could not update customer reminder setting: "+error.message);renderCustomers();return;}
+ const c=customers.find(x=>x.id===id);if(c)c.monthly_reminder_enabled=!!enabled;
+ notify(enabled?"Monthly medicine reminders enabled for this customer.":"Monthly medicine reminders disabled for this customer.");
+ renderCustomers();
 }
 function filterCustomers(q){fillCustomerRows(customers.filter(c=>(c.name+" "+(c.phone||"")).toLowerCase().includes(q.toLowerCase())));}
 function customerModal(){
@@ -2261,9 +2290,10 @@ function customerModal(){
  ${field("Customer name","name","","required")}
  ${field("Phone number","phone")}
  ${field("Address","address")}
+ <div class="field"><label class="customer-reminder-toggle"><input type="checkbox" name="monthly_reminder_enabled" value="true"> <span>Enable monthly medicine reminders for this customer</span></label><small class="feature-note">Only medicines selected with the reminder checkbox during billing will be saved.</small></div>
  <button class="btn full">Save customer</button></form>`;
  $("customerForm").onsubmit=async e=>{
-  e.preventDefault();const d=Object.fromEntries(new FormData(e.target));d.pharmacy_id=pharmacyId();
+  e.preventDefault();const d=Object.fromEntries(new FormData(e.target));d.pharmacy_id=pharmacyId();d.monthly_reminder_enabled=!!e.target.querySelector('[name="monthly_reminder_enabled"]')?.checked;d.reminder_interval_months=1;
   const {error}=await sb.from("ms_customers").insert(d);
   if(error)return notify(error.message);
   closeModal();await refreshData();renderCustomers();notify("Customer added.");
@@ -2501,10 +2531,16 @@ function staffNameOptions(){
  return [...new Set(names)].map(n=>`<option value="${esc(n)}">`).join("");
 }
 async function lookupBillCustomer(phone){
- phone=String(phone||"").replace(/\D/g,"");if(phone.length<7)return;
- try{const {data,error}=await sb.from("ms_customers").select("*").eq("pharmacy_id",pharmacyId()).eq("phone",phone).limit(1).maybeSingle();if(error)throw error;
- if(data){$("billCustomerName").value=data.name||"";$("billCustomerAddress").value=data.address||"";$("billDoctor").value=data.doctor_name||"";window.billCustomerId=data.id;}
- else window.billCustomerId=null;
+ const normalized=String(phone||"").replace(/\D/g,"");if(normalized.length<7)return;
+ try{
+  let data=(customers||[]).find(c=>String(c.phone||"").replace(/\D/g,"")===normalized)||null;
+  if(!data){
+   const {data:rows,error}=await sb.from("ms_customers").select("*").eq("pharmacy_id",pharmacyId()).limit(1000);
+   if(error)throw error;
+   data=(rows||[]).find(c=>String(c.phone||"").replace(/\D/g,"")===normalized)||null;
+  }
+  if(data){$("billCustomerName").value=data.name||"";$("billCustomerAddress").value=data.address||"";$("billDoctor").value=data.doctor_name||"";window.billCustomerId=data.id;}
+  else window.billCustomerId=null;
  }catch(e){console.warn("Customer lookup:",e.message);}
 }
 async function fileAsDataUrl(file){if(!file)return null;return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});}
@@ -2520,7 +2556,7 @@ function addToCart(id){
  if(Number(p.stock)<=0)return notify("This medicine is out of stock.");
  const item=cart.find(x=>x.id===id);
  if(item){if(item.qty+1>stockAvailableForUnit(p,item.unit))return notify("Insufficient stock.");item.qty++;}
- else cart.push({...p,stock_unit:p.unit||"PCS",unit:p.unit||"PCS",qty:1});
+ else cart.push({...p,stock_unit:p.unit||"PCS",unit:p.unit||"PCS",qty:1,reminder_selected:false});
  renderCart();
 }
 function changeQty(id,qty){
@@ -2533,6 +2569,7 @@ function changeQty(id,qty){
  renderCart();
 }
 function removeCart(id){cart=cart.filter(x=>x.id!==id);renderCart();}
+function toggleCartReminder(id,checked){const item=cart.find(x=>x.id===id);if(!item)return;item.reminder_selected=!!checked;renderCart();}
 function calculateBill(){
  // MRP is the billing rate. A minimum 20% profit over purchase cost is mandatory.
  const subtotal=cart.reduce((a,p)=>a+p.qty*cartRate(p)*(1-Math.max(0,Math.min(100,Number(p.discount_pct||0)))/100),0);
@@ -2544,8 +2581,8 @@ function calculateBill(){
 }
 function renderCart(){
  if(!$("cartItems"))return;
- const rows=cart.map(p=>{const rate=cartRate(p),maxQty=stockAvailableForUnit(p,p.unit),unitOptions=cartUnitOptions(p);return `<tr><td><b>${esc(p.name)}</b><small class="medicine-sub">${esc(p.brand||"")} · Inventory unit: ${esc(p.stock_unit||p.unit||"PCS")}</small></td><td><input aria-label="Batch number" value="${esc(p.batch_number||"")}" readonly title="Batch from inventory" style="min-width:90px;width:100%;background:#f7f8fb;border:1px solid var(--border);padding:7px;border-radius:6px"></td><td><select aria-label="Selling unit" title="Choose whether this medicine is sold as a full strip or as individual tablets" onchange="changeCartUnit('${p.id}',this.value)">${unitOptions}</select></td><td><input aria-label="Quantity" type="number" min="1" max="${Math.floor(maxQty+1e-8)}" step="1" value="${p.qty}" onchange="changeQty('${p.id}',this.value)"></td><td><span title="Automatically calculated from saved inventory MRP; cannot be edited">${money(rate)}</span></td><td><input aria-label="Discount percent" type="number" min="0" max="100" step=".1" value="${Number(p.discount_pct||0)}" onchange="setCartDiscount('${p.id}',this.value)"></td><td><b>${money(p.qty*rate*(1-Number(p.discount_pct||0)/100))}</b> <button class="close" onclick="removeCart('${p.id}')" aria-label="Remove">×</button></td></tr>`;}).join("");
- $("cartItems").innerHTML=`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Selling unit</th><th>Qty</th><th>MRP rate (fixed)</th><th>Disc %</th><th>Amount</th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="empty">Add medicines to this bill.</td></tr>`}</tbody></table></div><small class="feature-note" style="display:block;margin-top:8px">For strip medicines, choose <b>Strip</b> to sell a full strip or <b>Tablet</b> to sell individual tablets. The unit rate and stock deduction are calculated automatically from Inventory MRP and tablets per strip. POS rate cannot be edited.</small>`;
+ const rows=cart.map(p=>{const rate=cartRate(p),maxQty=stockAvailableForUnit(p,p.unit),unitOptions=cartUnitOptions(p);return `<tr><td><b>${esc(p.name)}</b><small class="medicine-sub">${esc(p.brand||"")} · Inventory unit: ${esc(p.stock_unit||p.unit||"PCS")}</small></td><td><input aria-label="Batch number" value="${esc(p.batch_number||"")}" readonly title="Batch from inventory" style="min-width:90px;width:100%;background:#f7f8fb;border:1px solid var(--border);padding:7px;border-radius:6px"></td><td><select aria-label="Selling unit" title="Choose whether this medicine is sold as a full strip or as individual tablets" onchange="changeCartUnit('${p.id}',this.value)">${unitOptions}</select></td><td><input aria-label="Quantity" type="number" min="1" max="${Math.floor(maxQty+1e-8)}" step="1" value="${p.qty}" onchange="changeQty('${p.id}',this.value)"></td><td><span title="Automatically calculated from saved inventory MRP; cannot be edited">${money(rate)}</span></td><td><input aria-label="Discount percent" type="number" min="0" max="100" step=".1" value="${Number(p.discount_pct||0)}" onchange="setCartDiscount('${p.id}',this.value)"></td><td><label class="pos-reminder-check" title="Only this selected medicine will be added to the customer's monthly reminder"><input type="checkbox" ${p.reminder_selected?"checked":""} onchange="toggleCartReminder('${p.id}',this.checked)"><span>Remind</span></label></td><td><b>${money(p.qty*rate*(1-Number(p.discount_pct||0)/100))}</b> <button class="close" onclick="removeCart('${p.id}')" aria-label="Remove">×</button></td></tr>`;}).join("");
+ $("cartItems").innerHTML=`<div class="table-wrap"><table class="bill-results-table"><thead><tr><th>Medicine</th><th>Batch No.</th><th>Selling unit</th><th>Qty</th><th>MRP rate (fixed)</th><th>Disc %</th><th>Monthly reminder</th><th>Amount</th></tr></thead><tbody>${rows||`<tr><td colspan="8" class="empty">Add medicines to this bill.</td></tr>`}</tbody></table></div><small class="feature-note" style="display:block;margin-top:8px">For strip medicines, choose <b>Strip</b> to sell a full strip or <b>Tablet</b> to sell individual tablets. Tick <b>Remind</b> only for medicines the customer wants in their monthly reminder. Unchecked medicines are not saved as reminders.</small>`;
  const t=calculateBill();const discountInput=$("billDiscount");
  if(discountInput && t.discountRejected){discountInput.value=t.maxDiscount.toFixed(2);notify("Discount reduced: minimum 20% profit on purchase cost must be maintained.");}
  if($("discountLimitNote"))$("discountLimitNote").textContent=`Maximum permitted discount: ${money(t.maxDiscount)}.`;
@@ -2603,7 +2640,8 @@ async function completeSale(){
    product_name:p.name,batch_number:p.batch_number,
    quantity:p.qty,unit_price:cartRate(p),
    gst_percent:p.gst_percent,
-   line_total:p.qty*cartRate(p)*(1-Number(p.discount_pct||0)/100)
+   line_total:p.qty*cartRate(p)*(1-Number(p.discount_pct||0)/100),
+   reminder_selected:!!p.reminder_selected
   }));
   const {error:itemError}=await sb.from("ms_sale_items").insert(lines);
   if(itemError)throw itemError;
@@ -2810,7 +2848,7 @@ function filterReminderRows(){
  const medicines=all.flatMap(c=>c.medicines||[]);const today=new Date().toISOString().slice(0,10);
  const due=medicines.filter(m=>m.due_date<=today&&!['Purchased','Completed'].includes(m.status)).length;
  const stats=$("reminderStats");if(stats)stats.innerHTML=`<div class="reminder-stat"><span>👥</span><small>Customers</small><strong>${all.length}</strong></div><div class="reminder-stat"><span>💊</span><small>Medicine lines</small><strong>${medicines.length}</strong></div><div class="reminder-stat"><span>📅</span><small>Due / overdue</small><strong>${due}</strong></div>`;
- host.innerHTML=rows.length?rows.map(c=>`<article class="customer-reminder-card"><div class="customer-reminder-head"><div class="customer-avatar">${esc((c.customer_name||"C").trim().charAt(0).toUpperCase())}</div><div class="customer-reminder-info"><h4>${esc(c.customer_name)}</h4><p>☎ ${esc(c.phone||"Phone not added")} <span>•</span> ${c.medicines.length} medicine(s)</p></div><div class="customer-reminder-actions">${c.phone?`<a class="btn light" href="tel:${esc(c.phone)}">Call</a>`:""}${c.phone?`<a class="btn light" target="_blank" rel="noopener" href="https://wa.me/91${esc(String(c.phone).replace(/\D/g,''))}?text=${encodeURIComponent('Hello '+c.customer_name+', this is a follow-up reminder from your pharmacy.')} ">WhatsApp</a>`:""}<button class="btn light" onclick="deletePatientReminder('${c.id}')">Delete</button></div></div><div class="customer-medicine-table"><div class="customer-medicine-title"><strong>Medicine details</strong><span>Separate medicine-wise due dates and status</span></div><div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Quantity / note</th><th>Due date</th><th>Status</th><th>Action</th></tr></thead><tbody>${(c.medicines||[]).map(m=>`<tr><td><strong>${esc(m.medicine_name)}</strong></td><td>${esc(m.quantity_note||"—")}</td><td>${esc(m.due_date||"—")}</td><td><span class="reminder-status ${m.status==='Purchased'?'done':m.status==='Called'?'called':''}">${esc(m.status||"Pending")}</span></td><td><div class="actions"><button class="btn light" onclick="setPatientMedicineStatus('${m.id}','Called')">Called</button><button class="btn light" onclick="setPatientMedicineStatus('${m.id}','Purchased')">Purchased</button><button class="btn light" onclick="reschedulePatientMedicine('${m.id}','${m.due_date||''}')">Reschedule</button></div></td></tr>`).join("")||`<tr><td colspan="5">No medicine details added.</td></tr>`}</tbody></table></div></div></article>`).join(""):`<div class="empty"><div style="font-size:34px;margin-bottom:8px">♡</div>No customer reminders found. Add one customer and enter multiple medicines under that same reminder.</div>`;
+ host.innerHTML=rows.length?rows.map(c=>`<article class="customer-reminder-card"><div class="customer-reminder-head"><div class="customer-avatar">${esc((c.customer_name||"C").trim().charAt(0).toUpperCase())}</div><div class="customer-reminder-info"><h4>${esc(c.customer_name)}</h4><p>☎ ${esc(c.phone||"Phone not added")} <span>•</span> ${c.medicines.length} medicine(s)</p></div><div class="customer-reminder-actions">${c.phone?`<a class="btn light" href="tel:${esc(c.phone)}">Call</a>`:""}${c.phone?`<a class="btn light" target="_blank" rel="noopener" href="https://wa.me/91${esc(String(c.phone).replace(/\D/g,''))}?text=${encodeURIComponent('Hello '+c.customer_name+', this is a follow-up reminder from your pharmacy.')} ">WhatsApp</a>`:""}<button class="btn light" onclick="deletePatientReminder('${c.id}')">Delete</button></div></div><div class="customer-medicine-table"><div class="customer-medicine-title"><strong>Medicine details</strong><span>Separate medicine-wise due dates and status</span></div><div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Quantity / note</th><th>Due date</th><th>Status</th><th>Call notes</th><th>Action</th></tr></thead><tbody>${(c.medicines||[]).map(m=>`<tr><td><strong>${esc(m.medicine_name)}</strong></td><td>${esc(m.quantity_note||"—")}</td><td>${esc(m.due_date||"—")}</td><td><span class="reminder-status ${m.status==='Purchased'?'done':m.status==='Called'?'called':''}">${esc(m.status||"Pending")}</span></td><td>${esc(m.call_notes||"—")}${m.called_at?`<small style="display:block;color:#82909d">${new Date(m.called_at).toLocaleString()}</small>`:""}</td><td><div class="actions">${String(m.status||"").toLowerCase()==="pending"?`<button class="btn light" onclick="logPatientReminderCall('${m.id}')">Call notes & close</button><button class="btn light" onclick="reschedulePatientMedicine('${m.id}','${m.due_date||''}')">Reschedule</button>`:""}${String(m.status||"").toLowerCase()!=="purchased"?`<button class="btn light" onclick="setPatientMedicineStatus('${m.id}','Purchased')">Purchased</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="6">No medicine details added.</td></tr>`}</tbody></table></div></div></article>`).join(""):`<div class="empty"><div style="font-size:34px;margin-bottom:8px">♡</div>No customer reminders found. Add one customer and enter multiple medicines under that same reminder.</div>`;
 }
 function reminderAddMedicineRow(){const host=$("remMedicineRows");if(!host)return;const row=document.createElement("div");row.className="rem-medicine-input-row";row.innerHTML=`<div class="field"><label>Medicine name *</label><input class="feature-input rem-med-name" required placeholder="Medicine name"></div><div class="field"><label>Quantity / note</label><input class="feature-input rem-med-qty" placeholder="e.g. 1 strip"></div><div class="field"><label>Due date *</label><input class="feature-input rem-med-date" type="date" required></div><button type="button" class="rem-remove" title="Remove medicine" onclick="this.parentElement.remove()">×</button>`;host.appendChild(row);}
 function reminderModal(){
@@ -2819,6 +2857,21 @@ function reminderModal(){
  reminderAddMedicineRow();
  $("patientRemForm").onsubmit=async e=>{e.preventDefault();const form=e.target;const meds=[...form.querySelectorAll(".rem-medicine-input-row")].map(r=>({medicine_name:r.querySelector(".rem-med-name").value.trim(),quantity_note:r.querySelector(".rem-med-qty").value.trim()||null,due_date:r.querySelector(".rem-med-date").value,status:"Pending",pharmacy_id:pharmacyId()}));if(!meds.length||meds.some(m=>!m.medicine_name||!m.due_date))return notify("Add at least one medicine with its due date.");try{const d=Object.fromEntries(new FormData(form));const phone=d.phone.trim()||null;let head=null,createdNew=false;let lookup=sb.from("ms_patient_reminders").select("id").eq("pharmacy_id",pharmacyId()).ilike("customer_name",d.customer_name.trim());lookup=phone?lookup.eq("phone",phone):lookup.is("phone",null);const found=await lookup.maybeSingle();if(found.error)throw found.error;if(found.data){head=found.data;const upd=await sb.from("ms_patient_reminders").update({notes:d.notes.trim()||null,updated_at:new Date().toISOString()}).eq("id",head.id).eq("pharmacy_id",pharmacyId());if(upd.error)throw upd.error;}else{const ins=await sb.from("ms_patient_reminders").insert({pharmacy_id:pharmacyId(),customer_name:d.customer_name.trim(),phone,notes:d.notes.trim()||null,created_by:currentUser.id}).select("id").single();if(ins.error)throw ins.error;head=ins.data;createdNew=true;}const {error:medError}=await sb.from("ms_patient_reminder_medicines").insert(meds.map(m=>({...m,reminder_id:head.id})));if(medError){if(createdNew)await sb.from("ms_patient_reminders").delete().eq("id",head.id).eq("pharmacy_id",pharmacyId());throw medError;}closeModal();notify(found.data?"Medicine details added to the existing customer reminder.":"Customer reminder saved with separate medicine details.");renderReminders();}catch(err){notify("Could not save reminder: "+err.message);}};
  openModal();
+}
+async function logPatientReminderCall(id){
+ const note=prompt("Enter call notes (required). The reminder will close after saving these notes:");
+ if(note===null)return;
+ if(!note.trim())return notify("Enter call notes before closing this reminder.");
+ const outcome=prompt("Call result: Answered / No answer / Will visit / Not interested","Answered");
+ if(outcome===null)return;
+ try{
+  const {data,error}=await sb.rpc("ms_close_customer_reminder_call",{p_reminder_medicine_id:id,p_call_notes:note.trim(),p_call_outcome:outcome.trim()||"Called"});
+  if(error)throw error;
+  if(data?.success===false)throw new Error(data.message||"Could not close reminder.");
+  notify("Call notes saved. Reminder closed.");
+  await renderReminders();
+  loadCustomerReminderAlerts();
+ }catch(e){notify("Could not save call notes: "+e.message);}
 }
 async function setPatientMedicineStatus(id,status){const {error}=await sb.from("ms_patient_reminder_medicines").update({status,updated_at:new Date().toISOString()}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Medicine reminder updated.");renderReminders();}
 async function reschedulePatientMedicine(id,current){const value=prompt("Enter new due date (YYYY-MM-DD)",current||new Date().toISOString().slice(0,10));if(!value)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return notify("Use date format YYYY-MM-DD.");const {error}=await sb.from("ms_patient_reminder_medicines").update({due_date:value,status:"Pending",updated_at:new Date().toISOString()}).eq("id",id).eq("pharmacy_id",pharmacyId());if(error)return notify(error.message);notify("Due date updated.");renderReminders();}
